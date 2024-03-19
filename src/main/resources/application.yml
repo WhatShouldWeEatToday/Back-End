@@ -13,7 +13,7 @@ spring:
       # ??? ??: update ?? validate
       # ???? ? ?? ??: validate ?? none
       ddl-auto: create
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+#    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
     generate-ddl: true
 
