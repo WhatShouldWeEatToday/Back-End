@@ -25,4 +25,14 @@ public class UserService {
         User savedUser = new User(loginId, loginPw, nickname, gender, age);
         userRepository.save(savedUser);
     }
+
+    @Transactional
+    public boolean confirmId(String loginId) {
+        return userRepository.existsByLoginId(loginId);
+    }
+
+    @Transactional
+    public boolean confirmNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
 }
