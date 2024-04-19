@@ -9,19 +9,32 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor // 기본 생성자의 접근 제어를 Protected로 설정함으로써 무분별한 객체 생성을 예방함
-//@Builder
+@NoArgsConstructor
 public class User {
 
     @Id @GeneratedValue
     @Column(name = "USER_ID")
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private String loginId;
+
+    @Column(nullable = false)
     private String loginPw;
+
+    @Column(nullable = false, unique = true)
     private String nickname;
     private int gender;
     private int age;
 
     @OneToMany(mappedBy = "user")
     private List<Bookmark> bookmarkList = new ArrayList<>();
+
+    public User(String loginId, String loginPw, String nickname, int gender, int age) {
+        this.loginId = loginId;
+        this.loginPw = loginPw;
+        this.nickname = nickname;
+        this.gender = gender;
+        this.age = age;
+    }
 }
