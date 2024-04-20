@@ -1,12 +1,15 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.dto.user.signup.SignupRequestDTO;
-import kit.project.whatshouldweeattoday.domain.dto.user.UserDTO;
 import kit.project.whatshouldweeattoday.domain.entity.User;
 import kit.project.whatshouldweeattoday.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
