@@ -19,6 +19,7 @@ public class UserController {
 
     @PostMapping("/api/signup")
     public ResponseEntity<SignupResponseDTO> signup(@RequestBody SignupRequestDTO requestDTO) {
+        System.out.println("text");
         userService.createUser(requestDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
