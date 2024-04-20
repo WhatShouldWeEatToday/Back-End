@@ -31,10 +31,16 @@ public class Restaurant {
     private int totalMood;
     private int totalPark;
 
+    private double latitude;
+    private double longitude;
+
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "bookmark_id")
     private Bookmark bookmark;
 
     @OneToMany(mappedBy = "restaurant", orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
+
+
 }
