@@ -1,6 +1,5 @@
 package kit.project.whatshouldweeattoday.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,12 +19,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Service
-@RequiredArgsConstructor
 public class TMapService {
 
-    @Value("${tmap.api.key}")
+//    @Value("${tmap.api.key}")
     private String tmapKey;
 
     //좌표로 변환

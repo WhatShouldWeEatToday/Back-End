@@ -1,4 +1,4 @@
-package kit.project.whatshouldweeattoday.config;
+package kit.project.whatshouldweeattoday;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
