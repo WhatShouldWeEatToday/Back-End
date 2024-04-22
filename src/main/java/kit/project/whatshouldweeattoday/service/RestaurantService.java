@@ -18,8 +18,8 @@ import java.util.Map;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    @Autowired
-    private TMapService tmapService;
+    private final TMapService tmapService;
+
     //keyword로 맛집을 검색함(메뉴명, 점포명)
     @Transactional
     public Page<RestaurantResponseDTO> searchRestaurants(String keyword, Pageable pageable) {

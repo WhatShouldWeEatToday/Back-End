@@ -1,7 +1,5 @@
 package kit.project.whatshouldweeattoday.repository;
 
-
-
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
