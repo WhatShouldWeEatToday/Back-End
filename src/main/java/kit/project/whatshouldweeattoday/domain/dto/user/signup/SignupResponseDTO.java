@@ -10,10 +10,10 @@ public class SignupResponseDTO {
     private final String loginId;
     private final String loginPw;
     private final String nickname;
-    private final int gender;
+    private final String gender;
     private final int age;
 
-    public SignupResponseDTO(Long id, String loginId, String loginPw, String nickname, int gender, int age) {
+    public SignupResponseDTO(Long id, String loginId, String loginPw, String nickname, String gender, int age) {
         this.id = id;
         this.loginId = loginId;
         this.loginPw = loginPw;

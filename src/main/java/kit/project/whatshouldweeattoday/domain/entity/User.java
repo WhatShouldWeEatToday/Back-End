@@ -24,13 +24,13 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String nickname;
-    private int gender;
+    private String gender;
     private int age;
 
     @OneToMany(mappedBy = "user")
     private List<Bookmark> bookmarkList = new ArrayList<>();
 
-    public User(String loginId, String loginPw, String nickname, int gender, int age) {
+    public User(String loginId, String loginPw, String nickname, String gender, int age) {
         this.loginId = loginId;
         this.loginPw = loginPw;
         this.nickname = nickname;
