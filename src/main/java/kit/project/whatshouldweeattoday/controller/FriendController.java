@@ -3,12 +3,17 @@ package kit.project.whatshouldweeattoday.controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.WaitingFriendListDTO;
 import kit.project.whatshouldweeattoday.domain.entity.User;
 import kit.project.whatshouldweeattoday.service.FriendService;
 import kit.project.whatshouldweeattoday.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +27,15 @@ public class FriendController {
 
     private final UserService userService;
     private final FriendService friendService;
+
+    @GetMapping("/friend/search")
+    public ResponseEntity<Page<FriendListResponseDTO>> searchFriend(String friendId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 15) Pageable pageable) throws Exception {
+        if(!userService.confirmId(friendId)) {
+            throw new BadRequestException("존재하지 않는 사용자입니다.");
+        }
+        Page<FriendListResponseDTO> responseDTOS = friendService.searchByLoginId(friendId, pageable);
+        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
+    }
 
     @PostMapping("/friend/add/{loginId}")
     public ResponseEntity<?> addFriend(@Valid @PathVariable("loginId") String loginId, HttpSession session) throws Exception {
@@ -47,4 +61,9 @@ public class FriendController {
         friendService.acceptFriendRequest(friendshipId);
         return ResponseEntity.ok(new MsgResponseDTO("친구 추가 수락", HttpStatus.OK.value()));
     }
+
+//    @DeleteMapping("/chat/friend/cancel")
+//    public ResponseEntity<?> cancelFriend() {
+//
+//    }
 }

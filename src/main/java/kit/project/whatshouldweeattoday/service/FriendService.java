@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.WaitingFriendListDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Friendship;
 import kit.project.whatshouldweeattoday.domain.entity.User;
@@ -8,6 +9,8 @@ import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
 import kit.project.whatshouldweeattoday.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,11 @@ public class FriendService {
 
     private final UserRepository userRepository;
     private final FriendshipRepository friendshipRepository;
+
+    @Transactional
+    public Page<FriendListResponseDTO> searchByLoginId(String keyword, Pageable pageable) {
+        return friendshipRepository.findByFriendLoginIdContaining(keyword, pageable);
+    }
 
     @Transactional
     public void createFriendship(String fromLoginId, String toLoginId) throws Exception {
