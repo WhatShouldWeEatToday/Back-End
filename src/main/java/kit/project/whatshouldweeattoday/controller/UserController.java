@@ -4,6 +4,7 @@ import kit.project.whatshouldweeattoday.domain.dto.user.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.user.signup.SignupResponseDTO;
 import kit.project.whatshouldweeattoday.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +12,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/api/signup")
     public ResponseEntity<SignupResponseDTO> signup(@RequestBody SignupRequestDTO requestDTO) {
-        System.out.println("text");
+        log.info("Received signup request: {}", requestDTO.getLoginId());
         userService.createUser(requestDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/confirmLoginId")
-    public ResponseEntity<String> confirmId(@RequestParam String loginId) throws BadRequestException {
+    @GetMapping("/confirmLoginId/{loginId}")
+    public ResponseEntity<String> confirmId(@PathVariable("loginId") String loginId) throws BadRequestException {
         if(userService.confirmId(loginId)) {
             throw new BadRequestException("이미 사용중인 아이디입니다.");
         } else {
@@ -31,8 +33,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/confirmNickname")
-    public ResponseEntity<String> confirmNickname(@RequestParam String nickname) throws BadRequestException {
+    @GetMapping("/confirmNickname/{nickname}")
+    public ResponseEntity<String> confirmNickname(@PathVariable("nickname") String nickname) throws BadRequestException {
         if(userService.confirmNickname(nickname)) {
             throw new BadRequestException("이미 사용중인 닉네임입니다.");
         } else {

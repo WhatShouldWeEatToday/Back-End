@@ -22,7 +22,7 @@ public class UserService {
         String loginId = signupRequestDTO.getLoginId();
         String loginPw = signupRequestDTO.getLoginPw();
         String nickname = signupRequestDTO.getNickname();
-        int gender = signupRequestDTO.getGender();
+        String gender = signupRequestDTO.getGender();
         int age = signupRequestDTO.getAge();
 
         User savedUser = new User(loginId, loginPw, nickname, gender, age);
