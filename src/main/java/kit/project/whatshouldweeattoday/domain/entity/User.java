@@ -37,4 +37,10 @@ public class User {
         this.gender = gender;
         this.age = age;
     }
+
+    public void updateUser(String nickname, String gender, int age) {
+        this.nickname = nickname;
+        this.gender = gender;
+        this.age = age;
+    }
 }

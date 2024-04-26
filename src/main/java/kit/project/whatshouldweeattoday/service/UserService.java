@@ -43,6 +43,17 @@ public class UserService {
     }
 
     @Transactional
+    public void updateUser(String loginId, UserRequestDTO requestDTO) {
+        User user = userRepository.findByLoginId(loginId);
+        user.updateUser(requestDTO.getNickname(), requestDTO.getGender(), requestDTO.getAge());
+    }
+
+    @Transactional
+    public void deleteUser(String loginId) {
+        userRepository.deleteByLoginId(loginId);
+    }
+
+    @Transactional
     public LoginResponseDTO login(String loginId, String loginPw) {
         User user = userRepository.findByLoginId(loginId);
 

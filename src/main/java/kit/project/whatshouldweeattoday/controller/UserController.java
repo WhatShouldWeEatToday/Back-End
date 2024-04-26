@@ -50,6 +50,36 @@ public class UserController {
         }
     }
 
+    @GetMapping("/mypage/update")
+    public ResponseEntity<UserResponseDTO>  update(HttpSession session) {
+        session.removeAttribute("msg");
+        String loginId = (String) session.getAttribute("loginId");
+        User user = userService.findByLoginId(loginId);
+        UserResponseDTO responseDTO = new UserResponseDTO(user);
+
+        UserResponseDTO.builder()
+                .nickname(responseDTO.getNickname())
+                .gender(responseDTO.getGender())
+                .age(responseDTO.getAge())
+                .build();
+
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    }
+
+    @PatchMapping("/api/user/update/{loginId}")
+    public ResponseEntity<MsgResponseDTO> updateUser(@PathVariable("loginId") String loginId, @RequestBody UserRequestDTO userRequestDTO) {
+        userService.updateUser(loginId, userRequestDTO);
+        return ResponseEntity.ok(new MsgResponseDTO("회원 정보 수정 완료", HttpStatus.OK.value()));
+    }
+
+    @DeleteMapping("/api/user/delete/{loginId}")
+    public String deleteUser(@PathVariable("loginId") String loginId, HttpSession session) {
+        userService.deleteUser(loginId);
+        session.invalidate();
+
+        return "redirect:/";
+    }
+
     @PostMapping("/api/signin")
     public ResponseEntity<MsgResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDto, HttpServletRequest request) {
         String loginId = loginRequestDto.getLoginId();
