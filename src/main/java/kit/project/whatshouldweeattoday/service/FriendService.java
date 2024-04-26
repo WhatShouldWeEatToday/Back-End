@@ -8,8 +8,6 @@ import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
 import kit.project.whatshouldweeattoday.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,5 +82,16 @@ public class FriendService {
             }
         }
         return result;
+    }
+
+    @Transactional
+    public void acceptFriendRequest(Long friendshipId) throws Exception {
+        // 누를 친구 요청과 매칭되는 상대방 친구 요청 둘다 가져옴
+        Friendship friendship = friendshipRepository.findById(friendshipId).orElseThrow(() -> new BadRequestException("친구 요청 조회 실패"));
+        Friendship counterFriendship = friendshipRepository.findById(friendship.getCounterpartId()).orElseThrow(() -> new BadRequestException("친구 요청 조회 실패"));
+
+        // 둘다 상태를 ACCEPT 로 변경함
+        friendship.acceptFriendshipRequest();
+        counterFriendship.acceptFriendshipRequest();
     }
 }
