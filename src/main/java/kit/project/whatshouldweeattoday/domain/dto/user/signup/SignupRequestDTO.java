@@ -23,6 +23,6 @@ public class SignupRequestDTO {
 
     @NotBlank
     private String nickname;
-    private int gender;
+    private String gender;
     private int age;
 }

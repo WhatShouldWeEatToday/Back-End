@@ -1,6 +1,7 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
+import kit.project.whatshouldweeattoday.domain.type.MessageType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,8 +16,10 @@ public class Chat {
     @GeneratedValue
     @Column(name = "CHAT_ID")
     private Long id;
-    private String chatRoomName;
+    private String writer;
+    private String name;
     private String message;
+    private MessageType messageType;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "meet_id")

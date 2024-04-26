@@ -31,8 +31,8 @@ public class Restaurant {
     private int totalMood;
     private int totalPark;
 
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
 
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
