@@ -61,4 +61,28 @@ public class FriendService {
         friendshipTo.setCounterpartId(friendshipFrom.getId());
         friendshipFrom.setCounterpartId(friendshipTo.getId());
     }
+
+    @Transactional
+    public List<WaitingFriendListDTO> getWaitingFriendList(String loginId) throws Exception {
+        User user = userRepository.findByLoginId(loginId);
+        List<Friendship> friendshipList = user.getFriendshipList();
+        List<WaitingFriendListDTO> result = new ArrayList<>();
+
+        for (Friendship request : friendshipList) {
+            if(!request.isFrom() && (request.getStatus() == FriendshipStatus.WAITING)) {
+                User friend = userRepository.findByLoginId(request.getFriendLoginId());
+                if(friend == null) {
+                    throw new BadRequestException("회원 조회를 실패하였습니다.");
+                }
+                WaitingFriendListDTO waitingFriend = WaitingFriendListDTO.builder()
+                        .friendshipId(request.getId())
+                        .friendLoginId(friend.getLoginId())
+                        .friendNickname(friend.getNickname())
+                        .status(request.getStatus())
+                        .build();
+                result.add(waitingFriend);
+            }
+        }
+        return result;
+    }
 }

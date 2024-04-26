@@ -35,4 +35,12 @@ public class FriendController {
 
         return ResponseEntity.ok(new MsgResponseDTO("친구 추가 완료", HttpStatus.OK.value()));
     }
+
+    @GetMapping("/user/friends/received")
+    public ResponseEntity<?> getWaitingFriendInfo(HttpSession session) throws Exception {
+        User loginMember = (User)session.getAttribute("loginMember");
+        List<WaitingFriendListDTO> waitingFriendList = friendService.getWaitingFriendList(loginMember.getLoginId());
+
+        return new ResponseEntity<>(waitingFriendList, HttpStatus.OK);
+    }
 }
