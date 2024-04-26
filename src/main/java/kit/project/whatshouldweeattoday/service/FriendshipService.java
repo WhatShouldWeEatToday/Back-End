@@ -1,7 +1,7 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.friend.WaitingFriendListDTO;
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Friendship;
 import kit.project.whatshouldweeattoday.domain.entity.User;
 import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FriendService {
+public class FriendshipService {
 
     private final UserRepository userRepository;
     private final FriendshipRepository friendshipRepository;
@@ -69,10 +69,34 @@ public class FriendService {
     }
 
     @Transactional
-    public List<WaitingFriendListDTO> getWaitingFriendList(String loginId) throws Exception {
+    public List<FriendListDTO> getFriendList(String loginId) throws BadRequestException {
         User user = userRepository.findByLoginId(loginId);
         List<Friendship> friendshipList = user.getFriendshipList();
-        List<WaitingFriendListDTO> result = new ArrayList<>();
+        List<FriendListDTO> result = new ArrayList<>();
+
+        for (Friendship request : friendshipList) {
+            if(!request.isFrom() && (request.getStatus() == FriendshipStatus.ACCEPT)) {
+                User friend = userRepository.findByLoginId(request.getFriendLoginId());
+                if(friend == null) {
+                    throw new BadRequestException("회원 조회를 실패하였습니다.");
+                }
+                FriendListDTO friendList = FriendListDTO.builder()
+                        .friendshipId(request.getId())
+                        .friendLoginId(friend.getLoginId())
+                        .friendNickname(friend.getNickname())
+                        .status(request.getStatus())
+                        .build();
+                result.add(friendList);
+            }
+        }
+        return result;
+    }
+
+    @Transactional
+    public List<FriendListDTO> getWaitingFriendList(String loginId) throws Exception {
+        User user = userRepository.findByLoginId(loginId);
+        List<Friendship> friendshipList = user.getFriendshipList();
+        List<FriendListDTO> result = new ArrayList<>();
 
         for (Friendship request : friendshipList) {
             if(!request.isFrom() && (request.getStatus() == FriendshipStatus.WAITING)) {
@@ -80,13 +104,13 @@ public class FriendService {
                 if(friend == null) {
                     throw new BadRequestException("회원 조회를 실패하였습니다.");
                 }
-                WaitingFriendListDTO waitingFriend = WaitingFriendListDTO.builder()
+                FriendListDTO waitingFriendList = FriendListDTO.builder()
                         .friendshipId(request.getId())
                         .friendLoginId(friend.getLoginId())
                         .friendNickname(friend.getNickname())
                         .status(request.getStatus())
                         .build();
-                result.add(waitingFriend);
+                result.add(waitingFriendList);
             }
         }
         return result;

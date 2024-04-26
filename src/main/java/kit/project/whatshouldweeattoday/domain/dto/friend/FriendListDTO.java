@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class WaitingFriendListDTO {
+public class FriendListDTO {
 
      private Long friendshipId;
      private String friendLoginId;
