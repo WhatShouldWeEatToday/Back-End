@@ -62,8 +62,9 @@ public class FriendController {
         return ResponseEntity.ok(new MsgResponseDTO("친구 추가 수락", HttpStatus.OK.value()));
     }
 
-//    @DeleteMapping("/chat/friend/cancel")
-//    public ResponseEntity<?> cancelFriend() {
-//
-//    }
+    @DeleteMapping("/chat/friend/cancel/{friendshipId}")
+    public ResponseEntity<?> cancelFriend(@Valid @PathVariable("friendshipId") Long friendshipId) {
+        friendService.cancelFriendRequest(friendshipId);
+        return ResponseEntity.ok(new MsgResponseDTO("친구 추가 취소", HttpStatus.OK.value()));
+    }
 }

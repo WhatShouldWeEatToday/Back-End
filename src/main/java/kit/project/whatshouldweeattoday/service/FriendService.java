@@ -102,4 +102,9 @@ public class FriendService {
         friendship.acceptFriendshipRequest();
         counterFriendship.acceptFriendshipRequest();
     }
+
+    @Transactional
+    public void cancelFriendRequest(Long friendshipId) {
+        friendshipRepository.deleteById(friendshipId);
+    }
 }
