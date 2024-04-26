@@ -12,8 +12,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class Chat {
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CHAT_ID")
     private Long id;
     private String writer;

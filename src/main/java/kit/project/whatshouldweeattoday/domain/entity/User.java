@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     private Long id;
 
@@ -26,6 +26,9 @@ public class User {
     private String nickname;
     private String gender;
     private int age;
+
+    @OneToMany(mappedBy = "user")
+    private List<Friendship> friendshipList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<Bookmark> bookmarkList = new ArrayList<>();

@@ -12,8 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class WeeklyFoodRank extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FOOD_RANK_ID")
     private Long id;
     private int ranks;
