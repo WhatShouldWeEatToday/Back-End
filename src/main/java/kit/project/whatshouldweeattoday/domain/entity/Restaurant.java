@@ -12,8 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Restaurant {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "RESTAURANT_ID")
     private Long id;
     private String name;

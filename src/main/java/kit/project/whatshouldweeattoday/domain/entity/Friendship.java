@@ -2,13 +2,11 @@ package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Friendship {
