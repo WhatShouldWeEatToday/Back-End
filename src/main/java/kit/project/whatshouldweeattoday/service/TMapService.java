@@ -22,7 +22,7 @@ import java.util.Map;
 @Service
 public class TMapService {
 
-//    @Value("${tmap.api.key}")
+    @Value("${tmap.api.key}")
     private String tmapKey;
 
     //좌표로 변환
@@ -76,7 +76,4 @@ public class TMapService {
         }
         return Collections.emptyMap();
     }
-
 }
-
-
