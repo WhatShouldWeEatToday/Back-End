@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/map?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/project?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: thfla0901@
     hikari:
@@ -28,3 +28,7 @@ logging.level:
         descriptor:
           sql:
             BasicBinder: TRACE
+
+tmap:
+  api:
+    key: Outd4tYquuaWbktGSK6hnaZvtc2hB2n15Os8P0Iz

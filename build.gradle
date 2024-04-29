@@ -34,13 +34,22 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.0' // 웹 소켓의 데이터 통신을 위한 JSON 라이브러리
+    /* jwt */
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.projectlombok:lombok'
+    implementation 'commons-codec:commons-codec:1.13'
+    implementation 'com.auth0:java-jwt:3.13.0'
+
+//    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.0' // 웹 소켓의 데이터 통신을 위한 JSON 라이브러리
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 
     /* webjars */
-    implementation'org.webjars:jquery'
-    implementation 'org.webjars:sockjs-client'
-    implementation 'org.webjars:webjars-locator'
+//    implementation'org.webjars:jquery'
+//    implementation 'org.webjars:sockjs-client'
+//    implementation 'org.webjars:webjars-locator'
 
     /* Lombok */
     compileOnly 'org.projectlombok:lombok'
