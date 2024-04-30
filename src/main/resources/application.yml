@@ -1,19 +1,23 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/project?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/whatToEat?serverTimezone=UTC&characterEncoding=UTF-8
+
     username: root
-    password: thfla0901@
+    password: hoon@0815!!
     hikari:
       maximum-pool-size: 20
+  mustache:
+    suffix: .html
+  profiles:
+    include: jwt
 
   jpa:
     hibernate:
       # 개발 초기 단계 또는 로컬에서 테스트: create 또는 update
       # 테스트 서버: update 또는 validate
       # 스테이징 및 운영 서버: validate 또는 none
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.MySQLDialect
+      ddl-auto: create
     open-in-view: false
     generate-ddl: true
     properties:
