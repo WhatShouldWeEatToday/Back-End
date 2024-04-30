@@ -22,6 +22,7 @@ public class RestaurantController {
 
      private final RestaurantService restaurantService;
 
+     //맛집 검색
     @GetMapping("/search")
     public ResponseEntity<Page<RestaurantResponseDTO>> search(String word,
                                                               @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
@@ -29,6 +30,7 @@ public class RestaurantController {
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
+    //그냥 조회
     @GetMapping("/findAll")
     public ResponseEntity<Page<RestaurantResponseDTO>> findAll(
                                                               @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
@@ -69,5 +71,7 @@ public class RestaurantController {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
+
+
 }
 
