@@ -15,15 +15,16 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userLoginId;
+    private String memberLoginId;
     private String friendLoginId;
     private FriendshipStatus status;
     private boolean isFrom; // 상대에게 온 요청
+
     private Long counterpartId; // 상대가 보낸 요청 아이디
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     public void acceptFriendshipRequest() {
         status = FriendshipStatus.ACCEPT;

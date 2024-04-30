@@ -1,4 +1,4 @@
-package kit.project.whatshouldweeattoday.domain.dto.user.login;
+package kit.project.whatshouldweeattoday.domain.dto.member.login;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
