@@ -3,11 +3,13 @@ package kit.project.whatshouldweeattoday.service;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Friendship;
-import kit.project.whatshouldweeattoday.domain.entity.User;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
 import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
-import kit.project.whatshouldweeattoday.repository.UserRepository;
+import kit.project.whatshouldweeattoday.repository.MemberRepository;
+import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendshipService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final FriendshipRepository friendshipRepository;
 
     @Transactional
@@ -30,17 +33,21 @@ public class FriendshipService {
     }
 
     @Transactional
-    public void createFriendship(String fromLoginId, String toLoginId) throws Exception {
-        User fromUser = userRepository.findByLoginId(fromLoginId);
-        User toUser = userRepository.findByLoginId(toLoginId);
-        if(fromUser == null || toUser == null) {
-            throw new BadRequestException("회원 조회를 실패하였습니다.");
+    public void createFriendship(String toLoginId) throws BadRequestException {
+        // 현재 로그인 되어있는 유저(보내는 사람)
+        String fromLoginId = String.valueOf(SecurityUtil.getLoginId());
+        if (fromLoginId == null) {
+            throw new BadRequestException("에러 발생");
         }
+
+        // 유저 정보를 모두 가져옴
+        Member fromMember = memberRepository.findByLoginId(fromLoginId).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember = memberRepository.findByLoginId(toLoginId).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
 
         // 받는 사람에게 저장될 친구 요청
         Friendship friendshipFrom = Friendship.builder()
-                .user(fromUser)
-                .userLoginId(fromLoginId)
+                .member(fromMember)
+                .memberLoginId(fromLoginId)
                 .friendLoginId(toLoginId)
                 .status(FriendshipStatus.WAITING)
                 .isFrom(true)
@@ -48,16 +55,16 @@ public class FriendshipService {
 
         // 보내는 사람에게 저장될 친구 요청
         Friendship friendshipTo = Friendship.builder()
-                .user(toUser)
-                .userLoginId(toLoginId)
+                .member(toMember)
+                .memberLoginId(toLoginId)
                 .friendLoginId(fromLoginId)
                 .status(FriendshipStatus.WAITING)
                 .isFrom(false)
                 .build();
 
         // 각각의 친구리스트에 저장
-        fromUser.getFriendshipList().add(friendshipTo);
-        toUser.getFriendshipList().add(friendshipFrom);
+        fromMember.getFriendshipList().add(friendshipTo);
+        toMember.getFriendshipList().add(friendshipFrom);
 
         // 저장을 먼저 해야 서로의 친구 요청 번호가 생성됨
         friendshipRepository.save(friendshipTo);
@@ -69,20 +76,20 @@ public class FriendshipService {
     }
 
     @Transactional
-    public List<FriendListDTO> getFriendList(String loginId) throws BadRequestException {
-        User user = userRepository.findByLoginId(loginId);
+    public List<FriendListDTO> getFriendList() throws BadRequestException {
+        // 현재 로그인 되어있는 유저(보내는 사람)
+        Member user = memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
         List<Friendship> friendshipList = user.getFriendshipList();
+        // 조회된 결과 객체를 담을 DTO 리스트
         List<FriendListDTO> result = new ArrayList<>();
 
         for (Friendship request : friendshipList) {
-            if(!request.isFrom() && (request.getStatus() == FriendshipStatus.ACCEPT)) {
-                User friend = userRepository.findByLoginId(request.getFriendLoginId());
-                if(friend == null) {
-                    throw new BadRequestException("회원 조회를 실패하였습니다.");
-                }
+            // 친구 추가 요청이 수락된 목록만 조회
+            if(request.getStatus() == FriendshipStatus.ACCEPT) {
+                Member friend = memberRepository.findByLoginId(request.getFriendLoginId()).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
                 FriendListDTO friendList = FriendListDTO.builder()
                         .friendshipId(request.getId())
-                        .friendLoginId(friend.getLoginId())
+                        .friendloginId(friend.getLoginId())
                         .friendNickname(friend.getNickname())
                         .status(request.getStatus())
                         .build();
@@ -93,20 +100,19 @@ public class FriendshipService {
     }
 
     @Transactional
-    public List<FriendListDTO> getWaitingFriendList(String loginId) throws Exception {
-        User user = userRepository.findByLoginId(loginId);
+    public List<FriendListDTO> getWaitingFriendList() throws Exception {
+        // 현재 로그인 되어있는 유저(보내는 사람)
+        Member user = memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
         List<Friendship> friendshipList = user.getFriendshipList();
+        // 조회된 결과 객체를 담을 DTO 리스트
         List<FriendListDTO> result = new ArrayList<>();
 
         for (Friendship request : friendshipList) {
             if(!request.isFrom() && (request.getStatus() == FriendshipStatus.WAITING)) {
-                User friend = userRepository.findByLoginId(request.getFriendLoginId());
-                if(friend == null) {
-                    throw new BadRequestException("회원 조회를 실패하였습니다.");
-                }
+                Member friend = memberRepository.findByLoginId(request.getFriendLoginId()).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
                 FriendListDTO waitingFriendList = FriendListDTO.builder()
                         .friendshipId(request.getId())
-                        .friendLoginId(friend.getLoginId())
+                        .friendloginId(friend.getLoginId())
                         .friendNickname(friend.getNickname())
                         .status(request.getStatus())
                         .build();
@@ -118,7 +124,7 @@ public class FriendshipService {
 
     @Transactional
     public void acceptFriendRequest(Long friendshipId) throws Exception {
-        // 누를 친구 요청과 매칭되는 상대방 친구 요청 둘다 가져옴
+        // 누를 친구 요청과 매칭되는 상대방 친구 요청 둘 다 가져옴
         Friendship friendship = friendshipRepository.findById(friendshipId).orElseThrow(() -> new BadRequestException("친구 요청 조회 실패"));
         Friendship counterFriendship = friendshipRepository.findById(friendship.getCounterpartId()).orElseThrow(() -> new BadRequestException("친구 요청 조회 실패"));
 

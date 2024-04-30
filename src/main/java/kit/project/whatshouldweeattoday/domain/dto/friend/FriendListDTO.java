@@ -9,7 +9,7 @@ import lombok.Getter;
 public class FriendListDTO {
 
      private Long friendshipId;
-     private String friendLoginId;
+     private String friendloginId;
      private String friendNickname;
      private FriendshipStatus status;
      private String imgUrl;
