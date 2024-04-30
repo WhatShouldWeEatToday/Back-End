@@ -1,6 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.dto.friend;
 
-import kit.project.whatshouldweeattoday.domain.entity.User;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,8 +16,8 @@ public class FriendListResponseDTO {
     }
 
     /* Entity -> DTO */
-    public FriendListResponseDTO(User user) {
-        this.loginId = user.getLoginId();
-        this.nickname = user.getNickname();
+    public FriendListResponseDTO(Member member) {
+        this.loginId = member.getLoginId();
+        this.nickname = member.getNickname();
     }
 }
