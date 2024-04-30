@@ -40,6 +40,4 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
-
-
 }

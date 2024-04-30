@@ -1,6 +1,6 @@
-package kit.project.whatshouldweeattoday.domain.dto.user.signup;
+package kit.project.whatshouldweeattoday.domain.dto.member.signup;
 
-import kit.project.whatshouldweeattoday.domain.entity.User;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,12 +24,12 @@ public class SignupResponseDTO {
     }
 
     /* Entity -> DTO */
-    public SignupResponseDTO(User user) {
-        this.id = user.getId();
-        this.loginId = user.getLoginId();
-        this.loginPw = user.getLoginPw();
-        this.nickname = user.getNickname();
-        this.gender = user.getGender();
-        this.age = user.getAge();
+    public SignupResponseDTO(Member member) {
+        this.id = member.getId();
+        this.loginId = member.getLoginId();
+        this.loginPw = member.getLoginPw();
+        this.nickname = member.getNickname();
+        this.gender = member.getGender();
+        this.age = member.getAge();
     }
 }

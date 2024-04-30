@@ -14,8 +14,8 @@ public class Bookmark {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @OneToOne(mappedBy = "bookmark", fetch = FetchType.LAZY)
     private Restaurant restaurant;

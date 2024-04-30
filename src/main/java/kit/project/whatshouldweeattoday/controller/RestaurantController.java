@@ -1,13 +1,8 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.user.signup.SignupRequestDTO;
-import kit.project.whatshouldweeattoday.domain.dto.user.signup.SignupResponseDTO;
-import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.service.RestaurantService;
-import kit.project.whatshouldweeattoday.service.TMapService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
