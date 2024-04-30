@@ -14,9 +14,9 @@ public class ReviewResponseDTO {
     private int kind;
     private int mood;
     private int park;
+    private String created_Date;
     private Boolean certified;
-
-
+    private double stars;
 
 
     // review return 할때
@@ -30,6 +30,8 @@ public class ReviewResponseDTO {
        this.taste = review.getTaste();
        this.certified = review.getCertified();
        this.totalLikes = review.getTotalLikes();
+       this.created_Date = review.getCreatedDate();
+       this.stars = review.getStars();
     }
 
 }

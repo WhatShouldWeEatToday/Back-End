@@ -1,11 +1,14 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Likes {
 
@@ -14,6 +17,12 @@ public class Likes {
     private Long id;
     private Boolean state;
 
-    @OneToOne(mappedBy = "likes", fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_id")
     private Review review;
+
+    @Builder
+    public Likes(Boolean state){
+        this.state=state;
+    }
 }
