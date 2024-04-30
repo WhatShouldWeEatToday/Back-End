@@ -71,5 +71,7 @@ public class RestaurantController {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
+
+
 }
 

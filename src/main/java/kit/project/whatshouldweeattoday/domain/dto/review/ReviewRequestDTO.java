@@ -11,18 +11,20 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ReviewRequestDTO {
+    private long restaurant_id;
     private String writer;
-    private int totalLikes;
+    private Long totalLikes;
     private int taste;
     private int mood;
     private int park;
     private int kind;
     private int cost;
     private Boolean certified;
+    private double stars;
 
     //리뷰 등록
     @Builder
-    public ReviewRequestDTO(String writer, int taste, int mood, int park, int kind, int cost, boolean certified) {
+    public ReviewRequestDTO(String writer, int taste, int mood, int park, int kind, int cost, boolean certified,double stars, Long totalLikes) {
         this.writer=writer;
         this.taste = taste;
         this.mood = mood;
@@ -30,20 +32,8 @@ public class ReviewRequestDTO {
         this.kind = kind;
         this.cost = cost;
         this.certified = certified;
-    }
-
-    //DTO -> Entity
-    public Review toSaveReview(){
-
-        return Review.builder()
-                .writer(writer)
-                .taste(taste)
-                .mood(mood)
-                .park(park)
-                .kind(kind)
-                .cost(cost)
-                .certified(certified)
-                .build();
+        this.stars = stars;
+        this.totalLikes = totalLikes;
     }
 
 }
