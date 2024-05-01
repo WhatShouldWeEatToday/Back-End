@@ -71,7 +71,7 @@ public class Member {
     }
 
     /* 리뷰 등록 */
-    public void addPost(Review review){
+    public void addReview(Review review){
         reviewList.add(review);
     }
 

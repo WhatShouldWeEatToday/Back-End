@@ -1,11 +1,10 @@
 package kit.project.whatshouldweeattoday.config;
 
-import kit.project.whatshouldweeattoday.security.JwtTokenProvider;
 import kit.project.whatshouldweeattoday.security.filter.JwtAuthenticationFilter;
+import kit.project.whatshouldweeattoday.security.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -43,7 +42,6 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // httpBasic 인증방법 비활성화(특정 리소스에 접근할 때 loginId 와 loginPw 물어봄)
                 .csrf(AbstractHttpConfigurer::disable) // 정상적인 사용자가 의도치 않은 위조 요청을 보내는 것
                 .authorizeHttpRequests((authorize) -> authorize // 인증, 인가 필요한 URL 지정
-                        .requestMatchers(HttpMethod.OPTIONS, "/api/signin").permitAll()
 //                        .requestMatchers("/", "/signup", "/signin","/api/signup", "/api/signin", "/confirmId", "/confirmNickname").permitAll() // 지정된 URL 은 인증, 인가 없이도 접근 허용
                         .anyRequest().permitAll())
                 .logout((logout) -> logout

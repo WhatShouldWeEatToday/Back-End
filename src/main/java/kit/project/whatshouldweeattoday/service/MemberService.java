@@ -1,11 +1,11 @@
 package kit.project.whatshouldweeattoday.service;
 
-import kit.project.whatshouldweeattoday.domain.dto.JwtTokenDTO;
+import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
-import kit.project.whatshouldweeattoday.security.JwtTokenProvider;
+import kit.project.whatshouldweeattoday.security.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

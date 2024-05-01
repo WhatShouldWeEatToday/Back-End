@@ -10,6 +10,7 @@ import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import kit.project.whatshouldweeattoday.repository.ReviewRepository;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ReviewService {
 
@@ -32,9 +34,6 @@ public class ReviewService {
 
         Review review = new Review(requestDTO);
         review.confirmWriter(memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다.")));
-
-
-
         review.setRestaurant(restaurant);
         reviewRepository.save(review);
     }

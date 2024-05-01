@@ -1,4 +1,4 @@
-package kit.project.whatshouldweeattoday.domain.dto;
+package kit.project.whatshouldweeattoday.domain.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
