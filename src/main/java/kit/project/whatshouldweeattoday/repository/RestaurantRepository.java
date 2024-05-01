@@ -15,7 +15,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Override
     Page<Restaurant> findAll(Pageable pageable);
     //입력받은 키워드가 메뉴나 점포명으로 필터링(like로 필터링)
-    @Query("SELECT r FROM Restaurant r WHERE r.name LIKE CONCAT('%',:keyword,'%') OR r.menus LIKE CONCAT('%',:keyword,'%')")
+    @Query("SELECT r FROM Restaurant r WHERE r.name LIKE CONCAT('%', :keyword, '%') OR r.menus LIKE CONCAT('%', :keyword, '%')")
     Page<Restaurant> findByMenuContainingOrNameContaining(@Param("keyword") String keyword, Pageable pageable);
     //입력받은 키워드가 메뉴나 점포명으로 필터링(like로 필터링)하고 restaurant_type이 카페인곳만 반환
     @Query("SELECT r FROM Restaurant r WHERE (r.name LIKE CONCAT('%',:keyword,'%') OR r.menus LIKE CONCAT('%',:keyword,'%')) AND (r.restaurantType LIKE '%카페%' OR r.restaurantType LIKE '%커피%' OR r.restaurantType LIKE '%베이커리%' )")

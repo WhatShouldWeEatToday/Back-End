@@ -1,8 +1,12 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,6 +21,19 @@ public class Bookmark {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToOne(mappedBy = "bookmark", fetch = FetchType.LAZY)
-    private Restaurant restaurant;
+    @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Restaurant> restaurants = new ArrayList<>();
+
+    public void setRestaurants(Restaurant restaurant) {
+        if (restaurant != null) {
+            if (restaurants == null) {
+                restaurants = new ArrayList<>();
+            }
+            restaurants.add(restaurant); // 리스트에 Restaurant 객체 추가
+        }
+    }
+    @Builder
+    public Bookmark(Restaurant restaurant) {
+        this.restaurants.add(restaurant);
+    }
 }

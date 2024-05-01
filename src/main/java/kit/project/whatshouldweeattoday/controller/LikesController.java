@@ -1,10 +1,13 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.repository.ReviewRepository;
 import kit.project.whatshouldweeattoday.service.LikesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,8 +29,7 @@ public class LikesController {
 
     //리뷰 좋아요 취소
     @DeleteMapping("/api/review/{reviewId}/likes/{likesId}")
-    public Long reviewDelete(@PathVariable Long reviewId, @PathVariable Long likesId) {
-        likesService.delete(reviewId, likesId);
-        return reviewId;
+    public ResponseEntity<MsgResponseDTO> reviewDelete(@PathVariable Long reviewId, @PathVariable Long likesId) {
+        return new ResponseEntity<>(likesService.delete(reviewId,likesId), HttpStatus.OK);
     }
 }

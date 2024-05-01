@@ -33,8 +33,7 @@ public class Restaurant {
     private Double latitude;
     private Double longitude;
 
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bookmark_id")
     private Bookmark bookmark;
 
