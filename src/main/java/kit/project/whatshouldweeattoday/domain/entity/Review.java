@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,22 +29,16 @@ public class Review extends BaseTimeEntity {
     private int kind;
     private int mood;
     private int park;
-    private ReviewType reviewType;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member writer;
-
+    private ReviewType reviewType = ReviewType.NOT_CERTIFY;
     private double stars;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    private Member writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "image_id")
-    private Image image;
 
     @OneToMany(mappedBy = "review")
     private List<Likes> likesList;
@@ -65,7 +60,12 @@ public class Review extends BaseTimeEntity {
         this.totalLikes = requestDTO.getTotalLikes();
     }
 
-    //리뷰수정
+    public void confirmWriter(Member writer) {
+        this.writer = writer;
+        writer.addPost(this);
+    }
+
+    // 리뷰 수정
     public void updateReview(int cost, int park, int mood, int kind, int taste, double stars) {
         this.cost = cost;
         this.park = park;

@@ -1,34 +1,42 @@
 package kit.project.whatshouldweeattoday.service;
 
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
+import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import kit.project.whatshouldweeattoday.repository.ReviewRepository;
+import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
+
+    private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
 
     //리뷰 등록
     @Transactional
-    public ReviewResponseDTO save(Long restaurantId,ReviewRequestDTO requestDTO) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+    public void save(Long id,ReviewRequestDTO requestDTO) {
+        Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
+
         Review review = new Review(requestDTO);
+        review.confirmWriter(memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다.")));
+
+
+
         review.setRestaurant(restaurant);
-        Review savedReview = reviewRepository.save(review);
-        return new ReviewResponseDTO(savedReview);
+        reviewRepository.save(review);
     }
 
     //리뷰 전체조회

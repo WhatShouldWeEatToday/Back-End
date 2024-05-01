@@ -1,6 +1,5 @@
 package kit.project.whatshouldweeattoday.controller;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;

@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -22,7 +25,7 @@ public class ReviewRequestDTO {
 
     //리뷰 등록
     @Builder
-    public ReviewRequestDTO(int taste, int mood, int park, int kind, int cost, ReviewType reviewType,double stars, Long totalLikes) {
+    public ReviewRequestDTO(int taste, int mood, int park, int kind, int cost, ReviewType reviewType, double stars, Long totalLikes) {
         this.taste = taste;
         this.mood = mood;
         this.park = park;
@@ -32,5 +35,4 @@ public class ReviewRequestDTO {
         this.stars = stars;
         this.totalLikes = totalLikes;
     }
-
 }

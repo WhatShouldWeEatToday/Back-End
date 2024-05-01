@@ -17,7 +17,7 @@ spring:
       # 개발 초기 단계 또는 로컬에서 테스트: create 또는 update
       # 테스트 서버: update 또는 validate
       # 스테이징 및 운영 서버: validate 또는 none
-      ddl-auto: create
+      ddl-auto: update
     open-in-view: false
     generate-ddl: true
     properties:
@@ -36,3 +36,8 @@ logging.level:
 tmap:
   api:
     key: Outd4tYquuaWbktGSK6hnaZvtc2hB2n15Os8P0Iz
+
+naver:
+  service:
+    url: https://0r5887jrbp.apigw.ntruss.com/custom/v1/28830/da1e56e39c8d3213aa260e082ac4da2d93ef75049c8db0cdc6ee629fa56b05f7/general
+    secretKey: S1VJdFd6dmZkeGlwbktGdndBcHpuY2FTeldVdktYYk4=
