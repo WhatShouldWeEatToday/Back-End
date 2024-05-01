@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.type.RoleType;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +54,7 @@ class JwtServiceTest {
                 .nickname("홍길동")
                 .gender("Female")
                 .age(24)
+                .role(RoleType.USER)
                 .build();
 
         memberRepository.save(member);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.type.RoleType;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.service.MemberService;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +46,7 @@ class MemberControllerTest {
     private String nickname = "사용자1";
     private String gender = "FEMALE";
     private Integer age = 100;
+    private RoleType roleType = RoleType.USER;
 
     private void clear(){
         em.flush();
@@ -83,7 +85,7 @@ class MemberControllerTest {
     @Test
     void signup() throws Exception {
         //given
-        String signUpData = objectMapper.writeValueAsString(new SignupRequestDTO(loginId, loginPw, verifiedLoginPw, nickname, gender, age));
+        String signUpData = objectMapper.writeValueAsString(new SignupRequestDTO(loginId, loginPw, verifiedLoginPw, nickname, gender, age, roleType));
 
         //when
         signUp(signUpData);
@@ -97,7 +99,7 @@ class MemberControllerTest {
     @Test
     void updateUser() throws Exception {
         //given
-        String signUpData = objectMapper.writeValueAsString(new SignupRequestDTO(loginId, loginPw, verifiedLoginPw, nickname, gender, age));
+        String signUpData = objectMapper.writeValueAsString(new SignupRequestDTO(loginId, loginPw, verifiedLoginPw, nickname, gender, age, RoleType.USER));
         signUp(signUpData);
 
         String accessToken = getAccessToken();
@@ -127,7 +129,7 @@ class MemberControllerTest {
     @Test
     void deleteUser() throws Exception {
         //given
-        String signUpData = objectMapper.writeValueAsString(new SignupRequestDTO(loginId, loginPw, verifiedLoginPw, nickname, gender, age));
+        String signUpData = objectMapper.writeValueAsString(new SignupRequestDTO(loginId, loginPw, verifiedLoginPw, nickname, gender, age, RoleType.USER));
         signUp(signUpData);
 
         String accessToken = getAccessToken();
