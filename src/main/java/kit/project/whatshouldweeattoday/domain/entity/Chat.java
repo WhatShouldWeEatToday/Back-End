@@ -19,9 +19,9 @@ public class Chat {
     private String message;
     private MessageType messageType;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member writer;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "writer_id")
+//    private Member writer;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "meet_id")

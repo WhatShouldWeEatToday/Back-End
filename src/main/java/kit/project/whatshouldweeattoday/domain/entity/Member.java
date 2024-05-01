@@ -56,12 +56,11 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Bookmark> bookmarkList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Review review;
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviewList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Chat chat;
-
+//    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Chat> chatList = new ArrayList<>();
 
     public Member(String loginId, String loginPw, String nickname, String gender, int age) {
         this.loginId = loginId;
@@ -69,6 +68,11 @@ public class Member {
         this.nickname = nickname;
         this.gender = gender;
         this.age = age;
+    }
+
+    /* 리뷰 등록 */
+    public void addPost(Review review){
+        reviewList.add(review);
     }
 
     /* 회원 정보 수정 */
