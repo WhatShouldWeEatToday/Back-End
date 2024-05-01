@@ -1,9 +1,9 @@
-package kit.project.whatshouldweeattoday.security;
+package kit.project.whatshouldweeattoday.security.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import kit.project.whatshouldweeattoday.domain.dto.JwtTokenDTO;
+import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

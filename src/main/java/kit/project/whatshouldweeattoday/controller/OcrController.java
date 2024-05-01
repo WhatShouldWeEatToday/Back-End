@@ -45,15 +45,7 @@ public class OcrController {
         for(String s : result){
                 log.info(s);
         }
-//        List<String> convertResult = new ArrayList<>();
-//
-//        tempFile.delete(); // 임시 파일 삭제
-//
-//        convertByRegex(result, convertResult);
-//
-//        for(String s : convertResult){
-//                log.info(s);
-//        }
+        tempFile.delete(); // 임시 파일 삭제
         return ResponseEntity.ok(new MsgResponseDTO("영수증 인증 완료", HttpStatus.OK.value()));
     }
 

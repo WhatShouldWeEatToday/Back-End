@@ -62,7 +62,7 @@ public class Review extends BaseTimeEntity {
 
     public void confirmWriter(Member writer) {
         this.writer = writer;
-        writer.addPost(this);
+        writer.addReview(this);
     }
 
     // 리뷰 수정

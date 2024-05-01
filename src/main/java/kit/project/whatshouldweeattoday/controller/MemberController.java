@@ -2,7 +2,7 @@ package kit.project.whatshouldweeattoday.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import kit.project.whatshouldweeattoday.domain.dto.JwtTokenDTO;
+import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.login.LoginRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
