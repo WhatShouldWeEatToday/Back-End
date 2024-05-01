@@ -1,6 +1,7 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Likes;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
@@ -22,8 +23,7 @@ public class LikesService {
     //리뷰 좋아요
     @Transactional
     public void save(Long reviewId, LikesRequestDTO likesRequestDTO){
-       Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
-               new IllegalArgumentException("공감 실패: 해당 리뷰가 존재하지 않습니다." + reviewId));
+       Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
         Likes likes = likesRequestDTO.toSaveEntity();
         likes.setReview(review);
         likes.setState(true);
@@ -33,11 +33,10 @@ public class LikesService {
 
     //리뷰 좋아요 취소
     @Transactional
-    public void delete(Long reviewId, Long likesId){
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
-                new IllegalArgumentException("공감 실패: 해당 리뷰가 존재하지 않습니다." + reviewId));
+    public MsgResponseDTO delete(Long reviewId, Long likesId){
+        Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
        ;review.setTotalLikes(review.getTotalLikes()-1);
         likesRepository.deleteById(likesId);
-
+        return new MsgResponseDTO("좋아요 취소", 200);
     }
 }
