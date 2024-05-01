@@ -15,10 +15,13 @@ public class Chat {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CHAT_ID")
     private Long id;
-    private String writer;
     private String name;
     private String message;
     private MessageType messageType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member writer;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "meet_id")

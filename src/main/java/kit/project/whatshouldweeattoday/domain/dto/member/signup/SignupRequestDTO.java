@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.type.RoleType;
 import lombok.*;
 
 @Getter
@@ -26,8 +27,9 @@ public class SignupRequestDTO {
     private String nickname;
     private String gender;
     private int age;
+    private RoleType roleType;
 
     public Member toEntity() {
-        return Member.builder().loginId(loginId).loginPw(loginPw).verifiedLoginPw(verifiedLoginPw).nickname(nickname).gender(gender).age(age).build();
+        return Member.builder().loginId(loginId).loginPw(loginPw).verifiedLoginPw(verifiedLoginPw).nickname(nickname).gender(gender).age(age).role(RoleType.USER).build();
     }
 }

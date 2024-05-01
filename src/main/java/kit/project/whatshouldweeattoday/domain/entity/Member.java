@@ -41,19 +41,27 @@ public class Member {
     @Column(length = 1000)
     private String refreshToken;
 
+    /* JWT 토큰 관리 */
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
-
     public void destroyRefreshToken() {
         this.refreshToken = null;
     }
 
+    /* 회원 탈퇴 => 친구, 북마크, 리뷰 모두 삭제 */
     @OneToMany(mappedBy = "member")
     private List<Friendship> friendshipList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Bookmark> bookmarkList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Review review;
+
+    @OneToOne(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Chat chat;
+
 
     public Member(String loginId, String loginPw, String nickname, String gender, int age) {
         this.loginId = loginId;
@@ -63,14 +71,13 @@ public class Member {
         this.age = age;
     }
 
+    /* 회원 정보 수정 */
     public void updateNickname(String nickname){
         this.nickname = nickname;
     }
-
     public void updateGender(String gender){
         this.gender = gender;
     }
-
     public void updateAge(int age){
         this.age = age;
     }
@@ -79,7 +86,6 @@ public class Member {
     public void encodePassword(PasswordEncoder passwordEncoder){
         this.loginPw = passwordEncoder.encode(loginPw);
     }
-
     public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPW) {
         return passwordEncoder.matches(checkPW, getLoginPw());
     }
