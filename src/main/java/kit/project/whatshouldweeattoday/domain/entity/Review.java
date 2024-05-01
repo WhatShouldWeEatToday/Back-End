@@ -2,10 +2,12 @@ package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
+import kit.project.whatshouldweeattoday.domain.type.ReviewType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +28,12 @@ public class Review extends BaseTimeEntity {
     private int kind;
     private int mood;
     private int park;
-    private Boolean certified;
-    private String writer;
+    private ReviewType reviewType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member writer;
+
     private double stars;
 
 
@@ -54,8 +60,7 @@ public class Review extends BaseTimeEntity {
         this.mood = requestDTO.getMood();
         this.kind = requestDTO.getKind();
         this.park = requestDTO.getPark();
-        this.certified = requestDTO.getCertified();
-        this.writer = requestDTO.getWriter();
+        this.reviewType = requestDTO.getReviewType();
         this.stars = requestDTO.getStars();
         this.totalLikes = requestDTO.getTotalLikes();
     }
@@ -69,6 +74,4 @@ public class Review extends BaseTimeEntity {
         this.taste = taste;
         this.stars = stars;
     }
-
-
 }

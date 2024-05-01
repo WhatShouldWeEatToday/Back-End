@@ -42,7 +42,7 @@ class MemberServiceTest {
     }
 
     private SignupRequestDTO createSignupRequestDTO() {
-        return new SignupRequestDTO("test1234", loginPw, "Aa12345678", "사용자1","FEMALE", 22);
+        return new SignupRequestDTO("test1234", loginPw, "Aa12345678", "사용자1","FEMALE", 22, RoleType.USER);
     }
 
     public SignupRequestDTO setMember() throws BadRequestException {

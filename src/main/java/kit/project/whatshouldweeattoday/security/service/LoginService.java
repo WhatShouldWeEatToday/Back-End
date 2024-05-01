@@ -19,9 +19,9 @@ public class LoginService implements UserDetailsService {
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 사용자입니다."));
-//        return new UserDetailsImpl(member.getLoginId(), member.getLoginPw());
         return User.builder()
                 .username(member.getLoginId())
+                .password(member.getLoginPw())
                 .roles(member.getRole().name())
                 .build();
     }
