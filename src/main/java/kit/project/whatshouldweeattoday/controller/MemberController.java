@@ -2,7 +2,9 @@ package kit.project.whatshouldweeattoday.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import kit.project.whatshouldweeattoday.domain.dto.JwtTokenDTO;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.member.login.LoginRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateResponseDTO;
@@ -76,6 +78,18 @@ public class MemberController {
 
     public record UserDeleteDTO(@NotBlank(message = "비밀번호를 입력해주세요")
                                     String checkPassword) {
+    }
+
+    @PostMapping("/api/signin")
+    public JwtTokenDTO signIn(@RequestBody LoginRequestDTO requestDTO) {
+        String username = requestDTO.getLoginId();
+        String password = requestDTO.getLoginPw();
+        JwtTokenDTO jwtToken = memberService.signIn(username, password);
+
+        log.info("request username = {}, password = {}", username, password);
+        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
+
+        return jwtToken;
     }
 
 //    @PostConstruct
