@@ -31,10 +31,11 @@ public class Review extends BaseTimeEntity {
     private int park;
     private ReviewType reviewType = ReviewType.NOT_CERTIFY;
     private double stars;
+    private String writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_id")
-    private Member writer;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
@@ -49,6 +50,11 @@ public class Review extends BaseTimeEntity {
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
+
+    public void setWriter(String writer) {
+        this.writer = writer;
+    }
+
     public Review(ReviewRequestDTO requestDTO){
         this.taste = requestDTO.getTaste();
         this.cost = requestDTO.getCost();
@@ -60,9 +66,9 @@ public class Review extends BaseTimeEntity {
         this.totalLikes = requestDTO.getTotalLikes();
     }
 
-    public void confirmWriter(Member writer) {
-        this.writer = writer;
-        writer.addReview(this);
+    public void confirmMember(Member member) {
+        this.member = member;
+        member.addReview(this);
     }
 
     // 리뷰 수정

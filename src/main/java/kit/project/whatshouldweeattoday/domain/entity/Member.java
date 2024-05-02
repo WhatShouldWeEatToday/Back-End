@@ -56,7 +56,7 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Bookmark> bookmarkList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)

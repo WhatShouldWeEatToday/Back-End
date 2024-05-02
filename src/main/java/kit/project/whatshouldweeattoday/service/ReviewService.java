@@ -3,6 +3,7 @@ package kit.project.whatshouldweeattoday.service;
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
@@ -33,7 +34,9 @@ public class ReviewService {
                 .orElseThrow(IllegalArgumentException::new);
 
         Review review = new Review(requestDTO);
-        review.confirmWriter(memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다.")));
+        Member member = memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+        review.setWriter(member.getNickname());
+        review.confirmMember(member);
         review.setRestaurant(restaurant);
         reviewRepository.save(review);
     }
