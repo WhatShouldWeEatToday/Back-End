@@ -65,7 +65,7 @@ public class ReviewService {
     public ReviewResponseDTO update(Long id, ReviewRequestDTO requestDTO) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        review.updateReview(requestDTO.getCost(),requestDTO.getPark(),requestDTO.getMood(),requestDTO.getKind(),requestDTO.getTaste(),requestDTO.getStars());
+        review.updateReview(requestDTO.getCost(),requestDTO.getPark(),requestDTO.getMood(),requestDTO.getKind(),requestDTO.getTaste());
         return new ReviewResponseDTO(review);
     }
 
