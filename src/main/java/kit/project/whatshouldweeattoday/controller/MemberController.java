@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
@@ -92,27 +93,27 @@ public class MemberController {
         return jwtToken;
     }
 
-//    @PostConstruct
-//    public void initData() throws BadRequestException {
-//        SignupRequestDTO member1 = SignupRequestDTO.builder()
-//                .loginId("hyun3478")
-//                .loginPw("a12345678")
-//                .verifiedLoginPw("a12345678")
-//                .nickname("이지현")
-//                .gender("FEMALE")
-//                .age(24)
-//                .build();
-//
-//        SignupRequestDTO member2 = SignupRequestDTO.builder()
-//                .loginId("lim3478")
-//                .loginPw("a12345678")
-//                .verifiedLoginPw("a12345678")
-//                .nickname("임수연")
-//                .gender("FEMALE")
-//                .age(24)
-//                .build();
-//
-//        memberService.createMember(member1);
-//        memberService.createMember(member2);
-//    }
+    @PostConstruct
+    public void initData() throws BadRequestException {
+        SignupRequestDTO member1 = SignupRequestDTO.builder()
+                .loginId("hyun3478")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("이지현")
+                .gender("FEMALE")
+                .age(24)
+                .build();
+
+        SignupRequestDTO member2 = SignupRequestDTO.builder()
+                .loginId("lim3478")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("임수연")
+                .gender("FEMALE")
+                .age(24)
+                .build();
+
+        memberService.createMember(member1);
+        memberService.createMember(member2);
+    }
 }
