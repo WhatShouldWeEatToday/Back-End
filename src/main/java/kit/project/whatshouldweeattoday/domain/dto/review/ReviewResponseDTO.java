@@ -30,6 +30,5 @@ public class ReviewResponseDTO {
        this.reviewType = review.getReviewType();
        this.totalLikes = review.getTotalLikes();
        this.created_Date = review.getCreatedDate();
-       
     }
 }

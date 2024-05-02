@@ -24,12 +24,6 @@ public class RestaurantService {
     @Transactional
     public Page<RestaurantResponseDTO> searchRestaurants(String keyword, Pageable pageable) {
         System.out.println("searchRestaurants 함수 : " + keyword);
-
-        if (keyword == null || keyword.trim().isEmpty()) {
-            // keyword가 null이거나 빈 경우, findAll을 호출
-            return findAll(pageable);
-        }
-
         // JPA Repository에서 Page<Restaurant>를 반환받음
         Page<Restaurant> restaurantPage = restaurantRepository.findByMenuContainingOrNameContaining(keyword, pageable);
 
@@ -53,15 +47,18 @@ public class RestaurantService {
     @Transactional
     public Page<RestaurantResponseDTO> searchOnlyCafes(String keyword, Pageable pageable) {
         System.out.println("searchOnlyCafes 함수 : " + keyword);
+        Page<Restaurant> cafes;
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            // keyword가 null이거나 빈 경우, findAll을 호출
-            return findAll(pageable);
+            // keyword가 null이거나 빈 문자열인 경우, 모든 카페를 검색
+            cafes = restaurantRepository.findAllCafes(pageable);
+        } else {
+            // keyword가 있는 경우, 해당 키워드를 포함하는 카페만 검색
+            cafes = restaurantRepository.findOnlyCafes(keyword, pageable);
         }
-        // JPA Repository에서 Page<Restaurant>를 반환받음
-        Page<Restaurant> onlyCafe = restaurantRepository.findOnlyCafes(keyword, pageable);
+
         // Page<Restaurant>를 Page<RestaurantResponseDTO>로 변환
-        Page<RestaurantResponseDTO> dtoPage = onlyCafe.map(restaurant -> {
+        Page<RestaurantResponseDTO> dtoPage = cafes.map(restaurant -> {
             // 좌표 변환 로직
             Map<String, Double> coordinates = tmapService.getCoordinates(restaurant.getAddressRoad());
             // RestaurantResponseDTO 생성 및 좌표 설정
@@ -75,19 +72,23 @@ public class RestaurantService {
         return dtoPage;
     }
 
+
     //카페가 아닌곳(음식점)만 반환
     @Transactional
     public Page<RestaurantResponseDTO> searchOnlyRestaurant(String keyword, Pageable pageable) {
         System.out.println("searchOnlyRestaurant 함수 : " + keyword);
+        Page<Restaurant> cafes;
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            // keyword가 null이거나 빈 경우, findAll을 호출
-            return findAll(pageable);
+            // keyword가 null이거나 빈 문자열인 경우, 모든 카페가 아닌 음식점 검색
+            cafes = restaurantRepository.findAllRestaurant(pageable);
+        } else {
+            // keyword가 있는 경우, 해당 키워드를 포함하는 카페가 아닌 음식점 검색
+            cafes = restaurantRepository.findRestaurantsExcludingCafes(keyword, pageable);
         }
-        // JPA Repository에서 Page<Restaurant>를 반환받음
-        Page<Restaurant> onlyRestaurant = restaurantRepository.findRestaurantsExcludingCafes(keyword, pageable);
+
         // Page<Restaurant>를 Page<RestaurantResponseDTO>로 변환
-        Page<RestaurantResponseDTO> dtoPage = onlyRestaurant.map(restaurant -> {
+        Page<RestaurantResponseDTO> dtoPage = cafes.map(restaurant -> {
             // 좌표 변환 로직
             Map<String, Double> coordinates = tmapService.getCoordinates(restaurant.getAddressRoad());
             // RestaurantResponseDTO 생성 및 좌표 설정
