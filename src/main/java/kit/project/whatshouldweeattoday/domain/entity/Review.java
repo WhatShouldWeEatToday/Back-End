@@ -30,6 +30,7 @@ public class Review extends BaseTimeEntity {
     private int mood;
     private int park;
     private ReviewType reviewType = ReviewType.NOT_CERTIFY;
+    private double stars;
     private String writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -61,6 +62,7 @@ public class Review extends BaseTimeEntity {
         this.kind = requestDTO.getKind();
         this.park = requestDTO.getPark();
         this.reviewType = requestDTO.getReviewType();
+        this.stars = requestDTO.getStars();
         this.totalLikes = requestDTO.getTotalLikes();
     }
 
@@ -70,11 +72,12 @@ public class Review extends BaseTimeEntity {
     }
 
     // 리뷰 수정
-    public void updateReview(int cost, int park, int mood, int kind, int taste) {
+    public void updateReview(int cost, int park, int mood, int kind, int taste, double stars) {
         this.cost = cost;
         this.park = park;
         this.mood= mood;
         this.kind = kind;
         this.taste = taste;
+        this.stars = stars;
     }
 }
