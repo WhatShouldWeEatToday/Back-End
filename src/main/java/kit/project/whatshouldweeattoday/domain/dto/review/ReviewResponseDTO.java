@@ -21,15 +21,14 @@ public class ReviewResponseDTO {
 
     // review return 할때
     public ReviewResponseDTO(Review review) {
-        this.id = review.getId();
-        this.cost = review.getCost();
-        this.park = review.getPark();
-        this.mood = review.getMood();
-        this.kind = review.getKind();
-        this.taste = review.getTaste();
-        this.reviewType = review.getReviewType();
-        this.totalLikes = review.getTotalLikes();
-        this.created_Date = review.getCreatedDate();
-        this.stars = review.getStars();
+       this.id = review.getId();
+       this.cost = review.getCost();
+       this.park = review.getPark();
+       this.mood = review.getMood();
+       this.kind = review.getKind();
+       this.taste = review.getTaste();
+       this.reviewType = review.getReviewType();
+       this.totalLikes = review.getTotalLikes();
+       this.created_Date = review.getCreatedDate();
     }
 }
