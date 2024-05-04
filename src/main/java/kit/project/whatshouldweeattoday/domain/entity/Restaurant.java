@@ -3,12 +3,14 @@ package kit.project.whatshouldweeattoday.domain.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Restaurant {
 
@@ -32,6 +34,10 @@ public class Restaurant {
 
     private Double latitude;
     private Double longitude;
+
+    //null값을 허용하기 위해
+    private Integer pathTime;
+    private Double distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bookmark_id")

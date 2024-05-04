@@ -2,6 +2,7 @@ package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.service.RestaurantService;
+import kit.project.whatshouldweeattoday.service.TMapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,6 +68,13 @@ public class RestaurantController {
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
+    //맛집조회 직선거리순-> 출발지 위도,경도 및 도착지 위도,경도 필요
+    @GetMapping("/search/routes")
+    public ResponseEntity<Page<RestaurantResponseDTO>> getRestaurantsByRoutes(double startX, double startY, String word,
+                                                                              @PageableDefault(sort = "distance", direction = Sort.Direction.ASC, size = 10) Pageable pageable){
+        Page<RestaurantResponseDTO> page = restaurantService.findByDistances(word,startX,startY,pageable);
+        return new ResponseEntity<>(page, HttpStatus.OK);
+    }
 
 }
 

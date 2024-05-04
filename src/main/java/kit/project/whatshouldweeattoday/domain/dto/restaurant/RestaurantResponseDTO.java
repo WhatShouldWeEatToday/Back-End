@@ -26,12 +26,15 @@ public class RestaurantResponseDTO {
     private int totalMood;
     private int totalPark;
 
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
+    private Double distance;
+    private Integer pathTime;
 
-    public void setCoordinates(double latitude, double longitude) {
+    public void setCoordinates(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+        System.out.println("setCoordicates 의 경도 위도 "+ longitude+" "+latitude );
     }
 
     // Entity -> DTO
@@ -50,6 +53,10 @@ public class RestaurantResponseDTO {
         this.totalKind = restaurant.getTotalKind();
         this.totalMood = restaurant.getTotalMood();
         this.totalPark = restaurant.getTotalPark();
+        this.longitude = restaurant.getLongitude();
+        this.latitude=restaurant.getLatitude();
+        this.distance=restaurant.getDistance();
+        this.pathTime=restaurant.getPathTime();
     }
 
 }

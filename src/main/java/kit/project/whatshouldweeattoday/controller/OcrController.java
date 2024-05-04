@@ -28,6 +28,7 @@ public class OcrController {
     private String secretKey;
     private final OcrService ocrService;
 
+
     // 파일 업로드 및 OCR 수행을 위한 POST 요청 핸들러 메서드
     @PostMapping("/api/review/receipt")
     public ResponseEntity<MsgResponseDTO> uploadAndOcr(@RequestParam("file") MultipartFile file) throws IOException {
