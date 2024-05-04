@@ -7,7 +7,9 @@ import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,18 +79,18 @@ public class RestaurantService {
     @Transactional
     public Page<RestaurantResponseDTO> searchOnlyRestaurant(String keyword, Pageable pageable) {
         System.out.println("searchOnlyRestaurant 함수 : " + keyword);
-        Page<Restaurant> cafes;
+        Page<Restaurant> restaurants;
 
         if (keyword == null || keyword.trim().isEmpty()) {
             // keyword가 null이거나 빈 문자열인 경우, 모든 카페가 아닌 음식점 검색
-            cafes = restaurantRepository.findAllRestaurant(pageable);
+            restaurants = restaurantRepository.findAllRestaurant(pageable);
         } else {
             // keyword가 있는 경우, 해당 키워드를 포함하는 카페가 아닌 음식점 검색
-            cafes = restaurantRepository.findRestaurantsExcludingCafes(keyword, pageable);
+            restaurants = restaurantRepository.findRestaurantsExcludingCafes(keyword, pageable);
         }
 
         // Page<Restaurant>를 Page<RestaurantResponseDTO>로 변환
-        Page<RestaurantResponseDTO> dtoPage = cafes.map(restaurant -> {
+        Page<RestaurantResponseDTO> dtoPage = restaurants.map(restaurant -> {
             // 좌표 변환 로직
             Map<String, Double> coordinates = tmapService.getCoordinates(restaurant.getAddressRoad());
             // RestaurantResponseDTO 생성 및 좌표 설정
@@ -119,5 +121,49 @@ public class RestaurantService {
         });
         return dtoPage;
 
+    }
+
+    //맛집 하나만 반환
+    public RestaurantResponseDTO findById(Long restaurantId, Pageable pageable) {
+
+        return null;
+    }
+
+    //음식점 직선거리
+    public Page<RestaurantResponseDTO> findByDistances(String keyword, double startX, double startY,Pageable pageable) {
+        System.out.println("findByDistances들어옴");
+        Page<Restaurant> restaurants;
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // keyword가 null이거나 빈 문자열인 경우, 모든 음식점 반환
+            restaurants = restaurantRepository.findAll(pageable);
+        } else {
+            // keyword가 있는 경우, 해당 키워드를 포함하는 음식점 반환
+            restaurants = restaurantRepository.findByMenuContainingOrNameContaining(keyword, pageable);
+        }
+        // Page<Restaurant>를 Page<RestaurantResponseDTO>로 변환
+        Page<RestaurantResponseDTO> dtoPage = restaurants.map(restaurant -> {
+
+            Map<String, Double> coordinates = tmapService.getCoordinates(restaurant.getAddressRoad());
+            // RestaurantResponseDTO 생성 및 좌표 설정
+            RestaurantResponseDTO dto = new RestaurantResponseDTO(restaurant);
+            if (coordinates != null && !coordinates.isEmpty()) {
+                dto.setLatitude(coordinates.get("latitude"));
+                dto.setLongitude(coordinates.get("longitude"));
+            }
+            double endX=dto.getLongitude();
+            double endY=dto.getLatitude();
+            // 직선거리 구하기
+            double distance = tmapService.getDirectDistance(startX,startY,endX,endY);
+            // RestaurantResponseDTO 생성 및 좌표 설정
+            if (distance != 0.0) {
+                dto.setDistance(distance);
+            }
+            return dto;
+        });
+        Sort sort = Sort.by("distance").ascending();
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        return dtoPage;
     }
 }
