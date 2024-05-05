@@ -97,5 +97,37 @@ public class RestaurantController {
 
         return tmapService.getAddressByCoordinates(startX,startY);
     }
+
+    //리뷰개수순으로 정렬하면서 카페만
+    @GetMapping("/search/onlycafes/reviews")
+    public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyCafeforTotalReviews(String word,
+                                                                    @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+        Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
+        return new ResponseEntity<>(page, HttpStatus.OK);
+    }
+
+    //평점순으로 정렬하면서 카페만
+    @GetMapping("/search/onlycafes/degree")
+    public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyCafeforDegree(String word,
+                                                                                   @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+        Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
+        return new ResponseEntity<>(page, HttpStatus.OK);
+    }
+
+    //리뷰개수순으로 정렬하면서 음식점만
+    @GetMapping("/search/onlyrestaurants/reviews")
+    public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyRestaurantforTotalReviews(String word,
+                                                                          @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+        Page<RestaurantResponseDTO> page = restaurantService.searchOnlyRestaurant(word, pageable);
+        return new ResponseEntity<>(page, HttpStatus.OK);
+    }
+
+    //평점으로 정렬하면서 음식점만
+    @GetMapping("/search/onlyrestaurants/degree")
+    public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyRestaurantforDegree(String word,
+                                                                                         @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+        Page<RestaurantResponseDTO> page = restaurantService.searchOnlyRestaurant(word, pageable);
+        return new ResponseEntity<>(page, HttpStatus.OK);
+    }
 }
 

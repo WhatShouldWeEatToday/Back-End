@@ -20,7 +20,6 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final TMapService tmapService;
-    private ArrayList<RestaurantResponseDTO> dtos = new ArrayList<>();
 
     //keyword로 맛집을 검색함(메뉴명, 점포명)
     @Transactional
@@ -112,6 +111,7 @@ public class RestaurantService {
         Page<Restaurant> restaurants;
         String dong = tmapService.getAddressByCoordinates(startX, startY);
         List<Restaurant> list = null;
+        List<RestaurantResponseDTO> dtos = new ArrayList<>();
         if (keyword == null || keyword.trim().isEmpty()) {
             // keyword가 null이거나 빈 문자열인 경우, 모든 카페가 아닌 음식점 검색
             list = restaurantRepository.findAllAddress(dong);
