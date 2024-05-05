@@ -31,12 +31,6 @@ public class RestaurantResponseDTO {
     private Double distance;
     private Integer pathTime;
 
-    public void setCoordinates(Double latitude, Double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        System.out.println("setCoordicates 의 경도 위도 "+ longitude+" "+latitude );
-    }
-
     // Entity -> DTO
     public RestaurantResponseDTO(Restaurant restaurant) {
         this.id = restaurant.getId();
