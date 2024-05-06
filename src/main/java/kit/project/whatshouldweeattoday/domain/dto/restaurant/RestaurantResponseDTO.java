@@ -56,6 +56,7 @@ public class RestaurantResponseDTO {
         this.reviewList = reviewList;
     }
 
+
     //리뷰폼 안의 음식점상세
     public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark) {
         this.id = id;

@@ -54,5 +54,14 @@ public class Restaurant {
         System.out.println("setCoordicates 의 경도 위도 "+ longitude+" "+latitude );
     }
 
+    public void caculateDegree(Double newDegree) {
+        if (totalReviews == 0) {
+            degree = newDegree;
+        } else {
+            degree = ((degree * totalReviews) + newDegree) / (totalReviews + 1);
+        }
+        //소수첫재짜리까지
+        degree = Math.round(degree * 10) / 10.0;
+    }
 
 }

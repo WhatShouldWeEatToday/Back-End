@@ -46,6 +46,7 @@ public class Review extends BaseTimeEntity {
     @OneToMany(mappedBy = "review",fetch = FetchType.EAGER)
     private List<Likes> likesList;
 
+
     public void setTotalLikes(Long totalLikes) {
         this.totalLikes = totalLikes;
     }
