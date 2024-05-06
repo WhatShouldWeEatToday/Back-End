@@ -116,5 +116,4 @@ public class MemberController {
         memberService.createMember(member1);
         memberService.createMember(member2);
    */
-    }
 }
