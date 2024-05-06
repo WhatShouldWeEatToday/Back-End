@@ -1,10 +1,15 @@
 package kit.project.whatshouldweeattoday.domain.dto.restaurant;
 
 
+import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
+import kit.project.whatshouldweeattoday.domain.entity.Review;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,6 +35,44 @@ public class RestaurantResponseDTO {
     private Double longitude;
     private Double distance;
     private Integer pathTime;
+    private Page<ReviewResponseDTO> reviewList;
+
+    //음식점 상세보기
+    public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark, Page<ReviewResponseDTO> reviewList) {
+        this.id = id;
+        this.name = name;
+        this.restaurantType = restaurantType;
+        this.degree = degree;
+        this.addressRoad = addressRoad;
+        this.addressNumber = addressNumber;
+        this.tel = tel;
+        this.menus = menus;
+        this.totalReviews = totalReviews;
+        this.totalTaste = totalTaste;
+        this.totalCost = totalCost;
+        this.totalKind = totalKind;
+        this.totalMood = totalMood;
+        this.totalPark = totalPark;
+        this.reviewList = reviewList;
+    }
+
+    //리뷰폼 안의 음식점상세
+    public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark) {
+        this.id = id;
+        this.name = name;
+        this.restaurantType = restaurantType;
+        this.degree = degree;
+        this.addressRoad = addressRoad;
+        this.addressNumber = addressNumber;
+        this.tel = tel;
+        this.menus = menus;
+        this.totalReviews = totalReviews;
+        this.totalTaste = totalTaste;
+        this.totalCost = totalCost;
+        this.totalKind = totalKind;
+        this.totalMood = totalMood;
+        this.totalPark = totalPark;
+    }
 
     // Entity -> DTO
     public RestaurantResponseDTO(Restaurant restaurant) {
@@ -52,5 +95,6 @@ public class RestaurantResponseDTO {
         this.distance=restaurant.getDistance();
         this.pathTime=restaurant.getPathTime();
     }
+
 
 }

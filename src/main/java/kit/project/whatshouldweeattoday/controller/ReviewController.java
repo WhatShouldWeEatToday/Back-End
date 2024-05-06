@@ -18,14 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    // 리뷰 등록
+    //리뷰등록 -> 작성하기 버튼 눌렀을때
     @PostMapping("/api/review/{restaurantId}")
     public ResponseEntity<MsgResponseDTO> save(@PathVariable("restaurantId") Long restaurantId, @RequestBody ReviewRequestDTO requestDTO) {
         requestDTO.setTotalLikes(0L);
         reviewService.save(restaurantId,requestDTO);
         return ResponseEntity.ok(new MsgResponseDTO("리뷰 등록 완료", HttpStatus.OK.value()));
     }
-
     // 최신순 리뷰 조회
     @GetMapping("/review/findAll")
     public ResponseEntity<Page<ReviewResponseDTO>> findAll(@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 15)Pageable pageable){
@@ -34,27 +33,32 @@ public class ReviewController {
     }
 
     // 리뷰 수정
-    @PatchMapping("/api/review/{id}")
-    public ResponseEntity<ReviewResponseDTO> update(@PathVariable Long id, @RequestBody ReviewRequestDTO requestDTO) {
+    @PatchMapping("/api/review/{reviewId}")
+    public ResponseEntity<ReviewResponseDTO> update(@PathVariable("reviewId") Long id, @RequestBody ReviewRequestDTO requestDTO) {
         return new ResponseEntity<>(reviewService.update(id, requestDTO), HttpStatus.OK);
     }
 
     // 리뷰 삭제
-    @DeleteMapping("/api/review/{id}")
-    public ResponseEntity<MsgResponseDTO> delete(@PathVariable Long id) {
+    @DeleteMapping("/api/review/{reviewId}")
+    public ResponseEntity<MsgResponseDTO> delete(@PathVariable("reviewId") Long id) {
         return new ResponseEntity<>(reviewService.delete(id), HttpStatus.OK);
     }
 
     // 리뷰 수정 및 상세화면
-    @GetMapping("/review/{id}")
+    /*@GetMapping("/review/{id}")
     public ResponseEntity<ReviewResponseDTO> reviewDetail(@PathVariable Long id){
         ReviewResponseDTO responseDTOS = reviewService.reviewDetails(id);
+        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
+    }*/
+    @GetMapping("/{restaurantId}/review/{id}")
+    public ResponseEntity<ReviewResponseDTO> reviewDetail(@PathVariable("restaurantId") Long restaurantId,@PathVariable("id") Long id){
+        ReviewResponseDTO responseDTOS = reviewService.reviewDetails(restaurantId,id);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
 
     // 리뷰 읍,면,동 조회
     @GetMapping("/review/findbyAddress/{address}")
-    public ResponseEntity<Page<ReviewResponseDTO>> findByAddress(@PathVariable String address,@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 15)Pageable pageable){
+    public ResponseEntity<Page<ReviewResponseDTO>> findByAddress(@PathVariable("address") String address,@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 15)Pageable pageable){
         Page<ReviewResponseDTO> responseDTOS = reviewService.findByAdddress(address, pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
