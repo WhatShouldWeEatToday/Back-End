@@ -105,7 +105,7 @@ public class RestaurantService {
 
     @Transactional
     //음식점 직선거리
-    public Page<RestaurantResponseDTO> findByDistances(String keyword, double startX, double startY, Pageable pageable) {
+    public Page<RestaurantResponseDTO> findByDistances(String keyword, Float startX, Float startY, Pageable pageable) {
         //TODO 기본적으로 페이지 1에 대해서 출력은 하되 페이지 2부터는 다른 함수로 빼두는 게 좋을 거 같고 dtos를 활용해서 페이지 정보만 가지고 사용하면 됨
         System.out.println("findByDistances들어옴");
         Page<Restaurant> restaurants;
@@ -120,7 +120,7 @@ public class RestaurantService {
             list = restaurantRepository.findAllAddress(dong, keyword);
         }
         for (Restaurant target : list) {
-            double distance = tmapService.calculateDistance(startX, startY, target.getLongitude(), target.getLatitude());
+            Double distance = tmapService.calculateDistance(startX, startY, target.getLongitude(), target.getLatitude());
             target.setDistance(distance);
 
             dtos.add(new RestaurantResponseDTO(target));

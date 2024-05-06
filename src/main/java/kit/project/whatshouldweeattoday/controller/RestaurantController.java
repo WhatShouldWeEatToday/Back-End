@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/restaurant")
 public class RestaurantController {
 
-     private final RestaurantService restaurantService;
-     private final TMapService tmapService;
+    private final RestaurantService restaurantService;
+    private final TMapService tmapService;
 
-     //맛집 검색
+    //맛집 검색
     @GetMapping("/search")
-    public ResponseEntity<Page<RestaurantResponseDTO>> search(String word,
+    public ResponseEntity<Page<RestaurantResponseDTO>> search(@RequestParam(name = "word") String word,
                                                               @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchRestaurants(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
@@ -33,7 +33,7 @@ public class RestaurantController {
     //그냥 조회
     @GetMapping("/findAll")
     public ResponseEntity<Page<RestaurantResponseDTO>> findAll(
-                                                              @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         System.out.println("findAll 함수 들어옴");
         Page<RestaurantResponseDTO> page = restaurantService.findAll(pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
@@ -75,7 +75,9 @@ public class RestaurantController {
     //맛집조회 직선거리순-> 출발지 위도,경도 및 도착지 위도,경도 필요
     @GetMapping("/search/routes")
     public ResponseEntity<Page<RestaurantResponseDTO>> getRestaurantsByRoutes(
-           double startX, double startY, String word,
+            @RequestParam(name = "word") String word,
+            @RequestParam(name = "startX") Float startX,
+            @RequestParam(name = "startY") Float startY,
             @PageableDefault(sort = "distance", direction = Sort.Direction.ASC, size = 10) Pageable pageable) {
         // 거리를 기준으로 정렬하기 위해 Pageable 객체를 생성할 때, distance를 기준으로 정렬되도록 설정
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("distance"));
@@ -87,8 +89,8 @@ public class RestaurantController {
     // 맛집 위도 경도 넣어주기
     @PatchMapping("/api/initCoordinates")
     public String initCoordinates( ) {
-       restaurantService.updateCoordinates();
-       return null;
+        restaurantService.updateCoordinates();
+        return null;
     }
 
     //위치 받아서 주소 반환
@@ -101,7 +103,7 @@ public class RestaurantController {
     //리뷰개수순으로 정렬하면서 카페만
     @GetMapping("/search/onlycafes/reviews")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyCafeforTotalReviews(String word,
-                                                                    @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                                   @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -109,7 +111,7 @@ public class RestaurantController {
     //평점순으로 정렬하면서 카페만
     @GetMapping("/search/onlycafes/degree")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyCafeforDegree(String word,
-                                                                                   @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                             @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -117,7 +119,7 @@ public class RestaurantController {
     //리뷰개수순으로 정렬하면서 음식점만
     @GetMapping("/search/onlyrestaurants/reviews")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyRestaurantforTotalReviews(String word,
-                                                                          @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                                         @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyRestaurant(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -125,7 +127,7 @@ public class RestaurantController {
     //평점으로 정렬하면서 음식점만
     @GetMapping("/search/onlyrestaurants/degree")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyRestaurantforDegree(String word,
-                                                                                         @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                                   @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyRestaurant(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
