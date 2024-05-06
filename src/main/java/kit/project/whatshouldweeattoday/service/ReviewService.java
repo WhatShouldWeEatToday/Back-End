@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -55,11 +57,23 @@ public class ReviewService {
 
     //리뷰 상세화면 및 수정
     @Transactional
-    public ReviewResponseDTO reviewDetails(Long id) {
+    public ReviewResponseDTO reviewDetails(Long restaurantId,Long id) {
        Review review = reviewRepository.findById(id)
                .orElseThrow(IllegalArgumentException::new);
        return new ReviewResponseDTO(review);
     }
+
+    //한 가게의 리뷰 조회
+    @Transactional
+    public Page<ReviewResponseDTO> showReviewsByRestaurant(Long restaurantId, Pageable pageable) {
+        Page<Review> page = reviewRepository.findByRestaurantforPage(restaurantId, pageable);
+        Page<ReviewResponseDTO> dtoPage = page.map(review -> {
+            ReviewResponseDTO dto = new ReviewResponseDTO(review);
+            return dto;
+        });
+        return dtoPage;
+    }
+
     //리뷰 수정
     @Transactional //얘 안붙이면 mysql에 수정데이터 안들어감
     public ReviewResponseDTO update(Long id, ReviewRequestDTO requestDTO) {

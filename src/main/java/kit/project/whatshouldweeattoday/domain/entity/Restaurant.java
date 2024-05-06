@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,7 +44,8 @@ public class Restaurant {
     @JoinColumn(name = "bookmark_id")
     private Bookmark bookmark;
 
-    @OneToMany(mappedBy = "restaurant", orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonManagedReference
     private List<Review> reviewList = new ArrayList<>();
 
     public void setCoordinates(Double latitude, Double longitude) {
@@ -51,5 +53,6 @@ public class Restaurant {
         this.longitude = longitude;
         System.out.println("setCoordicates 의 경도 위도 "+ longitude+" "+latitude );
     }
+
 
 }

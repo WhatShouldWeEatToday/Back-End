@@ -9,6 +9,7 @@ public class ReviewResponseDTO {
 
     private Long id;
     private Long totalLikes;
+    private String writers;
     private int taste;
     private int cost;
     private int kind;
@@ -22,6 +23,7 @@ public class ReviewResponseDTO {
     // review return 할때
     public ReviewResponseDTO(Review review) {
        this.id = review.getId();
+       this.writers = review.getWriter();
        this.cost = review.getCost();
        this.park = review.getPark();
        this.mood = review.getMood();

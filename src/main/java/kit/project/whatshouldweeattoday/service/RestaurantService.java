@@ -4,7 +4,9 @@ package kit.project.whatshouldweeattoday.service;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
+import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
+import kit.project.whatshouldweeattoday.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -20,6 +22,8 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final TMapService tmapService;
+    private final ReviewRepository reviewRepository;
+    private final ReviewService reviewService;
 
     //keyword로 맛집을 검색함(메뉴명, 점포명)
     @Transactional
@@ -151,5 +155,57 @@ public class RestaurantService {
                 restaurant.setCoordinates(coordinates.get("latitude"), coordinates.get("longitude"));
             }
         }
+    }
+
+    //음식점 상세
+    @Transactional
+    public RestaurantResponseDTO showDetails(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(RuntimeException::new);
+        Page<ReviewResponseDTO> reviewList = reviewService.showReviewsByRestaurant(id, Pageable.ofSize(5));
+        //List<Review> reviewList = reviewRepository.findByRestaurant(id);
+       // restaurant.setReviewList(reviewList);
+        RestaurantResponseDTO responseDTO = new RestaurantResponseDTO(
+                restaurant.getId(),
+                restaurant.getName(),
+                restaurant.getRestaurantType(),
+                restaurant.getDegree(),
+                restaurant.getAddressRoad(),
+                restaurant.getAddressNumber(),
+                restaurant.getTel(),
+                restaurant.getMenus(),
+                restaurant.getTotalReviews(),
+                restaurant.getTotalTaste(),
+                restaurant.getTotalCost(),
+                restaurant.getTotalKind(),
+                restaurant.getTotalMood(),
+                restaurant.getTotalPark(),
+                reviewList
+        );
+        // Return the populated DTO
+        return responseDTO;
+
+    }
+    //음식점 상세 -> 리뷰폼
+    @Transactional
+    public RestaurantResponseDTO showDetailsOnlyReviews(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(RuntimeException::new);
+        RestaurantResponseDTO responseDTO = new RestaurantResponseDTO(
+                restaurant.getId(),
+                restaurant.getName(),
+                restaurant.getRestaurantType(),
+                restaurant.getDegree(),
+                restaurant.getAddressRoad(),
+                restaurant.getAddressNumber(),
+                restaurant.getTel(),
+                restaurant.getMenus(),
+                restaurant.getTotalReviews(),
+                restaurant.getTotalTaste(),
+                restaurant.getTotalCost(),
+                restaurant.getTotalKind(),
+                restaurant.getTotalMood(),
+                restaurant.getTotalPark()
+        );
+        // Return the populated DTO
+        return responseDTO;
     }
 }
