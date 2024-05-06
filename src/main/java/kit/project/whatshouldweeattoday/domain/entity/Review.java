@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
@@ -39,9 +40,10 @@ public class Review extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
+    @JsonBackReference
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review",fetch = FetchType.EAGER)
     private List<Likes> likesList;
 
     public void setTotalLikes(Long totalLikes) {
@@ -80,4 +82,6 @@ public class Review extends BaseTimeEntity {
         this.taste = taste;
         this.stars = stars;
     }
+
+    //리뷰 상세
 }

@@ -30,6 +30,20 @@ public class RestaurantController {
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
+    //음식점 상세페이지 -> 기본
+    @GetMapping("/{restaurantId}/details")
+    public ResponseEntity<RestaurantResponseDTO> showDetails(@PathVariable("restaurantId") Long id) {
+        RestaurantResponseDTO dto = restaurantService.showDetails(id);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    //음식점 상세페이지 -> 리뷰등록폼
+    @GetMapping("/{restaurantId}/review")
+    public ResponseEntity<RestaurantResponseDTO> showDetailsOnlyReviews(@PathVariable("restaurantId") Long id) {
+        RestaurantResponseDTO dto = restaurantService.showDetailsOnlyReviews(id);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
     //그냥 조회
     @GetMapping("/findAll")
     public ResponseEntity<Page<RestaurantResponseDTO>> findAll(
