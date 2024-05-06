@@ -78,7 +78,7 @@ public class ReviewService {
         reviewRepository.delete(review);
         return new MsgResponseDTO("리뷰 삭제 완료", 200);
     }
-
+    @Transactional
     public Page<ReviewResponseDTO> findByAdddress(String word, Pageable pageable) {
         Page<Review> page = reviewRepository.findByAddress(word, pageable);
 

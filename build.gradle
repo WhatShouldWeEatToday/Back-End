@@ -62,6 +62,10 @@ dependencies {
     /* Test */
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    /* JSON */
+    implementation 'org.json:json:20210307'
+
 }
 
 tasks.named('test') {

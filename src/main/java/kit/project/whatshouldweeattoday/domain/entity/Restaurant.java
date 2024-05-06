@@ -45,4 +45,11 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
+
+    public void setCoordinates(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        System.out.println("setCoordicates 의 경도 위도 "+ longitude+" "+latitude );
+    }
+
 }
