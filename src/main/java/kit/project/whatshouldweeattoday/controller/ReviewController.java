@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
@@ -25,10 +26,10 @@ public class ReviewController {
         reviewService.save(restaurantId,requestDTO);
         return ResponseEntity.ok(new MsgResponseDTO("리뷰 등록 완료", HttpStatus.OK.value()));
     }
-    // 최신순 리뷰 조회
+    // 최신순 리뷰 조회(default)
     @GetMapping("/review/findAll")
-    public ResponseEntity<Page<ReviewResponseDTO>> findAll(@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 15)Pageable pageable){
-        Page<ReviewResponseDTO> responseDTOS = reviewService.findAll(pageable);
+    public ResponseEntity<Page<RestaurantResponseDTO>> findAll(String address, @PageableDefault(direction = Sort.Direction.DESC, size = 10)Pageable pageable){
+        Page<RestaurantResponseDTO> responseDTOS = reviewService.findAll(address,pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
 
@@ -45,11 +46,6 @@ public class ReviewController {
     }
 
     // 리뷰 수정 및 상세화면
-    /*@GetMapping("/review/{id}")
-    public ResponseEntity<ReviewResponseDTO> reviewDetail(@PathVariable Long id){
-        ReviewResponseDTO responseDTOS = reviewService.reviewDetails(id);
-        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
-    }*/
     @GetMapping("/{restaurantId}/review/{id}")
     public ResponseEntity<ReviewResponseDTO> reviewDetail(@PathVariable("restaurantId") Long restaurantId,@PathVariable("id") Long id){
         ReviewResponseDTO responseDTOS = reviewService.reviewDetails(restaurantId,id);
@@ -58,7 +54,7 @@ public class ReviewController {
 
     // 리뷰 읍,면,동 조회
     @GetMapping("/review/findbyAddress/{address}")
-    public ResponseEntity<Page<ReviewResponseDTO>> findByAddress(@PathVariable("address") String address,@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 15)Pageable pageable){
+    public ResponseEntity<Page<ReviewResponseDTO>> findByAddress(@PathVariable("address") String address,@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 10)Pageable pageable){
         Page<ReviewResponseDTO> responseDTOS = reviewService.findByAdddress(address, pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }

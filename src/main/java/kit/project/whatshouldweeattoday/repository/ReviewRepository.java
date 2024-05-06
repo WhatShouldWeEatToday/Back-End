@@ -11,8 +11,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+    
+    //읍,면, 동별로 찾기 -> 리뷰만
     @Query("SELECT r FROM Review r JOIN r.restaurant rest WHERE rest.addressNumber LIKE %:address%")
     Page<Review> findByAddress(@Param("address") String address, Pageable pageable);
+
 
     //음식점 아이디로 리뷰찾기
     @Query("SELECT r FROM Review r WHERE r.restaurant.id = :id")
