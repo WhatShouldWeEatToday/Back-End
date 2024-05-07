@@ -29,7 +29,8 @@ public class ReviewController {
 
     // 최신순 리뷰 조회(default)
     @GetMapping("/review/findAll")
-    public ResponseEntity<Page<RestaurantResponseDTO>> findAll(@RequestParam(name = "address", required = false) String address, @PageableDefault(direction = Sort.Direction.DESC, size = 10)Pageable pageable){
+    public ResponseEntity<Page<RestaurantResponseDTO>> findAll(@RequestParam(name = "address", required = false) String address,
+                                                               Pageable pageable){
         Page<RestaurantResponseDTO> responseDTOS = reviewService.findAll(address,pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
