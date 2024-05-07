@@ -84,5 +84,4 @@ public class Review extends BaseTimeEntity {
         this.stars = stars;
     }
 
-    //리뷰 상세
 }

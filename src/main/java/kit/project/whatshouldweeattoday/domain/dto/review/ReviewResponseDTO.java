@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.dto.review;
 
+import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
 import lombok.Getter;
@@ -18,10 +19,16 @@ public class ReviewResponseDTO {
     private String created_Date;
     private ReviewType reviewType;
     private double stars;
+    private Long member_id;
 
 
     // review return 할때
     public ReviewResponseDTO(Review review) {
+        if (review.getMember() != null) {
+            this.member_id = review.getMember().getId();
+        } else {
+            this.member_id = null;// 기존 크롤링한 데이터에는 member_id가 없음
+        }
        this.id = review.getId();
        this.writers = review.getWriter();
        this.cost = review.getCost();
