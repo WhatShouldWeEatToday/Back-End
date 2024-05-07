@@ -26,9 +26,10 @@ public class ReviewController {
         reviewService.save(restaurantId,requestDTO);
         return ResponseEntity.ok(new MsgResponseDTO("리뷰 등록 완료", HttpStatus.OK.value()));
     }
+
     // 최신순 리뷰 조회(default)
     @GetMapping("/review/findAll")
-    public ResponseEntity<Page<RestaurantResponseDTO>> findAll(String address, @PageableDefault(direction = Sort.Direction.DESC, size = 10)Pageable pageable){
+    public ResponseEntity<Page<RestaurantResponseDTO>> findAll(@RequestParam(name = "address", required = false) String address, @PageableDefault(direction = Sort.Direction.DESC, size = 10)Pageable pageable){
         Page<RestaurantResponseDTO> responseDTOS = reviewService.findAll(address,pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
