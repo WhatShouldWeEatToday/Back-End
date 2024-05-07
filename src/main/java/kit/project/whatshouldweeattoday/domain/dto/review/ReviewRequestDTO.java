@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.dto.review;
 
+import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,5 +35,19 @@ public class ReviewRequestDTO {
         this.reviewType = reviewType;
         this.stars = stars;
         this.totalLikes = totalLikes;
+    }
+
+    //DTO to Entity
+    public Review toEntity(){
+            return Review.builder()
+                    .taste(taste)
+                    .cost(cost)
+                    .mood(mood)
+                    .kind(kind)
+                    .park(park)
+                    .reviewType(reviewType)
+                    .stars(stars)
+                    .totalLikes(totalLikes)
+                    .build();
     }
 }

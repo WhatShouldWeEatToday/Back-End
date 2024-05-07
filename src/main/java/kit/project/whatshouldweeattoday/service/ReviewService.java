@@ -118,41 +118,38 @@ public class ReviewService {
     }
 
     //리뷰 수정
-    @Transactional //얘 안붙이면 mysql에 수정데이터 안들어감
+    @Transactional
     public ReviewResponseDTO update(Long id, ReviewRequestDTO requestDTO) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        review.updateReview(requestDTO.getCost(),requestDTO.getPark(),requestDTO.getMood(),requestDTO.getKind(),requestDTO.getTaste(),requestDTO.getStars());
         Restaurant restaurant = review.getRestaurant();
-        if(review.getMood()==1){
-            restaurant.setTotalMood(restaurant.getTotalMood()+1);
-        }else if(review.getMood()==0 && restaurant.getTotalMood()>0){
-            restaurant.setTotalMood(restaurant.getTotalMood()-1);
-        }
-
-        if(review.getKind()==1){
-            restaurant.setTotalKind(restaurant.getTotalKind()+1);
-        }else if(review.getKind()==0 && restaurant.getTotalKind()>0){
-            restaurant.setTotalKind(restaurant.getTotalKind()-1);
-        }
-
-        if(review.getCost()==1){
-            restaurant.setTotalCost(restaurant.getTotalCost()+1);
-        }else if(review.getCost()==0&& restaurant.getTotalCost()>0){
-            restaurant.setTotalCost(restaurant.getTotalCost()-1);
-        }
-
-        if(review.getPark()==1){
-            restaurant.setTotalPark(restaurant.getTotalPark()+1);
-        }else if(review.getPark()==0&& restaurant.getTotalPark()>0){
-            restaurant.setTotalPark(restaurant.getTotalPark()-1);
-        }
-
-        if(review.getTaste()==1){
-            restaurant.setTotalTaste(restaurant.getTotalTaste()+1);
-        }else if(review.getTaste()==0&& restaurant.getTotalTaste()>0){
+        if(review.getTaste()!=requestDTO.getTaste() && requestDTO.getTaste()==0){
             restaurant.setTotalTaste(restaurant.getTotalTaste()-1);
+        }else if(review.getTaste()!=requestDTO.getTaste() && requestDTO.getTaste()==1){
+            restaurant.setTotalTaste(restaurant.getTotalTaste()+1);
         }
+        if(review.getCost()!=requestDTO.getCost() && requestDTO.getCost()==0){
+            restaurant.setTotalCost(restaurant.getTotalCost()-1);
+        }else if(review.getCost()!=requestDTO.getCost() && requestDTO.getCost()==1){
+            restaurant.setTotalCost(restaurant.getTotalCost()+1);
+        }
+        if(review.getMood()!=requestDTO.getMood() && requestDTO.getMood()==0){
+            restaurant.setTotalMood(restaurant.getTotalMood()-1);
+        }else if(review.getMood()!=requestDTO.getMood() && requestDTO.getMood()==1){
+            restaurant.setTotalMood(restaurant.getTotalMood()+1);
+        }
+        if(review.getKind()!=requestDTO.getKind() && requestDTO.getKind()==0){
+            restaurant.setTotalKind(restaurant.getTotalKind()-1);
+        }else if(review.getKind()!=requestDTO.getKind() && requestDTO.getKind()==1){
+            restaurant.setTotalKind(restaurant.getTotalKind()+1);
+        }
+        if(review.getPark()!=requestDTO.getPark() && requestDTO.getPark()==0){
+            restaurant.setTotalPark(restaurant.getTotalPark()-1);
+        }else if(review.getPark()!=requestDTO.getPark() && requestDTO.getPark()==1){
+            restaurant.setTotalPark(restaurant.getTotalPark()+1);
+        }
+        review.updateReview(requestDTO.getCost(),requestDTO.getPark(),requestDTO.getMood(),requestDTO.getKind(),requestDTO.getTaste(),requestDTO.getStars());
+
         restaurant.caculateDegree(review.getStars());
         return new ReviewResponseDTO(review);
     }
@@ -162,16 +159,9 @@ public class ReviewService {
     public MsgResponseDTO delete(Long id) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
-
         Long restaurantId = review.getRestaurant().getId();
-
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RuntimeException::new);
         restaurant.setTotalReviews(restaurant.getTotalReviews()-1);
-        restaurant.setTotalCost(restaurant.getTotalCost()-1);
-        restaurant.setTotalMood(restaurant.getTotalMood()-1);
-        restaurant.setTotalPark(restaurant.getTotalPark()-1);
-        restaurant.setTotalKind(restaurant.getTotalKind()-1);
-        restaurant.setTotalTaste(restaurant.getTotalTaste()-1);
         restaurant.caculateDegree(-review.getStars());
 
         if(review.getMood()==1){

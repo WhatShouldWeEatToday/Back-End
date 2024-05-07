@@ -63,5 +63,4 @@ public class Restaurant {
         //소수첫재짜리까지
         degree = Math.round(degree * 10) / 10.0;
     }
-
 }
