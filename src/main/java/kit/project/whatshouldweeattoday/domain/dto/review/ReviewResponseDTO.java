@@ -29,6 +29,11 @@ public class ReviewResponseDTO {
         } else {
             this.member_id = null;// 기존 크롤링한 데이터에는 member_id가 없음
         }
+        if(review.getReviewType()!=null){
+            this.reviewType=review.getReviewType();
+        }else{
+            this.reviewType=ReviewType.NOT_CERTIFY;
+        }
        this.id = review.getId();
        this.writers = review.getWriter();
        this.cost = review.getCost();
@@ -36,7 +41,6 @@ public class ReviewResponseDTO {
        this.mood = review.getMood();
        this.kind = review.getKind();
        this.taste = review.getTaste();
-       this.reviewType = review.getReviewType();
        this.totalLikes = review.getTotalLikes();
        this.created_Date = review.getCreatedDate();
        this.stars=review.getStars();
