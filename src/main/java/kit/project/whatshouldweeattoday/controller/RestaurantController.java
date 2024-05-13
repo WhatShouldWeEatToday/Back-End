@@ -89,7 +89,7 @@ public class RestaurantController {
     //맛집조회 직선거리순-> 출발지 위도,경도 및 도착지 위도,경도 필요
     @GetMapping("/search/routes")
     public ResponseEntity<Page<RestaurantResponseDTO>> getRestaurantsByRoutes(
-            @RequestParam(name = "word") String word,
+            @RequestParam(name = "word", required = false) String word,
             @RequestParam(name = "startX") Float startX,
             @RequestParam(name = "startY") Float startY,
             @PageableDefault(sort = "distance", direction = Sort.Direction.ASC, size = 10) Pageable pageable) {

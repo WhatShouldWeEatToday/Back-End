@@ -66,14 +66,14 @@ public class FriendshipController {
     }
 
     /* 친구 추가 수락 */
-    @PostMapping("/chat/friend/accept/{friendshipId}")
+    @PostMapping("/friend/accept/{friendshipId}")
     public ResponseEntity<?> acceptFriend(@Valid @PathVariable("friendshipId") Long friendshipId) throws Exception {
         friendshipService.acceptFriendRequest(friendshipId);
         return ResponseEntity.ok(new MsgResponseDTO("친구 추가 수락", HttpStatus.OK.value()));
     }
 
     /* 친구 추가 취소 */
-    @DeleteMapping("/chat/friend/cancel/{friendshipId}")
+    @DeleteMapping("/friend/cancel/{friendshipId}")
     public ResponseEntity<?> cancelFriend(@Valid @PathVariable("friendshipId") Long friendshipId) {
         friendshipService.cancelFriendRequest(friendshipId);
         return ResponseEntity.ok(new MsgResponseDTO("친구 추가 취소", HttpStatus.OK.value()));

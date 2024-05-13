@@ -56,7 +56,7 @@ public class ReviewController {
 
     // 리뷰 읍,면,동 조회
     @GetMapping("/review/findbyAddress/{address}")
-    public ResponseEntity<Page<ReviewResponseDTO>> findByAddress(@PathVariable("address") String address,@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 10)Pageable pageable){
+    public ResponseEntity<Page<ReviewResponseDTO>> findByAddress(@PathVariable("address") String address, @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 10)Pageable pageable){
         Page<ReviewResponseDTO> responseDTOS = reviewService.findByAdddress(address, pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
