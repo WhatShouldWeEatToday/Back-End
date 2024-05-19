@@ -1,9 +1,8 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.TotalTimeRequest;
-import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
-import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathRequestDTO;
 import kit.project.whatshouldweeattoday.service.RestaurantService;
 import kit.project.whatshouldweeattoday.service.TMapService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/restaurant")
@@ -57,7 +57,7 @@ public class RestaurantController {
     //맛집 조회(리뷰평점순(degree))
     @GetMapping("/search/degree")
     public ResponseEntity<Page<RestaurantResponseDTO>> getRestaurantsByDegree(@RequestParam(name = "word", required = false) String word,
-                                                                              @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10)Pageable pageable ){
+                                                                              @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchRestaurants(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -65,7 +65,7 @@ public class RestaurantController {
     //맛집 조회(리뷰개수순(total_reviews))
     @GetMapping("/search/reviews")
     public ResponseEntity<Page<RestaurantResponseDTO>> getRestaurantsByTotalReviews(@RequestParam(name = "word", required = false) String word,
-                                                                                    @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10)Pageable pageable ){
+                                                                                    @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchRestaurants(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -73,7 +73,7 @@ public class RestaurantController {
     //맛집조회(음식점만)
     @GetMapping("/search/onlyrestaurants")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyRestaurant(@RequestParam(name = "word", required = false) String word,
-                                                                          @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                          @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyRestaurant(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -82,7 +82,7 @@ public class RestaurantController {
     //맛집조회(카페만) ==> 카페,제과,베이커리,케이크,커피
     @GetMapping("/search/onlycafes")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyCafe(@RequestParam(name = "word", required = false) String word,
-                                                                    @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                    @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -103,22 +103,22 @@ public class RestaurantController {
 
     // 맛집 위도 경도 넣어주기
     @PatchMapping("/api/initCoordinates")
-    public String initCoordinates( ) {
+    public String initCoordinates() {
         restaurantService.updateCoordinates();
         return null;
     }
 
     //위치 받아서 주소 반환
     @GetMapping("/reverseGeo")
-    public String getAddressByCoordinates(double startX, double startY){
+    public String getAddressByCoordinates(double startX, double startY) {
 
-        return tmapService.getAddressByCoordinates(startX,startY);
+        return tmapService.getAddressByCoordinates(startX, startY);
     }
 
     //리뷰개수순으로 정렬하면서 카페만
     @GetMapping("/search/onlycafes/reviews")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyCafeforTotalReviews(@RequestParam(name = "word", required = false) String word,
-                                                                                   @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                                   @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -126,7 +126,7 @@ public class RestaurantController {
     //평점순으로 정렬하면서 카페만
     @GetMapping("/search/onlycafes/degree")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyCafeforDegree(@RequestParam(name = "word", required = false) String word,
-                                                                             @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                             @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyCafes(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -134,7 +134,7 @@ public class RestaurantController {
     //리뷰개수순으로 정렬하면서 음식점만
     @GetMapping("/search/onlyrestaurants/reviews")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyRestaurantforTotalReviews(@RequestParam(name = "word", required = false) String word,
-                                                                                         @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                                         @PageableDefault(sort = "totalReviews", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyRestaurant(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -142,7 +142,7 @@ public class RestaurantController {
     //평점으로 정렬하면서 음식점만
     @GetMapping("/search/onlyrestaurants/degree")
     public ResponseEntity<Page<RestaurantResponseDTO>> findOnlyRestaurantforDegree(@RequestParam(name = "word", required = false) String word,
-                                                                                   @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable){
+                                                                                   @PageableDefault(sort = "degree", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         Page<RestaurantResponseDTO> page = restaurantService.searchOnlyRestaurant(word, pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
@@ -151,10 +151,10 @@ public class RestaurantController {
     //음식점 경로 시간 알아보기
     @PostMapping("/search/totalTime")
     public ResponseEntity<?> totalTime(
-            @RequestBody TotalTimeRequest totalTimeRequest) {
+            @RequestBody PathRequestDTO totalTimeRequest) {
 
         try {
-            int totalTime = tmapService.totalTime(totalTimeRequest.getStartX(), totalTimeRequest.getStartY(), totalTimeRequest.getEndX(), totalTimeRequest.getEndY(),totalTimeRequest.getLang(),totalTimeRequest.getFormat(),totalTimeRequest.getCount(),totalTimeRequest.getSearchDttm());
+            int totalTime = tmapService.totalTime(totalTimeRequest.getStartX(), totalTimeRequest.getStartY(), totalTimeRequest.getEndX(), totalTimeRequest.getEndY(), totalTimeRequest.getLang(), totalTimeRequest.getFormat(), totalTimeRequest.getCount(), totalTimeRequest.getSearchDttm());
             return ResponseEntity.ok(totalTime);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error calculating total time: " + e.getMessage());
@@ -163,17 +163,22 @@ public class RestaurantController {
 
     //주소받아서 음식점경로 알아오기
     @PostMapping("/search/totalPath")
-    public ResponseEntity<?> totalTime2(
-            @RequestBody TotalTimeRequest totalTimeRequest) {
+    public ResponseEntity<PathResponseDTO> getTransitRoute(
+            @RequestBody PathRequestDTO totalTimeRequest) {
+        String departure = totalTimeRequest.getDeparture();
+        String destination = totalTimeRequest.getDestination();
+        String searchDttm = totalTimeRequest.getSearchDttm();
 
-        try {
-            int totalTime = tmapService.totalTime2(totalTimeRequest.getDeparture(),totalTimeRequest.getDestination(),0,"json",1,totalTimeRequest.getSearchDttm());
-            return ResponseEntity.ok(totalTime);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error calculating total time: " + e.getMessage());
+        PathResponseDTO routeInfo = tmapService.getTransitRoute(departure, destination, 0, "json", 1, searchDttm);
+
+        if (routeInfo == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+
+        return ResponseEntity.ok(routeInfo);
     }
-
-
 }
+
+
+
 
