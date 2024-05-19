@@ -17,4 +17,12 @@ public class Meet extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "meet", fetch = FetchType.LAZY)
     private Chat chat;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "vote_id")
+    private Vote vote;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "food_id")
+    private Food food;
 }
