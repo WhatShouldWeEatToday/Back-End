@@ -13,8 +13,13 @@ public class Food {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FOOD_ID")
     private Long id;
+    private String foodName;
     private String restaurantType;
+    private String imageRoute;
     private int count = 0;
+
+    @OneToOne(mappedBy = "food", fetch = FetchType.LAZY)
+    private Meet meet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_rank_id")

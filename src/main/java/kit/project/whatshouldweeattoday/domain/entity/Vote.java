@@ -15,7 +15,6 @@ public class Vote {
     private String menu;
     private int voteCount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_id")
-    private Chat chat;
+    @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY)
+    private Meet meet;
 }
