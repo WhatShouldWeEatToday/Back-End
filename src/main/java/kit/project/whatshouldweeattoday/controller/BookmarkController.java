@@ -17,7 +17,7 @@ public class BookmarkController {
 
     //맛집 즐겨찾기
     @PostMapping("/api/restaurant/{restaurantId}/bookmark")
-    public Long reviewLikes(@PathVariable Long restaurantId) {
+    public Long bookmark(@PathVariable Long restaurantId) {
         BookmarkRequestDTO bookmarkRequestDTO = new BookmarkRequestDTO();
         bookmarkService.save(restaurantId, bookmarkRequestDTO);
         return restaurantId;
@@ -25,7 +25,7 @@ public class BookmarkController {
 
     //즐겨찾기 취소
     @DeleteMapping("/api/restaurant/{restaurantId}/bookmark/{bookmarkId}")
-    public ResponseEntity<MsgResponseDTO> reviewDelete(@PathVariable Long restaurantId, @PathVariable Long bookmarkId) {
+    public ResponseEntity<MsgResponseDTO> deleteBookmark(@PathVariable Long restaurantId, @PathVariable Long bookmarkId) {
         return new ResponseEntity<>(bookmarkService.delete(restaurantId,bookmarkId), HttpStatus.OK);
     }
 }

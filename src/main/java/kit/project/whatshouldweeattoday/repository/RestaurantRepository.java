@@ -63,4 +63,13 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "(SELECT rev.restaurant.id FROM Review rev GROUP BY rev.restaurant.id " +
             "ORDER BY MAX(rev.createdDate) DESC)")
     Page<Restaurant> findAllByReviewCreated(Pageable pageable);
+
+    //주소로 조회 XX동XX번지
+    @Query("SELECT r FROM Restaurant r WHERE r.addressNumber LIKE CONCAT('%', :userAddress, '%')")
+    List<Restaurant> findByOnlyAddress(String userAddress);
+
+    //주간순위 -> 음식종류별
+    @Query("SELECT r FROM Restaurant r ORDER BY r.count DESC")
+    List<Restaurant> findTop5ByCount();
+
 }

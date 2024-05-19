@@ -39,6 +39,7 @@ public class Restaurant {
     //null값을 허용하기 위해
     private Integer pathTime;
     private Double distance;
+    private int count;//음식종류별 순위
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bookmark_id")
@@ -48,12 +49,12 @@ public class Restaurant {
     @JsonManagedReference
     private List<Review> reviewList = new ArrayList<>();
 
+
     public void setCoordinates(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
         System.out.println("setCoordicates 의 경도 위도 "+ longitude+" "+latitude );
     }
-
     public void caculateDegree(Double newDegree) {
         if (totalReviews == 0) {
             degree = newDegree;

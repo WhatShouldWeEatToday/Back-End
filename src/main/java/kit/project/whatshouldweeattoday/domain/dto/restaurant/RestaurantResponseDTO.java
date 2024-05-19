@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RestaurantResponseDTO {
+public class RestaurantResponseDTO extends Restaurant {
     private Long id;
     private String name;
     private String restaurantType;
@@ -36,6 +36,9 @@ public class RestaurantResponseDTO {
     private Double distance;
     private Integer pathTime;
     private Page<ReviewResponseDTO> reviewList;
+
+    private int count;
+    private int rank;
 
     //음식점 상세보기
     public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark, Page<ReviewResponseDTO> reviewList) {
@@ -97,5 +100,34 @@ public class RestaurantResponseDTO {
         this.pathTime=restaurant.getPathTime();
     }
 
+    //주간순위 -> 음식종류만 반환
+    public RestaurantResponseDTO(Long id, String name, int count, String restaurantType, int rank) {
+        this.id = id;
+        this.name = name;
+        this.count = count;
+        this.restaurantType = restaurantType;
+        this.rank = rank;
+    }
 
+    public RestaurantResponseDTO(Restaurant restaurant, Page<ReviewResponseDTO> reviewList) {
+        this.id = restaurant.getId();
+        this.name = restaurant.getName();
+        this.restaurantType = restaurant.getRestaurantType();
+        this.degree = restaurant.getDegree();
+        this.addressRoad = restaurant.getAddressRoad();
+        this.addressNumber = restaurant.getAddressNumber();
+        this.tel = restaurant.getTel();
+        this.menus = restaurant.getMenus();
+        this.totalReviews = restaurant.getTotalReviews();
+        this.totalTaste = restaurant.getTotalTaste();
+        this.totalCost = restaurant.getTotalCost();
+        this.totalKind = restaurant.getTotalKind();
+        this.totalMood = restaurant.getTotalMood();
+        this.totalPark = restaurant.getTotalPark();
+        this.latitude = restaurant.getLatitude();
+        this.longitude = restaurant.getLongitude();
+        this.distance = restaurant.getDistance();
+        this.pathTime = restaurant.getPathTime();
+        this.reviewList = reviewList;
+    }
 }

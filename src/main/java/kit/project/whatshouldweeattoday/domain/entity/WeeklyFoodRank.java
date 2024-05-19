@@ -17,6 +17,7 @@ public class WeeklyFoodRank extends BaseTimeEntity {
     private Long id;
     private int ranks;
     private String foodName;
+    private String date; // 한주가 지나면 초기화되어야함
 
     @OneToMany(mappedBy = "weeklyFoodRank")
     private List<Food> foods = new ArrayList<>();

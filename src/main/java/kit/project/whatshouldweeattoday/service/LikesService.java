@@ -35,7 +35,7 @@ public class LikesService {
     @Transactional
     public MsgResponseDTO delete(Long reviewId, Long likesId){
         Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
-       ;review.setTotalLikes(review.getTotalLikes()-1);
+        review.setTotalLikes(review.getTotalLikes()-1);
         likesRepository.deleteById(likesId);
         return new MsgResponseDTO("좋아요 취소", 200);
     }

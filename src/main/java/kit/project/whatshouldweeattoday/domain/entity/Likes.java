@@ -21,6 +21,10 @@ public class Likes {
     @JoinColumn(name = "review_id")
     private Review review;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @Builder
     public Likes(Boolean state){
         this.state=state;
