@@ -1,10 +1,2 @@
 jwt:
-  secret: c6083dc2c996fcadb6f8fdcd959c79dd4726e20cfe298b35458e61ec1fcfc99c1be6ff515d21ef96a214bf9d6ef01c3b459cf280175a1aea44ba22392bf5d0af
-
-#  access:
-#    expiration: 80
-#    header: Authorization
-#
-#  refresh:
-#    expiration: 90
-#    header: Authorization-refresh
+  secret: ${JWT_SECRET_KEY}

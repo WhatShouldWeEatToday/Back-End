@@ -1,10 +1,10 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/project?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/whatToEat?serverTimezone=UTC&characterEncoding=UTF-8
 
     username: root
-    password: thfla0901@
+    password: hoon@0815!!
     hikari:
       maximum-pool-size: 20
   mustache:
@@ -17,7 +17,7 @@ spring:
       # 개발 초기 단계 또는 로컬에서 테스트: create 또는 update
       # 테스트 서버: update 또는 validate
       # 스테이징 및 운영 서버: validate 또는 none
-      ddl-auto: update
+      ddl-auto: create
     open-in-view: false
     generate-ddl: true
     properties:
@@ -26,7 +26,7 @@ spring:
 
 logging.level:
   org:
-    springframework.security: DEBUG
+#    springframework.security: DEBUG
     hibernate:
       SQL: DEBUG
       type:
@@ -36,9 +36,9 @@ logging.level:
 
 tmap:
   api:
-    key: Outd4tYquuaWbktGSK6hnaZvtc2hB2n15Os8P0Iz
+    key: ${TMAP_API_KEY}
 
 naver:
   service:
     url: https://0r5887jrbp.apigw.ntruss.com/custom/v1/28830/da1e56e39c8d3213aa260e082ac4da2d93ef75049c8db0cdc6ee629fa56b05f7/general
-    secretKey: S1VJdFd6dmZkeGlwbktGdndBcHpuY2FTeldVdktYYk4=
+    secretKey: ${NAVER_SERVICE_KEY}
