@@ -9,16 +9,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Food {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FOOD_ID")
     private Long id;
     private String restaurantType;
+    private int count = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_rank_id")
     private WeeklyFoodRank weeklyFoodRank;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_type_rank_id")
-    private WeeklyFoodTypeRank weeklyFoodTypeRank;
+    private WeeklyFoodTypeRank weeklyFoodTypeRank;*/
 }

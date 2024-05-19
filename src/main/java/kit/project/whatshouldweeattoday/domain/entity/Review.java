@@ -34,6 +34,7 @@ public class Review extends BaseTimeEntity {
     private double stars;
     private String writer;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -53,6 +54,7 @@ public class Review extends BaseTimeEntity {
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
+
 
     public void setWriter(String writer) {
         this.writer = writer;

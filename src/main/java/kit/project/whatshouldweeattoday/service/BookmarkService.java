@@ -20,6 +20,7 @@ public class BookmarkService {
 
 
     //즐겨찾기 등록
+    @Transactional
     public void save(Long restaurantId, BookmarkRequestDTO bookmarkRequestDTO) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RuntimeException::new);
         Bookmark bookmark = bookmarkRequestDTO.toSaveEntity();
