@@ -31,7 +31,7 @@ public class RankService {
         WeeklyFoodTypeRank weeklyFoodTypeRank = new WeeklyFoodTypeRank();
         weeklyFoodTypeRank.setDate(currentDate);
 
-        List<RestaurantResponseDTO> restaurantResponseDTOs = IntStream.range(0, topRestaurants.size())
+        List<RestaurantResponseDTO> restaurantResponseDTOs = IntStream.range(0, 5)//topRestaurants.size()
                 .mapToObj(i -> {
                     Restaurant restaurant = topRestaurants.get(i);
                     RestaurantResponseDTO dto = convertToDto(restaurant, i + 1);

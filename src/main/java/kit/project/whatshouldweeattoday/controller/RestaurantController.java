@@ -161,5 +161,19 @@ public class RestaurantController {
         }
     }
 
+    //주소받아서 음식점경로 알아오기
+    @PostMapping("/search/totalPath")
+    public ResponseEntity<?> totalTime2(
+            @RequestBody TotalTimeRequest totalTimeRequest) {
+
+        try {
+            int totalTime = tmapService.totalTime2(totalTimeRequest.getDeparture(),totalTimeRequest.getDestination(),0,"json",1,totalTimeRequest.getSearchDttm());
+            return ResponseEntity.ok(totalTime);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error calculating total time: " + e.getMessage());
+        }
+    }
+
+
 }
 

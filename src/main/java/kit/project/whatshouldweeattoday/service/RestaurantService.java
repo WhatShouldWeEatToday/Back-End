@@ -165,20 +165,7 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(RuntimeException::new);
         Page<ReviewResponseDTO> reviewList = reviewService.showReviewsByRestaurant(id, Pageable.ofSize(5));
         RestaurantResponseDTO responseDTO = new RestaurantResponseDTO(
-                restaurant.getId(),
-                restaurant.getName(),
-                restaurant.getRestaurantType(),
-                restaurant.getDegree(),
-                restaurant.getAddressRoad(),
-                restaurant.getAddressNumber(),
-                restaurant.getTel(),
-                restaurant.getMenus(),
-                restaurant.getTotalReviews(),
-                restaurant.getTotalTaste(),
-                restaurant.getTotalCost(),
-                restaurant.getTotalKind(),
-                restaurant.getTotalMood(),
-                restaurant.getTotalPark(),
+                restaurant,
                 reviewList
         );
         // Return the populated DTO

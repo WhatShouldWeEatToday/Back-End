@@ -21,11 +21,11 @@ public class RankController {
     private final RankService rankService;
 
     //주간 음식종류별 순위
-    /*@GetMapping("foodType")
+    @GetMapping("foodType")
     public ResponseEntity<WeeklyFoodTypeRankResponseDTO> getTypeRank() {
         WeeklyFoodTypeRankResponseDTO topRestaurants = rankService.getTop5RestaurantsByCount();
         return ResponseEntity.ok(topRestaurants);
-    }*/
+    }
     
     //주간 음식별 순위 -> 채팅방 투표결과 기준
     /*@GetMapping("food")

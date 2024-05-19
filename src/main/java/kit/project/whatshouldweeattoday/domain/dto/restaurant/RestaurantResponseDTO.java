@@ -11,10 +11,16 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.domain.Page;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class RestaurantResponseDTO extends Restaurant {
+public class RestaurantResponseDTO {
+
     private Long id;
     private String name;
     private String restaurantType;
@@ -40,7 +46,7 @@ public class RestaurantResponseDTO extends Restaurant {
     private int count;
     private int rank;
 
-    //음식점 상세보기
+    // 음식점 상세보기
     public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark, Page<ReviewResponseDTO> reviewList) {
         this.id = id;
         this.name = name;
@@ -59,8 +65,7 @@ public class RestaurantResponseDTO extends Restaurant {
         this.reviewList = reviewList;
     }
 
-
-    //리뷰폼 안의 음식점상세
+    // 리뷰폼 안의 음식점 상세
     public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark) {
         this.id = id;
         this.name = name;
@@ -95,12 +100,12 @@ public class RestaurantResponseDTO extends Restaurant {
         this.totalMood = restaurant.getTotalMood();
         this.totalPark = restaurant.getTotalPark();
         this.longitude = restaurant.getLongitude();
-        this.latitude=restaurant.getLatitude();
-        this.distance=restaurant.getDistance();
-        this.pathTime=restaurant.getPathTime();
+        this.latitude = restaurant.getLatitude();
+        this.distance = restaurant.getDistance();
+        this.pathTime = restaurant.getPathTime();
     }
 
-    //주간순위 -> 음식종류만 반환
+    // 주간 순위 -> 음식 종류만 반환
     public RestaurantResponseDTO(Long id, String name, int count, String restaurantType, int rank) {
         this.id = id;
         this.name = name;

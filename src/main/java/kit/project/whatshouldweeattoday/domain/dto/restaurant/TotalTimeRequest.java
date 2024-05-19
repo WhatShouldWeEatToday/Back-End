@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TotalTimeRequest {
+    private String departure;
+    private String destination;
     private String startX;
     private String startY;
     private String endX;

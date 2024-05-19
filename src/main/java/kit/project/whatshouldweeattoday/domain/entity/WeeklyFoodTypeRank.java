@@ -18,7 +18,7 @@ public class WeeklyFoodTypeRank extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FOOD_TYPE_RANK_ID")
     private Long id;
-    private int rank;
+    private int ranks;
     private String foodTypeName;
     private String date; // 한주가 지나면 초기화되어야함
 
@@ -27,7 +27,7 @@ public class WeeklyFoodTypeRank extends BaseTimeEntity{
     private List<RestaurantResponseDTO> foods = new ArrayList<>();
 
     public WeeklyFoodTypeRank(int rank, String date, String foodTypeName) {
-        this.rank = rank;
+        this.ranks = ranks;
         this.date = date;
         this.foodTypeName = foodTypeName;
     }
