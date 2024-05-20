@@ -75,7 +75,7 @@ public class RankService {
         List<FoodResponseDTO> foodResponseDTOS = IntStream.range(0,5)
                 .mapToObj(i ->{
                     Food food = topFoods.get(i);
-                    FoodResponseDTO dto = convertToFoodDto(food,i+1);
+                    FoodResponseDTO dto = convertToFoodDto(food,i+1L);
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -86,7 +86,7 @@ public class RankService {
     }
 
     @Transactional
-    public FoodResponseDTO convertToFoodDto(Food food, int rank) {
+    public FoodResponseDTO convertToFoodDto(Food food, Long rank) {
         return new FoodResponseDTO(
                 food.getId(),
                 food.getFoodName(),
