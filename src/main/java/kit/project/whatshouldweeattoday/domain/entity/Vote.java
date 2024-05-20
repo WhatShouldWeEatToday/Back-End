@@ -1,8 +1,12 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -16,7 +20,18 @@ public class Vote {
     private Long voteCount;
 
     @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY)
-    private Meet meet;
+    private Chat chat;
+
+    @Builder
+    public Vote(String menu) {
+        this.menu = menu;
+    }
+
+    public static Vote createVote(String menu) {
+        return Vote.builder()
+                .menu(menu)
+                .build();
+    }
 
     public void incrementVoteCount() {
         this.voteCount++;

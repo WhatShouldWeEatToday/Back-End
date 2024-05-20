@@ -66,7 +66,7 @@ public class MemberService {
 
     @Transactional
     public void updateMember(MemberUpdateRequestDTO requestDTO, String loginId) throws BadRequestException {
-        Member member = memberRepository.findByLoginId(loginId) //SecurityContextHolder 에 들어있는 loginId 가져옴, TODO : 이거 변경함
+        Member member = memberRepository.findByLoginId(loginId) // SecurityContextHolder 에 들어있는 loginId 가져옴, TODO : 이거 변경함
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 회원입니다."));
 
         requestDTO.nickname().ifPresent(member::updateNickname);
