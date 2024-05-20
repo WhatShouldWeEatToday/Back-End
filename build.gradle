@@ -30,13 +30,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-//    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-
-    /* 파일 수정 시 재시작 하지 않아도 됨 */
-    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    /* webjars */
+    implementation 'org.webjars:webjars-locator-core'
+    implementation 'org.webjars:sockjs-client:1.5.1'
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'org.webjars:bootstrap:5.2.3'
+    implementation 'org.webjars:jquery:3.6.4'
 
     /* jwt */
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -47,28 +52,22 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.13'
     implementation 'com.auth0:java-jwt:3.13.0'
 
-//    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.0' // 웹 소켓의 데이터 통신을 위한 JSON 라이브러리
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-
-    /* webjars */
-//    implementation'org.webjars:jquery'
-//    implementation 'org.webjars:sockjs-client'
-//    implementation 'org.webjars:webjars-locator'
 
     /* Lombok */
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     /* SQL */
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.mysql:mysql-connector-j'
+//    implementation 'org.springframework.boot:spring-boot-starter-redis:3.2.5.RELEASE'
 
     /* Test */
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
     /* JSON */
-    implementation 'org.json:json:20210307'
+    implementation 'org.json:json:20231013'
 
 }
 
