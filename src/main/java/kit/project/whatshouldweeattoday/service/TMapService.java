@@ -3,6 +3,7 @@ package kit.project.whatshouldweeattoday.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathResponseStepInfoDTO;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -370,18 +371,34 @@ public class TMapService {
                         pathResponse.setMode(bestItinerary.path("legs").get(0).path("mode").asText());
                     }
 
-                    // 폴리라인 정보 추출
+                    // 폴리라인 및 단계별 정보 추출
                     List<List<Double>> polyline = new ArrayList<>();
+                    List<PathResponseStepInfoDTO> stepInfos = new ArrayList<>();
                     for (JsonNode leg : bestItinerary.path("legs")) {
                         for (JsonNode step : leg.path("steps")) {
+                            // description과 linestring 추출
+                            String description = step.path("description").asText();
                             String linestring = step.path("linestring").asText();
+
                             for (String point : linestring.split(" ")) {
                                 String[] coords = point.split(",");
                                 polyline.add(Arrays.asList(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])));
                             }
+
+                            PathResponseStepInfoDTO stepInfoDTO = new PathResponseStepInfoDTO();
+                            stepInfoDTO.setDescription(description);
+                            List<Double> coordinates = new ArrayList<>();
+                            for (String coord : linestring.split(" ")) {
+                                String[] parts = coord.split(",");
+                                coordinates.add(Double.parseDouble(parts[0]));
+                                coordinates.add(Double.parseDouble(parts[1]));
+                            }
+                            stepInfoDTO.setCoordinates(coordinates);
+                            stepInfos.add(stepInfoDTO);
                         }
                     }
                     pathResponse.setPolyline(polyline);
+                    pathResponse.setSteps(stepInfos);
 
                     return pathResponse;
                 }
@@ -392,4 +409,5 @@ public class TMapService {
             return null; // 오류 발생 시 null 반환
         }
     }
+
 }
