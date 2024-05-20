@@ -1,10 +1,8 @@
 package kit.project.whatshouldweeattoday.domain.dto.rank;
 
 import kit.project.whatshouldweeattoday.domain.dto.food.FoodResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -17,12 +15,15 @@ public class WeeklyFoodRankResponseDTO {
     private String date;
     private List<FoodResponseDTO> topFoods;
 
+    public WeeklyFoodRankResponseDTO(String date, List<FoodResponseDTO> topFoods) {
+        this.date = date;
+        this.topFoods = topFoods;
+    }
+
     public void setDate(String date) {
         this.date = date;
     }
-
-    public WeeklyFoodRankResponseDTO(String date, List<FoodResponseDTO> topFoods) {
-        this.date = date;
+    public void setTopFood(List<FoodResponseDTO> topFoods) {
         this.topFoods = topFoods;
     }
 }

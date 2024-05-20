@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import kit.project.whatshouldweeattoday.domain.dto.rank.WeeklyFoodRankResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.rank.WeeklyFoodTypeRankResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.service.RankService;
@@ -28,9 +29,9 @@ public class RankController {
     }
     
     //주간 음식별 순위 -> 채팅방 투표결과 기준
-    /*@GetMapping("food")
-    public ResponseEntity<WeeklyFoodRankReponseDTO> getFoodRank() {
-       return null;
+    @GetMapping("food")
+    public ResponseEntity<WeeklyFoodRankResponseDTO> getFoodRank() {
+        WeeklyFoodRankResponseDTO topFoods = rankService.getTop5FoodsByChat();
+       return ResponseEntity.ok(topFoods);
     }
-*/
 }

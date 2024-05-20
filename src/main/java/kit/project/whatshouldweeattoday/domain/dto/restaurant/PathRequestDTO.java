@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TotalTimeRequest {
+public class PathRequestDTO {
     private String departure;
     private String destination;
     private String startX;

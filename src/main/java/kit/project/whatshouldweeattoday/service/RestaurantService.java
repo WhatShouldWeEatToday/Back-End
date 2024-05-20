@@ -287,7 +287,7 @@ public class RestaurantService {
         return personalPaths;
     }
 
-    /* //주간순위 ->음식종류별
+   /* //주간순위 ->음식종류별
     @Transactional
      public List<RestaurantResponseDTO> getTop5RestaurantsTypeByCount() {
          List<Restaurant> topRestaurants = restaurantRepository.findTop5ByCount();
