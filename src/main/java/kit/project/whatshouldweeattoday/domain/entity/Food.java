@@ -16,7 +16,7 @@ public class Food {
     private String foodName;
     private String restaurantType;
     private String imageRoute;
-    private int count = 0; //채팅방에서 나올때마다 count됨
+    private Long count; //채팅방에서 나올때마다 count됨
 
     @OneToOne(mappedBy = "food", fetch = FetchType.LAZY)
     private Meet meet;

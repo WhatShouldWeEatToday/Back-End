@@ -13,8 +13,12 @@ public class Vote {
     @Column(name = "VOTE_ID")
     private Long id;
     private String menu;
-    private int voteCount;
+    private Long voteCount;
 
     @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY)
     private Meet meet;
+
+    public void incrementVoteCount() {
+        this.voteCount++;
+    }
 }
