@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 //@RedisHash
 @Entity
@@ -23,9 +21,6 @@ public class Chat {
 
     private String sender;
 
-    @Column(columnDefinition = "TEXT")
-    private String message;
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime sendDate;
@@ -33,6 +28,10 @@ public class Chat {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
     private ChatRoom room;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "vote_id")
+    private Vote vote;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "meet_id")
@@ -43,25 +42,28 @@ public class Chat {
     private Notice notice;
 
     @Builder
-    public Chat(ChatRoom room, String sender, String message) {
+    public Chat(ChatRoom room, Vote vote, Meet meet, String sender) {
         this.room = room;
+        this.vote = vote;
+        this.meet = meet;
         this.sender = sender;
-        this.message = message;
         this.sendDate = LocalDateTime.now();
     }
 
     /**
      * 채팅 생성
      * @param room 채팅 방
-     * @param sender 보낸이
-     * @param message 내용
+     * @param vote 투표
+     * @param meet 약속
+     * @param sender  보낸 이
      * @return Chat Entity
      */
-    public static Chat createChat(ChatRoom room, String sender, String message) {
+    public static Chat createChat(ChatRoom room, Vote vote, Meet meet, String sender) {
         return Chat.builder()
                 .room(room)
+                .vote(vote)
+                .meet(meet)
                 .sender(sender)
-                .message(message)
                 .build();
     }
 }
