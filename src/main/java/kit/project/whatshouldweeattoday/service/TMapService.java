@@ -366,10 +366,12 @@ public class TMapService {
                     pathResponse.setTotalWalkTime(bestItinerary.path("totalWalkTime").asInt());
                     pathResponse.setTotalFare(bestItinerary.path("fare").path("regular").path("totalFare").asInt());
 
-                    // 이동 수단 종류 추출 (첫 번째 구간의 mode 사용)
-                    if (bestItinerary.path("legs").isArray() && bestItinerary.path("legs").size() > 0) {
-                        pathResponse.setMode(bestItinerary.path("legs").get(0).path("mode").asText());
+                    // 모든 이동 수단 종류 추출
+                    List<String> modes = new ArrayList<>();
+                    for (JsonNode leg : bestItinerary.path("legs")) {
+                        modes.add(leg.path("mode").asText());
                     }
+                    pathResponse.setModes(modes);
 
                     // 폴리라인 및 단계별 정보 추출
                     List<List<Double>> polyline = new ArrayList<>();
@@ -409,5 +411,51 @@ public class TMapService {
             return null; // 오류 발생 시 null 반환
         }
     }
+
+    @Transactional
+    public JsonNode getJsonByTransitRoute(String departure, String destination, int lang, String format, int count, String searchDttm) {
+        System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+        Map<String, Double> depCoordinates = this.getCoordinates(departure);
+        Map<String, Double> destCoordinates = this.getCoordinates(destination);
+
+        System.out.println("출발지 위치 :" + depCoordinates.get("latitude") + " " + depCoordinates.get("longitude") + " 도착지 위치 " + destCoordinates.get("latitude") + " " + destCoordinates.get("longitude"));
+        String startY = Double.toString(depCoordinates.get("latitude"));
+        String startX = Double.toString(depCoordinates.get("longitude"));
+        String endY = Double.toString(destCoordinates.get("latitude"));
+        String endX = Double.toString(destCoordinates.get("longitude"));
+
+        try {
+            String jsonBody = String.format(
+                    "{\"startX\":\"%s\",\"startY\":\"%s\",\"endX\":\"%s\",\"endY\":\"%s\",\"lang\":%d,\"format\":\"%s\",\"count\":%d,\"searchDttm\":\"%s\"}",
+                    startX, startY, endX, endY, lang, format, count, searchDttm);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://apis.openapi.sk.com/transit/routes"))
+                    .header("accept", "application/json")
+                    .header("appKey", tmapKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+
+            System.out.println("Url : " + request.uri().toString());
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
+            System.out.println("body : " + body);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(body);
+
+            if (rootNode.has("error")) {
+                System.out.println("에러입니다");
+                return rootNode; // 오류가 있는 경우 오류 응답 반환
+            }
+
+            return rootNode; // JSON 응답을 그대로 반환
+
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Failed to calculate transit time: " + e.getMessage());
+            return null; // 오류 발생 시 null 반환
+        }
+    }
+
 
 }
