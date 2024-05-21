@@ -21,5 +21,8 @@ public class PathResponseDTO {
     private String mode;
     private List<List<Double>> polyline;
     private List<PathResponseStepInfoDTO> steps;
+    private List<String> modes;
+
 }
+
 

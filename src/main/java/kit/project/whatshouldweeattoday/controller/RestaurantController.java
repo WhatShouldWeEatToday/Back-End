@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathRequestDTO;
@@ -162,7 +163,7 @@ public class RestaurantController {
     }
 
     //주소받아서 음식점경로 알아오기
-    @PostMapping("/search/totalPath")
+   /* @PostMapping("/search/totalPath")
     public ResponseEntity<PathResponseDTO> getTransitRoute(
             @RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
@@ -170,6 +171,21 @@ public class RestaurantController {
         String searchDttm = totalTimeRequest.getSearchDttm();
 
         PathResponseDTO routeInfo = tmapService.getTransitRoute(departure, destination, 0, "json", 1, searchDttm);
+
+        if (routeInfo == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        return ResponseEntity.ok(routeInfo);
+    }
+*/
+    @PostMapping("/search/totalPath")
+    public ResponseEntity<JsonNode> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
+        String departure = totalTimeRequest.getDeparture();
+        String destination = totalTimeRequest.getDestination();
+        String searchDttm = totalTimeRequest.getSearchDttm();
+
+        JsonNode routeInfo = tmapService.getJsonByTransitRoute(departure, destination, 0, "json", 1, searchDttm);
 
         if (routeInfo == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
