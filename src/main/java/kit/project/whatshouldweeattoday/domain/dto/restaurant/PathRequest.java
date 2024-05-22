@@ -7,7 +7,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PathResponseStepInfoDTO {
-    private String description;
-    private List<Double> coordinates;
+public class PathRequest {
+    private String keyword;
+    private List<String> startAddress;
+    private String searchDttm;
 }

@@ -2,16 +2,14 @@ package kit.project.whatshouldweeattoday.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathResponseStepInfoDTO;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.io.IOException;
 import java.net.URI;
@@ -222,7 +220,7 @@ public class TMapService {
             System.out.println("Url : " + request.uri().toString());
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            System.out.println("body : " + body);
+          //  System.out.println("body : " + body);
 
             if (body.contains("error")) {
                 System.out.println("에러입니다");
@@ -237,7 +235,7 @@ public class TMapService {
             if (itinerariesNode.isArray() && itinerariesNode.size() > 0) {
                 JsonNode firstItinerary = itinerariesNode.get(0);
                 JsonNode totalTimeInfo = firstItinerary.path("totalTime");
-                System.out.println("총 소요시간은 : " + totalTimeInfo.toString());
+               // System.out.println("총 소요시간은 : " + totalTimeInfo.toString());
                 return totalTimeInfo.asInt();
             }
             return 0;
@@ -332,6 +330,8 @@ public class TMapService {
             String body = response.body();
             System.out.println("body : " + body);
 
+            //body를 받아오는 시점
+
             if (body.contains("error")) {
                 System.out.println("에러입니다");
                 JsonNode rootNode = mapper.readTree(body);
@@ -341,70 +341,17 @@ public class TMapService {
             }
 
             JsonNode rootNode = mapper.readTree(body);
-            JsonNode itinerariesNode = rootNode.path("metaData").path("plan").path("itineraries");
-            if (itinerariesNode.isArray() && itinerariesNode.size() > 0) {
-                // totalTime이 가장 적은 경로 찾기
-                JsonNode bestItinerary = null;
-                int minTotalTime = Integer.MAX_VALUE;
+            JsonNode metaData = rootNode.path("metaData");
+            JsonNode requestParameter = metaData.path("requestParameters");
+            JsonNode itinerariesNode = metaData.path("plan").path("itineraries");// List
+            JsonNode legs = itinerariesNode.get(0).path("legs"); //List
 
-                for (JsonNode itinerary : itinerariesNode) {
-                    int totalTime = itinerary.path("totalTime").asInt();
-                    if (totalTime < minTotalTime) {
-                        minTotalTime = totalTime;
-                        bestItinerary = itinerary;
-                    }
-                }
-
-                if (bestItinerary != null) {
-                    PathResponseDTO pathResponse = new PathResponseDTO();
-                    pathResponse.setDeparture(departure);
-                    pathResponse.setDestination(destination);
-                    pathResponse.setTotalTime(bestItinerary.path("totalTime").asInt());
-                    pathResponse.setTransferCount(bestItinerary.path("transferCount").asInt());
-                    pathResponse.setTotalWalkDistance(bestItinerary.path("totalWalkDistance").asInt());
-                    pathResponse.setTotalDistance(bestItinerary.path("totalDistance").asInt());
-                    pathResponse.setTotalWalkTime(bestItinerary.path("totalWalkTime").asInt());
-                    pathResponse.setTotalFare(bestItinerary.path("fare").path("regular").path("totalFare").asInt());
-
-                    // 모든 이동 수단 종류 추출
-                    List<String> modes = new ArrayList<>();
-                    for (JsonNode leg : bestItinerary.path("legs")) {
-                        modes.add(leg.path("mode").asText());
-                    }
-                    pathResponse.setModes(modes);
-
-                    // 폴리라인 및 단계별 정보 추출
-                    List<List<Double>> polyline = new ArrayList<>();
-                    List<PathResponseStepInfoDTO> stepInfos = new ArrayList<>();
-                    for (JsonNode leg : bestItinerary.path("legs")) {
-                        for (JsonNode step : leg.path("steps")) {
-                            // description과 linestring 추출
-                            String description = step.path("description").asText();
-                            String linestring = step.path("linestring").asText();
-
-                            for (String point : linestring.split(" ")) {
-                                String[] coords = point.split(",");
-                                polyline.add(Arrays.asList(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])));
-                            }
-
-                            PathResponseStepInfoDTO stepInfoDTO = new PathResponseStepInfoDTO();
-                            stepInfoDTO.setDescription(description);
-                            List<Double> coordinates = new ArrayList<>();
-                            for (String coord : linestring.split(" ")) {
-                                String[] parts = coord.split(",");
-                                coordinates.add(Double.parseDouble(parts[0]));
-                                coordinates.add(Double.parseDouble(parts[1]));
-                            }
-                            stepInfoDTO.setCoordinates(coordinates);
-                            stepInfos.add(stepInfoDTO);
-                        }
-                    }
-                    pathResponse.setPolyline(polyline);
-                    pathResponse.setSteps(stepInfos);
-
-                    return pathResponse;
-                }
-            }
+            //DTO를 구성해 -> 들어갈 정보들
+            //requestParameters.path("expressBusCount") -> requestParameters는 앞의 예시와 같이
+            //itinerariesNode의 경우 .get(0).path("fare").path("regular").path("totalPrice");
+            //itinerariesNode의 totalTime의 경우 .get(0).path("totalTime);
+            //legs의 경우에는 여러 index가 있어서 for문으로 전부 돌아서 원하는 정보 위와 같이 넣어주면 될 거 같음
+            //TODO 구조 잘 보고 넣을 것!!!!
             return null;
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to calculate transit time: " + e.getMessage());
@@ -457,5 +404,51 @@ public class TMapService {
         }
     }
 
+    @Transactional
+    public PathResponseDTO getTransitRoute2(String departure, String destination, int lang, String format, int count, String searchDttm) {
+        System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+        Map<String, Double> depCoordinates = this.getCoordinates(departure);
+        Map<String, Double> destCoordinates = this.getCoordinates(destination);
 
+        System.out.println("출발지 위치 :" + depCoordinates.get("latitude") + " " + depCoordinates.get("longitude") + " 도착지 위치 " + destCoordinates.get("latitude") + " " + destCoordinates.get("longitude"));
+        String startY = Double.toString(depCoordinates.get("latitude"));
+        String startX = Double.toString(depCoordinates.get("longitude"));
+        String endY = Double.toString(destCoordinates.get("latitude"));
+        String endX = Double.toString(destCoordinates.get("longitude"));
+
+        try {
+            String jsonBody = String.format(
+                    "{\"startX\":\"%s\",\"startY\":\"%s\",\"endX\":\"%s\",\"endY\":\"%s\",\"lang\":%d,\"format\":\"%s\",\"count\":%d,\"searchDttm\":\"%s\"}",
+                    startX, startY, endX, endY, lang, format, count, searchDttm);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://apis.openapi.sk.com/transit/routes"))
+                    .header("accept", "application/json")
+                    .header("appKey", tmapKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+
+            System.out.println("Url : " + request.uri().toString());
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
+            System.out.println("body : " + body);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(body);
+
+            if (rootNode.has("error")) {
+                System.out.println("에러입니다");
+                return null; // 오류가 있는 경우 null 반환
+            }
+
+            // JSON 응답을 PathResponseDTO 객체로 매핑
+            PathResponseDTO pathResponseDTO = mapper.treeToValue(rootNode, PathResponseDTO.class);
+            return pathResponseDTO;
+
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Failed to calculate transit time: " + e.getMessage());
+            return null; // 오류 발생 시 null 반환
+        }
+    }
 }
+

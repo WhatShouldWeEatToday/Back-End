@@ -36,10 +36,10 @@ public class Restaurant {
     private Double latitude;
     private Double longitude;
 
-    //null값을 허용하기 위해
+    // null값을 허용하기 위해
     private Integer pathTime;
     private Double distance;
-    private int count;//음식종류별 순위
+    private int count; // 음식종류별 순위
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bookmark_id")
@@ -49,19 +49,31 @@ public class Restaurant {
     @JsonManagedReference
     private List<Review> reviewList = new ArrayList<>();
 
-
     public void setCoordinates(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
-        System.out.println("setCoordicates 의 경도 위도 "+ longitude+" "+latitude );
+        System.out.println("setCoordinates의 경도 위도 " + longitude + " " + latitude);
     }
-    public void caculateDegree(Double newDegree) {
+
+    public void calculateDegree(Double newDegree) {
         if (totalReviews == 0) {
             degree = newDegree;
         } else {
             degree = ((degree * totalReviews) + newDegree) / (totalReviews + 1);
         }
-        //소수첫재짜리까지
+        // 소수 첫째 자리까지
         degree = Math.round(degree * 10) / 10.0;
+    }
+
+    @Override
+    public String toString() {
+        return "Restaurant{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", degree=" + degree +
+                ", addressRoad='" + addressRoad + '\'' +
+                ", addressNumber='" + addressNumber + '\'' +
+                ", pathTime=" + pathTime +
+                '}';
     }
 }

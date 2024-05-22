@@ -44,7 +44,7 @@ public class ReviewService {
         review.setRestaurant(restaurant);
         reviewRepository.save(review);
         updateRestaurantScores(restaurant, review, true);
-        restaurant.caculateDegree(review.getStars());
+        restaurant.calculateDegree(review.getStars());
     }
 
     private void updateRestaurantScores(Restaurant restaurant, Review review, boolean isAdding) {
@@ -98,7 +98,7 @@ public class ReviewService {
         Restaurant restaurant = review.getRestaurant();
         updateRestaurantScoresForReviewUpdate(restaurant, review, requestDTO);
         review.updateReview(requestDTO.getCost(), requestDTO.getPark(), requestDTO.getMood(), requestDTO.getKind(), requestDTO.getTaste(), requestDTO.getStars());
-        restaurant.caculateDegree(review.getStars());
+        restaurant.calculateDegree(review.getStars());
         return new ReviewResponseDTO(review);
     }
 
@@ -127,7 +127,7 @@ public class ReviewService {
         Long restaurantId = review.getRestaurant().getId();
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RuntimeException::new);
         restaurant.setTotalReviews(restaurant.getTotalReviews() - 1);
-        restaurant.caculateDegree(-review.getStars());
+        restaurant.calculateDegree(-review.getStars());
         updateRestaurantScores(restaurant, review, false);
         reviewRepository.delete(review);
         return new MsgResponseDTO("리뷰 삭제 완료", 200);
