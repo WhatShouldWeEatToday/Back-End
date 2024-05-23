@@ -202,7 +202,7 @@ public class TMapService {
     //출발지 및 도착지 위도경도 필요
     @Transactional
     public int totalTime(String startX, String startY, String endX, String endY, int lang, String format, int count, String searchDttm) {
-        System.out.println("경로 반환 함수 출발지 " + startX + " " + startY + " 도착지 정보 " + endX + " " + endY);
+        //System.out.println("경로 반환 함수 출발지 " + startX + " " + startY + " 도착지 정보 " + endX + " " + endY);
         ObjectMapper mapper = new ObjectMapper();
 
         try {
@@ -217,7 +217,7 @@ public class TMapService {
                     .method("POST", HttpRequest.BodyPublishers.ofString(jsonBody)) // 변경된 부분
                     .build();
 
-            System.out.println("Url : " + request.uri().toString());
+           // System.out.println("Url : " + request.uri().toString());
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
           //  System.out.println("body : " + body);
@@ -406,11 +406,11 @@ public class TMapService {
 
     @Transactional
     public PathResponseDTO getTransitRoute2(String departure, String destination, int lang, String format, int count, String searchDttm) {
-        System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+       // System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
         Map<String, Double> destCoordinates = this.getCoordinates(destination);
 
-        System.out.println("출발지 위치 :" + depCoordinates.get("latitude") + " " + depCoordinates.get("longitude") + " 도착지 위치 " + destCoordinates.get("latitude") + " " + destCoordinates.get("longitude"));
+      //  System.out.println("출발지 위치 :" + depCoordinates.get("latitude") + " " + depCoordinates.get("longitude") + " 도착지 위치 " + destCoordinates.get("latitude") + " " + destCoordinates.get("longitude"));
         String startY = Double.toString(depCoordinates.get("latitude"));
         String startX = Double.toString(depCoordinates.get("longitude"));
         String endY = Double.toString(destCoordinates.get("latitude"));
@@ -428,10 +428,10 @@ public class TMapService {
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
-            System.out.println("Url : " + request.uri().toString());
+         //   System.out.println("Url : " + request.uri().toString());
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            System.out.println("body : " + body);
+          //  System.out.println("body : " + body);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(body);

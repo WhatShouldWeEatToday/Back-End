@@ -197,96 +197,30 @@ public class RestaurantService {
         return responseDTO;
     }
 
-    //개인의 음식점 경로 배열
-    @Transactional
-    public List<Restaurant> pathList(double startX, double startY, String searchDttm) {
-        //1. 사용자의 위치정보를 주소로 반환후 XX동 XX까지 추출
-        String userAddress = tmapService.getAddressByCoordinates2(startX, startY);
-
-        //2. 주소로 음식점 검색함
-        List<Restaurant> restaurants = restaurantRepository.findByOnlyAddress(userAddress);
-
-        //3. 리뷰평점순으로 20개 추출(1차 필터링)
-        restaurants = sortByDegree(restaurants);
-
-        //4. 경로구하기
-        restaurants = getPath(startX, startY, restaurants, searchDttm, 0);
-
-        //5. 경로순으로 정렬
-        restaurants = sortByPath(restaurants);
-
-        return restaurants;
+    //-> restaurant -> restaurnatDTO (reviewList를 추출하기 위한 용도)
+    @Transactional(readOnly = true)
+    public RestaurantResponseDTO getRestaurant(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+        return toDto(restaurant);
     }
 
-    //리뷰평점순으로 정렬
-    @Transactional
-    public List<Restaurant> sortByDegree(List<Restaurant> restaurants) {
+    @Transactional(readOnly = true)
+    public List<RestaurantResponseDTO> getRestaurantsByKeywordAndAddress(String keyword, String address) {
+        List<Restaurant> restaurants = restaurantRepository.findByKeywordAndAddress(keyword, address);
         return restaurants.stream()
-                .sorted((r1, r2) -> Double.compare(r2.getDegree(), r1.getDegree()))
-                .limit(20)
+                .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
-    //경로시간 구하기
-    @Transactional
-    public List<Restaurant> getPath(double startX, double startY, List<Restaurant> restaurants, String searchDttm, int start) {
-        for (int i = start; i < restaurants.size(); i++) {
-            restaurants.get(i).setPathTime(tmapService.totalTime(Double.toString(startX), Double.toString(startY),
-                    Double.toString(restaurants.get(i).getLongitude()), Double.toString(restaurants.get(i).getLatitude()), 0, "json", 10, searchDttm));
-        }
-        return restaurants;
+    private RestaurantResponseDTO toDto(Restaurant restaurant) {
+        Page<ReviewResponseDTO> reviewPage = new PageImpl<>(
+                restaurant.getReviewList().stream()
+                        .map(ReviewResponseDTO::new)
+                        .collect(Collectors.toList())
+        );
+        return new RestaurantResponseDTO(restaurant, reviewPage);
     }
-
-    //거리순으로 정렬
-    @Transactional
-    public List<Restaurant> sortByPath(List<Restaurant> restaurants) {
-        return restaurants.stream()
-                .sorted((r1, r2) -> Double.compare(r2.getPathTime(), r1.getPathTime()))
-                .limit(5)
-                .collect(Collectors.toList());
-    }
-
-    //가중치 배열을 만들기 위한 로직(이미 합친 배열을 가지고왔다는 전제), 사람마다 해줘야함
-    @Transactional
-    public void getWeightInfo(double startX, double startY, List<Restaurant> mergedList, String searchDttm) {
-
-        //1. 합친배열에서 경로시간을 받아온다
-        mergedList = getPath(startX, startY, mergedList, searchDttm, 5);
-
-        //2. 경로시간대로 다시 정렬
-        mergedList = sortByPath(mergedList);
-
-        //3. 가중치 배열이랑 비교하기 쉽게 PersonalPath 배열로 변환
-        List<PersonalPath> personalPaths = getPersonal(mergedList, 0);
-
-    }
-
-    //상대방 배열과 내 배열 합침 == 채팅 인원수대로 for 돌려야함
-    @Transactional
-    public List<Restaurant> mergeList(List<Restaurant> restaurants1, List<Restaurant> restaurants2) {
-        List<Restaurant> mergedList = new ArrayList<>(restaurants1);
-        mergedList.addAll(restaurants2);
-        return mergedList;
-    }
-
-    //이미 경로순으로 정렬된 restaurants 배열이 들어와야함
-    @Transactional
-    public List<PersonalPath> getWeight(List<Restaurant> restaurants) {
-        return null;
-    }
-
-    //가중치 배열 만들기(모든 개인별 배열 넣어줌),
-    public List<PersonalPath> getPersonal(List<Restaurant> restaurants, int start) {
-        List<PersonalPath> personalPaths = new ArrayList<>();
-        for (int i = start; i < restaurants.size() + start; i++) {
-            personalPaths.get(i).setRestaurant(restaurants.get(i - start));
-            personalPaths.get(i).setTotalTime(restaurants.get(i - start).getPathTime());
-            personalPaths.get(i).setSerialNum(serialNum);
-            serialNum++;
-        }
-        return personalPaths;
-    }
-
    /* //주간순위 ->음식종류별
     @Transactional
      public List<RestaurantResponseDTO> getTop5RestaurantsTypeByCount() {
