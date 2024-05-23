@@ -10,5 +10,4 @@ import java.util.List;
 public class PathRequest {
     private String keyword;
     private List<String> startAddress;
-    private String searchDttm;
 }

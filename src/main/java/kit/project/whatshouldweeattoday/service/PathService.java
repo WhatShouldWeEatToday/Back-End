@@ -4,9 +4,13 @@ import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,8 +25,10 @@ public class PathService {
 
     // num = 채팅방사람들 수, startAddres = 채팅방 사람들의 출발지 list
     @Transactional
-    public List<PersonalPath> getWeight(String keyword, List<String> startAddress, String searchDttm) {
+    public List<PersonalPath> getWeight(String keyword, List<String> startAddress) {
         List<PersonalPath> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String searchDttm = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
         for (String targetAddress : startAddress) { //allPathList를 채워줌
             List<PersonalPath> pathList = personalRestaurant(keyword, targetAddress, searchDttm);
             pathList = setSerialNumForArray(pathList);

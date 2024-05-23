@@ -94,6 +94,22 @@ public class MemberController {
         return jwtToken;
     }
 
+    @GetMapping("/api/memberInfo")
+    public ResponseEntity<MemberResponseDTO> getMemberInfo() throws BadRequestException {
+        String loginId = SecurityUtil.getLoginId();
+        Member findMember = memberService.findByLoginId(loginId).orElseThrow(() -> new BadRequestException("존재하지 않는 사용자입니다."));
+        MemberResponseDTO memberResponseDTO = MemberResponseDTO.builder()
+                .id(findMember.getId())
+                .loginId(findMember.getLoginId())
+                .loginPw(findMember.getLoginPw())
+                .nickname(findMember.getNickname())
+                .gender(findMember.getGender())
+                .age(findMember.getAge())
+                .build();
+
+        return ResponseEntity.ok(memberResponseDTO);
+    }
+
     @PostConstruct
     public void initData() throws BadRequestException {
        SignupRequestDTO member1 = SignupRequestDTO.builder()
@@ -117,22 +133,4 @@ public class MemberController {
        memberService.createMember(member1);
        memberService.createMember(member2);
    }
-
-}
-
-    @GetMapping("/api/memberInfo")
-    public ResponseEntity<MemberResponseDTO> getMemberInfo() throws BadRequestException {
-        String loginId = SecurityUtil.getLoginId();
-        Member findMember = memberService.findByLoginId(loginId).orElseThrow(() -> new BadRequestException("존재하지 않는 사용자입니다."));
-        MemberResponseDTO memberResponseDTO = MemberResponseDTO.builder()
-                .id(findMember.getId())
-                .loginId(findMember.getLoginId())
-                .loginPw(findMember.getLoginPw())
-                .nickname(findMember.getNickname())
-                .gender(findMember.getGender())
-                .age(findMember.getAge())
-                .build();
-
-        return ResponseEntity.ok(memberResponseDTO);
-    }
 }
