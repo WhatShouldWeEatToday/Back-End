@@ -28,6 +28,11 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
+    /**
+     * 채팅방 친구 초대
+     * @param roomId
+     * @param inviteRequestDTO
+     */
     @MessageMapping("/chat/invite/{roomId}")
     @SendTo("/topic/room/{roomId}")
     public void inviteFriends(@DestinationVariable("roomId") Long roomId,
@@ -56,11 +61,11 @@ public class ChatRoomController {
      * 채팅방 등록
      * @param chatRoom
      */
-    @PostMapping("/room")
-    public String createRoom(ChatRoomDTO chatRoom) {
-        chatRoomService.createChatRoom(chatRoom.getName());
-        return "redirect:/roomList";
-    }
+//    @PostMapping("/room")
+//    public String createRoom(ChatRoomDTO chatRoom) {
+//        chatRoomService.createChatRoom(chatRoom.getName());
+//        return "redirect:/roomList";
+//    }
 
     /**
      * 채팅방 리스트 보기
@@ -79,34 +84,4 @@ public class ChatRoomController {
     public String roomForm() {
         return "chat/roomForm";
     }
-//    /**
-//     * 채팅방 참여하기
-//     * @param roomId 채팅방 id
-//     */
-//    @GetMapping("/{roomId}")
-//    public String joinRoom(@PathVariable("roomId") Long roomId, Model model) {
-//        List<Chat> chatList = chatService.findAllChatByRoomId(roomId);
-//
-//        model.addAttribute("roomId", roomId);
-//        model.addAttribute("chatList", chatList);
-//        return "chat/room";
-//    }
-//
-//    /**
-//     * 채팅방 리스트 보기
-//     */
-//    @GetMapping("/roomList")
-//    public String roomList(Model model) {
-//        List<ChatRoom> chatRoomList = chatService.findAllChatRoom();
-//        model.addAttribute("chatRoomList", chatRoomList);
-//        return "chat/roomList";
-//    }
-//
-//    /**
-//     * html 띄우기
-//     */
-//    @GetMapping("/roomForm")
-//    public String roomForm() {
-//        return "chat/roomForm";
-//    }
 }

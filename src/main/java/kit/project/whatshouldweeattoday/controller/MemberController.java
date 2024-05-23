@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.member.MemberResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.login.LoginRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateRequestDTO;
@@ -116,4 +117,20 @@ public class MemberController {
        memberService.createMember(member1);
        memberService.createMember(member2);
    }
+
+    @GetMapping("/api/memberInfo")
+    public ResponseEntity<MemberResponseDTO> getMemberInfo() throws BadRequestException {
+        String loginId = SecurityUtil.getLoginId();
+        Member findMember = memberService.findByLoginId(loginId).orElseThrow(() -> new BadRequestException("존재하지 않는 사용자입니다."));
+        MemberResponseDTO memberResponseDTO = MemberResponseDTO.builder()
+                .id(findMember.getId())
+                .loginId(findMember.getLoginId())
+                .loginPw(findMember.getLoginPw())
+                .nickname(findMember.getNickname())
+                .gender(findMember.getGender())
+                .age(findMember.getAge())
+                .build();
+
+        return ResponseEntity.ok(memberResponseDTO);
+    }
 }
