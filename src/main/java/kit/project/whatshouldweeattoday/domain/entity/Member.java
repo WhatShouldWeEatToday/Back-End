@@ -6,7 +6,9 @@ import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -52,6 +54,9 @@ public class Member {
     /* 회원 탈퇴 => 친구, 북마크, 리뷰 모두 삭제 */
     @OneToMany(mappedBy = "member")
     private List<Friendship> friendshipList = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "members")
+    private Set<ChatRoom> chatRooms = new HashSet<>();
 
     @OneToMany(mappedBy = "member")
     private List<Bookmark> bookmarkList = new ArrayList<>();
