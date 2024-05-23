@@ -26,30 +26,6 @@ public class ChatService {
     private final MeetRepository meetRepository;
 
     /**
-     * 채팅방 생성
-     * @param name 방 이름
-     */
-    public ChatRoom createChatRoom(String name) {
-        return chatRoomRepository.save(ChatRoom.createRoom(name));
-    }
-
-    /**
-     * 모든 채팅방 찾기
-     */
-    public List<ChatRoom> findAllChatRoom() {
-        return chatRoomRepository.findAll();
-    }
-
-
-    /**
-     * 채팅방의 채팅 내용 불러오기
-     * @param roomId 채팅방 id
-     */
-    public List<Chat> findAllChatByRoomId(Long roomId) {
-        return chatRepository.findAllByRoomId(roomId);
-    }
-
-    /**
      * 채팅에서 투표 생성
      * @param roomId 채팅방 id
      * @param menu 메뉴 이름
@@ -79,7 +55,8 @@ public class ChatService {
      */
     public Chat createMeet(Long roomId, String meetLocate, String meetMenu, Date meetTime) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
-        Meet meet = meetRepository.save(Meet.createMeet(meetLocate, meetMenu, meetTime));
+        Meet meet = Meet.createMeet(meetLocate, meetMenu, meetTime);
+        meet = meetRepository.save(meet);
         return chatRepository.save(Chat.createChat(chatRoom, null, meet, SecurityUtil.getLoginId()));
     }
 

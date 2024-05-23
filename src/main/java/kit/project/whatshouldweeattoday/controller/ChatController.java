@@ -1,8 +1,6 @@
 package kit.project.whatshouldweeattoday.controller;
 
-import kit.project.whatshouldweeattoday.domain.dto.chat.ChatMessage;
-import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.chat.VoteChatResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.chat.*;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
@@ -10,16 +8,38 @@ import kit.project.whatshouldweeattoday.domain.entity.Meet;
 import kit.project.whatshouldweeattoday.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.*;
 import org.springframework.stereotype.Controller;
+
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
+
+    /**
+     * 채팅 메시지 전송
+     * @param chatRoomMessage
+     */
+    @MessageMapping("/chat.sendMessage")
+    @SendTo("/topic/public")
+    public ChatRoomMessage sendMessage(ChatRoomMessage chatRoomMessage) {
+        return chatRoomMessage;
+    }
+
+    /**
+     * 친구 초대
+     * @param chatRoomMessage
+     * @return
+     */
+    @MessageMapping("/chat.addUser")
+    @SendTo("/topic/public")
+    public ChatRoomMessage addUser(ChatRoomMessage chatRoomMessage) {
+        chatRoomMessage.setContent(chatRoomMessage.getUserId() + " joined");
+        return chatRoomMessage;
+    }
 
     /**
      * 채팅방 내 투표 생성

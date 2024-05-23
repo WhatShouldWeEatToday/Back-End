@@ -1,21 +1,18 @@
 package kit.project.whatshouldweeattoday.domain.dto.chat;
 
+import kit.project.whatshouldweeattoday.domain.type.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatMessage {
+public class ChatRoomMessage {
 
-    private Long roomId;
-    private String sender;
-    private String senderEmail;
-    private String message;
-    private LocalDateTime sendDate;
+    private MessageType messageType;
+    private Long userId;
+    private String content;
 }
