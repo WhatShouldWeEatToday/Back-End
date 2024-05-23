@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 @Setter
 @NoArgsConstructor
 public class RestaurantResponseDTO {
-
     private Long id;
     private String name;
     private String restaurantType;

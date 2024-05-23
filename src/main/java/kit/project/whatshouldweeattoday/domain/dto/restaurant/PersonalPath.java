@@ -7,15 +7,26 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class PersonalPath {
-    private Restaurant restaurant; // 음식점 id, 음식점 평점, 음식점 이름, 음식점 주소
-    private int totalTime; // 소요시간
-    private int serialNum; // 일련번호
-    private int weight; // 가중치
+    private Restaurant restaurant;
+    private Integer totalTime;
+    private Integer serialNum;
+    private Integer weight = 0; //가중치
 
-    public PersonalPath(Restaurant restaurant, int totalTime, int serialNum){
+    public PersonalPath(Restaurant restaurant, Integer totalTime, Integer serialNum) {
         this.restaurant = restaurant;
         this.totalTime = totalTime;
         this.serialNum = serialNum;
+    }
+
+    @Override
+    public String toString() {
+        return "PersonalPath{" +
+                "restaurant=" + restaurant +
+                ", totalTime=" + totalTime +
+                ", serialNum=" + serialNum +
+                ", weight=" + weight +
+                '}';
     }
 }

@@ -10,12 +10,5 @@ import lombok.Setter;
 public class PathRequestDTO {
     private String departure;
     private String destination;
-    private String startX;
-    private String startY;
-    private String endX;
-    private String endY;
-    private int lang;
-    private String format;
-    private int count;
     private String searchDttm; //출발예정시각
 }

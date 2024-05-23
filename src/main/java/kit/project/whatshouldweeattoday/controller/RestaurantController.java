@@ -1,9 +1,8 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.PathRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.*;
+import kit.project.whatshouldweeattoday.service.PathService;
 import kit.project.whatshouldweeattoday.service.RestaurantService;
 import kit.project.whatshouldweeattoday.service.TMapService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/restaurant")
@@ -23,6 +24,7 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final TMapService tmapService;
+    private final PathService pathService;
 
     //맛집 검색
     @GetMapping("/search")
@@ -150,7 +152,7 @@ public class RestaurantController {
 
 
     //음식점 경로 시간 알아보기
-    @PostMapping("/search/totalTime")
+    /*@PostMapping("/search/totalTime")
     public ResponseEntity<?> totalTime(
             @RequestBody PathRequestDTO totalTimeRequest) {
 
@@ -160,17 +162,17 @@ public class RestaurantController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error calculating total time: " + e.getMessage());
         }
-    }
+    }*/
 
     //주소받아서 음식점경로 알아오기
-   /* @PostMapping("/search/totalPath")
-    public ResponseEntity<PathResponseDTO> getTransitRoute(
+    @PostMapping("/search/totalPath2")
+    public ResponseEntity<PathResponseDTO> getTransitRoute2(
             @RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
         String destination = totalTimeRequest.getDestination();
         String searchDttm = totalTimeRequest.getSearchDttm();
 
-        PathResponseDTO routeInfo = tmapService.getTransitRoute(departure, destination, 0, "json", 1, searchDttm);
+        PathResponseDTO routeInfo = tmapService.getTransitRoute2(departure, destination, 0, "json", 1, searchDttm);
 
         if (routeInfo == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -178,20 +180,26 @@ public class RestaurantController {
 
         return ResponseEntity.ok(routeInfo);
     }
-*/
-    @PostMapping("/search/totalPath")
+
+   @PostMapping("/search/totalPath")
     public ResponseEntity<JsonNode> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
-        String destination = totalTimeRequest.getDestination();
-        String searchDttm = totalTimeRequest.getSearchDttm();
+       String destination = totalTimeRequest.getDestination();
+       String searchDttm = totalTimeRequest.getSearchDttm();
 
         JsonNode routeInfo = tmapService.getJsonByTransitRoute(departure, destination, 0, "json", 1, searchDttm);
 
         if (routeInfo == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
         return ResponseEntity.ok(routeInfo);
+   }
+
+    @PostMapping("/search/showArray")
+    public ResponseEntity<List<PersonalPath>> getWeightInfo(@RequestBody PathRequest request) {
+        List<PersonalPath> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress(), request.getSearchDttm());
+        return ResponseEntity.ok(personalPathList);
     }
 }
 

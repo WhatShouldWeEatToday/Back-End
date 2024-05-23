@@ -94,7 +94,7 @@ public class MemberController {
         return jwtToken;
     }
 
-  @PostConstruct
+    @PostConstruct
     public void initData() throws BadRequestException {
        SignupRequestDTO member1 = SignupRequestDTO.builder()
                .loginId("hyun3478")
@@ -117,6 +117,8 @@ public class MemberController {
        memberService.createMember(member1);
        memberService.createMember(member2);
    }
+
+}
 
     @GetMapping("/api/memberInfo")
     public ResponseEntity<MemberResponseDTO> getMemberInfo() throws BadRequestException {

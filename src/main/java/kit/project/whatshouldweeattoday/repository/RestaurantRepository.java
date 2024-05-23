@@ -72,4 +72,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r FROM Restaurant r ORDER BY r.count DESC")
     List<Restaurant> findTop5ByCount();
 
+    //검색어에 맞는 거 추출
+    @Query("SELECT r FROM Restaurant r WHERE r.name LIKE CONCAT('%', :keyword, '%') OR r.menus LIKE CONCAT('%', :keyword, '%')")
+    List<Restaurant> findByKeyword(@Param("keyword") String keyword);
+
+    @Query("SELECT r FROM Restaurant r WHERE r.addressNumber LIKE CONCAT('%', :address, '%') AND (r.name LIKE CONCAT('%', :keyword, '%') OR r.menus LIKE CONCAT('%', :keyword, '%'))")
+    List<Restaurant> findByKeywordAndAddress(@Param("keyword") String keyword,@Param("address") String address);
+
 }
