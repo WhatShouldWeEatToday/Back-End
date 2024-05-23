@@ -198,7 +198,7 @@ public class RestaurantController {
 
     @PostMapping("/search/showArray")
     public ResponseEntity<List<PersonalPath>> getWeightInfo(@RequestBody PathRequest request) {
-        List<PersonalPath> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress(), request.getSearchDttm());
+        List<PersonalPath> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress());
         return ResponseEntity.ok(personalPathList);
     }
 }
