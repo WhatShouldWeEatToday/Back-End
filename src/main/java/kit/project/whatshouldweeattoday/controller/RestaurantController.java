@@ -181,6 +181,7 @@ public class RestaurantController {
         return ResponseEntity.ok(routeInfo);
     }
 
+    //주소받아서 음식점경로를 json으로 반환
    @PostMapping("/search/totalPath")
     public ResponseEntity<JsonNode> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
@@ -196,10 +197,26 @@ public class RestaurantController {
         return ResponseEntity.ok(routeInfo);
    }
 
+   //채팅방 단체최적경로
     @PostMapping("/search/showArray")
     public ResponseEntity<List<PersonalPath>> getWeightInfo(@RequestBody PathRequest request) {
         List<PersonalPath> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress());
         return ResponseEntity.ok(personalPathList);
+    }
+
+    //보행자 경로
+    @PostMapping("/search/walkPath")
+    public ResponseEntity<JsonNode> getWalkRoute(@RequestBody PathRequestDTO totalTimeRequest) {
+        String departure = totalTimeRequest.getDeparture();
+        String destination = totalTimeRequest.getDestination();
+
+        JsonNode routeInfo = tmapService.getJsonByWalkRoute(departure,destination);
+
+        if (routeInfo == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        return ResponseEntity.ok(routeInfo);
     }
 }
 

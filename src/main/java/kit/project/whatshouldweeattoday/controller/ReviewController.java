@@ -54,10 +54,16 @@ public class ReviewController {
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
 
-    // 리뷰 읍,면,동 조회
-    @GetMapping("/review/findbyAddress/{address}")
+   // 리뷰 읍,면,동 조회 -> 리뷰만
+    /*@GetMapping("/review/findbyAddress2/{address}")
     public ResponseEntity<Page<ReviewResponseDTO>> findByAddress(@PathVariable("address") String address, @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 10)Pageable pageable){
         Page<ReviewResponseDTO> responseDTOS = reviewService.findByAdddress(address, pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
+    }*/
+
+    // 리뷰 읍,면,동 조회 -> 리뷰랑 음식점 둘 다
+    @GetMapping("/review/findbyAddress/{address}")
+    public Page<RestaurantResponseDTO> getAllByAddress(@PathVariable("address") String address, Pageable pageable) {
+        return reviewService.getAllByAddress(address, pageable);
     }
 }

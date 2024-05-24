@@ -10,11 +10,14 @@ import lombok.Setter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @Getter
 @Setter
@@ -113,6 +116,7 @@ public class RestaurantResponseDTO {
         this.rank = rank;
     }
 
+    //음식점과 리뷰리스트 같이 반환
     public RestaurantResponseDTO(Restaurant restaurant, Page<ReviewResponseDTO> reviewList) {
         this.id = restaurant.getId();
         this.name = restaurant.getName();
