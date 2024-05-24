@@ -76,7 +76,26 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r FROM Restaurant r WHERE r.name LIKE CONCAT('%', :keyword, '%') OR r.menus LIKE CONCAT('%', :keyword, '%')")
     List<Restaurant> findByKeyword(@Param("keyword") String keyword);
 
+    // 주소와 키워드로 음식점 찾기
     @Query("SELECT r FROM Restaurant r WHERE r.addressNumber LIKE CONCAT('%', :address, '%') AND (r.name LIKE CONCAT('%', :keyword, '%') OR r.menus LIKE CONCAT('%', :keyword, '%'))")
     List<Restaurant> findByKeywordAndAddress(@Param("keyword") String keyword,@Param("address") String address);
 
+    //읍,면, 동별로 찾기 -> 음식점과 리뷰 모두 출력
+    @Query("SELECT r FROM Restaurant r WHERE r.addressNumber LIKE CONCAT('%', :address, '%')")
+    Page<Restaurant> findByAddressForReview(@Param("address") String address, Pageable pageable);
+
+  /*  //최신 리뷰 날짜를 기준으로 음식점을 정렬
+    @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.reviewList rev GROUP BY r ORDER BY MAX(rev.createdDate) DESC")
+    Page<Restaurant> findByAddressOrderByLatestReview(@Param("address") String address, Pageable pageable);*/
+
+    //읍,면, 동별로 찾기 -> 음식점과 리뷰 모두 출력
+    @Query("SELECT r FROM Restaurant r WHERE r.addressRoad LIKE CONCAT('%', :address, '%')")
+    Page<Restaurant> findByAddressOrderByLatestReview(@Param("address") String address, Pageable pageable);
+
+    //읍,면, 동별로 찾기 -> 음식점과 리뷰 모두 출력
+    @Query("SELECT r FROM Restaurant r WHERE r.addressNumber LIKE CONCAT('%', :address, '%')")
+    List<Restaurant> findByAddressLatestReview(@Param("address") String address);
 }
+
+
+

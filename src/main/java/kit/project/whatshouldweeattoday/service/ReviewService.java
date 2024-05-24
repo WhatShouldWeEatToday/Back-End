@@ -13,14 +13,14 @@ import kit.project.whatshouldweeattoday.repository.ReviewRepository;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -69,11 +69,11 @@ public class ReviewService {
     @Transactional
     public Page<RestaurantResponseDTO> findAll(String address, Pageable pageable) {
         Page<Restaurant> pages = (address == null || address.trim().isEmpty())
-                ? restaurantRepository.findAllByReviewCreated(pageable)
+                ? restaurantRepository.findAll(pageable)
                 : restaurantRepository.findByAddress(address, pageable);
 
         return pages.map(restaurant -> {
-            Page<ReviewResponseDTO> reviewList = this.showReviewsByRestaurant(restaurant.getId(), PageRequest.of(0, 5));
+            Page<ReviewResponseDTO> reviewList = this.showReviewsByRestaurant(restaurant.getId(), PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdDate")));
             return new RestaurantResponseDTO(restaurant, reviewList);
         });
     }
@@ -85,11 +85,6 @@ public class ReviewService {
         return new ReviewResponseDTO(review);
     }
 
-    @Transactional
-    public Page<ReviewResponseDTO> showReviewsByRestaurant(Long restaurantId, Pageable pageable) {
-        Page<Review> page = reviewRepository.findByRestaurantforPage(restaurantId, pageable);
-        return page.map(ReviewResponseDTO::new);
-    }
 
     @Transactional
     public ReviewResponseDTO update(Long id, ReviewRequestDTO requestDTO) {
@@ -133,9 +128,45 @@ public class ReviewService {
         return new MsgResponseDTO("리뷰 삭제 완료", 200);
     }
 
+    //읍면동 조회 -> 리뷰만 출력
     @Transactional
     public Page<ReviewResponseDTO> findByAdddress(String word, Pageable pageable) {
         Page<Review> page = reviewRepository.findByAddress(word, pageable);
+        return page.map(ReviewResponseDTO::new);
+    }
+
+    //읍면동 조회 -> 리뷰 및 음식점 출력
+    public Page<RestaurantResponseDTO> getAllByAddress(String address, Pageable pageable) {
+        // 읍,면,동으로 조회한 음식점
+        List<Restaurant> restaurants = restaurantRepository.findByAddressLatestReview(address);
+
+        // 변환 작업 및 최신 리뷰의 createdDate 기준 정렬
+        List<RestaurantResponseDTO> responseDTOs = restaurants.stream().map(restaurant -> {
+                    // 음식점 안에 review들을 createdDate순으로 정렬(한 페이지당 5개)
+                    Page<ReviewResponseDTO> reviewList = this.showReviewsByRestaurant(restaurant.getId(), PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdDate")));
+                    // RestaurantResponseDTO 객체 생성
+                    return new RestaurantResponseDTO(restaurant, reviewList);
+                }).sorted(Comparator.comparing(dto -> dto.getReviewList().getContent().isEmpty() ? null : dto.getReviewList().getContent().get(0).getCreatedDate(), Comparator.nullsLast(Comparator.reverseOrder())))
+                .collect(Collectors.toList());
+
+        // Pageable 객체가 없으면 기본값 설정
+        if (pageable == null) {
+            System.out.println("Pageable 객체가 없음");
+            pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+        }
+
+        // Page 객체로 변환
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), responseDTOs.size());
+        Page<RestaurantResponseDTO> page = new PageImpl<>(responseDTOs.subList(start, end), pageable, responseDTOs.size());
+
+        return page;
+    }
+
+    //음식점 아이디로 리뷰 반환
+    @Transactional
+    public Page<ReviewResponseDTO> showReviewsByRestaurant(Long restaurantId, Pageable pageable) {
+        Page<Review> page = reviewRepository.findByRestaurantforPage(restaurantId, pageable);
         return page.map(ReviewResponseDTO::new);
     }
 }

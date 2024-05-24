@@ -25,8 +25,6 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final TMapService tmapService;
     private final ReviewService reviewService;
-    private int serialNum = 0;
-    private List<PersonalPath> weithtArray = new ArrayList<>(); //전체 가중치
 
     //keyword로 맛집을 검색함(메뉴명, 점포명)
     @Transactional
@@ -220,26 +218,5 @@ public class RestaurantService {
                         .collect(Collectors.toList())
         );
         return new RestaurantResponseDTO(restaurant, reviewPage);
-    }
-   /* //주간순위 ->음식종류별
-    @Transactional
-     public List<RestaurantResponseDTO> getTop5RestaurantsTypeByCount() {
-         List<Restaurant> topRestaurants = restaurantRepository.findTop5ByCount();
-         return topRestaurants.stream()
-                 .map(this::convertToDto)
-                 .collect(Collectors.toList());
-     }
-
-     // list to dto for 음식종류별 주간순위
-     private RestaurantResponseDTO convertToDto(Restaurant restaurant) {
-         return new RestaurantResponseDTO(
-                 restaurant.getRestaurantType()
-         );
-     }
- */
-    //음식별 순위
-    @Transactional
-    public List<RestaurantResponseDTO> getTop5RestaurantsByFood() {
-        return null;
     }
 }

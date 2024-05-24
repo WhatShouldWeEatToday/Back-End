@@ -45,7 +45,7 @@ public class Restaurant {
     @JoinColumn(name = "bookmark_id")
     private Bookmark bookmark;
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviewList = new ArrayList<>();
 

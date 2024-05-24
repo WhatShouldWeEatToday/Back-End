@@ -4,8 +4,12 @@ import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class ReviewResponseDTO {
 
     private Long id;
@@ -16,7 +20,7 @@ public class ReviewResponseDTO {
     private int kind;
     private int mood;
     private int park;
-    private String created_Date;
+    private String createdDate;
     private ReviewType reviewType;
     private double stars;
     private Long member_id;
@@ -42,8 +46,7 @@ public class ReviewResponseDTO {
        this.kind = review.getKind();
        this.taste = review.getTaste();
        this.totalLikes = review.getTotalLikes();
-       this.created_Date = review.getCreatedDate();
+       this.createdDate = review.getCreatedDate();
        this.stars=review.getStars();
     }
-
 }
