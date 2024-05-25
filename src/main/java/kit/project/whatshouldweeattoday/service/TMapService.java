@@ -299,7 +299,7 @@ public class TMapService {
         }
     }
 
-    @Transactional
+    /*@Transactional
     public PathResponseDTO getTransitRoute(String departure, String destination, int lang, String format, int count, String searchDttm) {
         System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
@@ -358,7 +358,7 @@ public class TMapService {
             return null; // 오류 발생 시 null 반환
         }
     }
-
+*/
     @Transactional
     public JsonNode getJsonByTransitRoute(String departure, String destination, int lang, String format, int count, String searchDttm) {
         System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
@@ -391,9 +391,9 @@ public class TMapService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(body);
 
-            if (rootNode.has("error")) {
-                System.out.println("에러입니다");
-                return rootNode; // 오류가 있는 경우 오류 응답 반환
+            if (rootNode.has("result") && rootNode.get("result").get("status").asInt() == 11) {
+                System.out.println("출발지와 도착지 간 거리가 가까움. 도보 경로를 반환합니다.");
+                return getJsonByWalkRoute(departure, destination);
             }
 
             return rootNode; // JSON 응답을 그대로 반환
@@ -406,7 +406,7 @@ public class TMapService {
 
     @Transactional
     public PathResponseDTO getTransitRoute2(String departure, String destination, int lang, String format, int count, String searchDttm) {
-       // System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+        System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
         Map<String, Double> destCoordinates = this.getCoordinates(destination);
 
@@ -451,11 +451,10 @@ public class TMapService {
         }
     }
 
-    //보행자 경로 
-    //TODO 도착지랑 출발지 UTF-8변환
+    //보행자 경로 -> 대중교통 경로 반환할때 거리가 너무 가까우면 보행자경로 반환
     @Transactional
-    public JsonNode getJsonByWalkRoute(String departure, String destination){
-        // System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+    public JsonNode getJsonByWalkRoute(String departure, String destination) {
+        System.out.println("보행자 경로도 들어왔어용");
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
         Map<String, Double> destCoordinates = this.getCoordinates(destination);
 
@@ -465,16 +464,13 @@ public class TMapService {
         Float endX = destCoordinates.get("longitude").floatValue();
 
         try {
+            // departure와 destination을 UTF-8로 인코딩
+            String encodedDeparture = URLEncoder.encode(departure, StandardCharsets.UTF_8.toString());
+            String encodedDestination = URLEncoder.encode(destination, StandardCharsets.UTF_8.toString());
+
             String jsonBody = String.format(
-                    "{\"startX\":\"%f\",\"startY\":\"%f\",\"endX\":\"%f\",\"endY\":\"%f\",\"startName\":%s,\"endName\":\"%s\"}",
-                    startX, startY, endX, endY,departure,destination);
-/*
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://apis.openapi.sk.com/transit/routes"))
-                    .header("accept", "application/json")
-                    .header("appKey", tmapKey)
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .build();*/
+                    "{\"startX\":\"%f\",\"startY\":\"%f\",\"endX\":\"%f\",\"endY\":\"%f\",\"startName\":\"%s\",\"endName\":\"%s\"}",
+                    startX, startY, endX, endY, encodedDeparture, encodedDestination);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1"))
@@ -486,7 +482,7 @@ public class TMapService {
 
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            System.out.println( body);
+            System.out.println(body);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(body);

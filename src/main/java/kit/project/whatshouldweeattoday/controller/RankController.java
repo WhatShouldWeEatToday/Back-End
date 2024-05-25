@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class RankController {
     private final RankService rankService;
 
     //주간 음식종류별 순위
-    @GetMapping("foodType")
+    @GetMapping("/foodType")
     public ResponseEntity<WeeklyFoodTypeRankResponseDTO> getTypeRank() {
         WeeklyFoodTypeRankResponseDTO topRestaurants = rankService.getTop5RestaurantsByCount();
         return ResponseEntity.ok(topRestaurants);
@@ -33,5 +34,12 @@ public class RankController {
     public ResponseEntity<WeeklyFoodRankResponseDTO> getFoodRank() {
         WeeklyFoodRankResponseDTO topFoods = rankService.getTop5FoodsByChat();
        return ResponseEntity.ok(topFoods);
+    }
+
+    // 강제로 @Scheduled 메서드를 호출하는 테스트용 엔드포인트
+    @GetMapping("/foodType/testScheduled")
+    public ResponseEntity<Void> testScheduled() {
+        rankService.updateWeeklyRankings();
+        return ResponseEntity.ok().build();
     }
 }

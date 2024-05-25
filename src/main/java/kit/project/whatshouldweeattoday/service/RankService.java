@@ -13,6 +13,7 @@ import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import kit.project.whatshouldweeattoday.repository.WeeklyFoodRankRepository;
 import kit.project.whatshouldweeattoday.repository.WeeklyFoodTypeRankRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,16 +31,13 @@ public class RankService {
     private final WeeklyFoodRankRepository weeklyFoodRankRepository;
     private final FoodRepository foodRepository;
 
-
+    //주간 음식종류 순위
     @Transactional
     public WeeklyFoodTypeRankResponseDTO getTop5RestaurantsByCount() {
         List<Restaurant> topRestaurants = restaurantRepository.findTop5ByCount();
         String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 
-        WeeklyFoodTypeRank weeklyFoodTypeRank = new WeeklyFoodTypeRank();
-        weeklyFoodTypeRank.setDate(currentDate);
-
-        List<RestaurantResponseDTO> restaurantResponseDTOs = IntStream.range(0, 5)//topRestaurants.size()
+        List<RestaurantResponseDTO> restaurantResponseDTOs = IntStream.range(0, topRestaurants.size())
                 .mapToObj(i -> {
                     Restaurant restaurant = topRestaurants.get(i);
                     RestaurantResponseDTO dto = convertToRestaurantDTO(restaurant, i + 1);
@@ -47,10 +45,30 @@ public class RankService {
                 })
                 .collect(Collectors.toList());
 
+        WeeklyFoodTypeRank weeklyFoodTypeRank = new WeeklyFoodTypeRank();
+        weeklyFoodTypeRank.setDate(currentDate);
         weeklyFoodTypeRank.setFoods(restaurantResponseDTOs);
         weeklyFoodTypeRankRepository.save(weeklyFoodTypeRank);
 
         return new WeeklyFoodTypeRankResponseDTO(currentDate, restaurantResponseDTOs);
+    }
+
+    @Transactional
+    public void resetRestaurantCounts() {
+        List<Restaurant> allRestaurants = restaurantRepository.findAll();
+        for (Restaurant restaurant : allRestaurants) {
+            restaurant.setCount(0); // count 필드를 0으로 초기화
+        }
+        restaurantRepository.saveAll(allRestaurants);
+    }
+
+    @Scheduled(cron = "0 0 0 * * MON") // 매주 월요일 0시에 실행
+    @Transactional
+    public void updateWeeklyRankings() {
+        // 1. 주간 순위 업데이트
+        getTop5RestaurantsByCount();
+        // 2. restaurant count 초기화
+        resetRestaurantCounts();
     }
 
     @Transactional
@@ -94,4 +112,5 @@ public class RankService {
                 rank
         );
     }
+
 }
