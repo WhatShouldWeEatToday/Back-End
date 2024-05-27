@@ -10,7 +10,11 @@ import kit.project.whatshouldweeattoday.domain.dto.member.login.LoginRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.Friendship;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
+import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
+import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final FriendshipRepository friendshipRepository;
 
     /* 회원가입 */
     @PostMapping("/api/signup")
@@ -111,7 +117,7 @@ public class MemberController {
     }
 
     @PostConstruct
-    public void initData() throws BadRequestException {
+    public void initMemberData() throws BadRequestException {
        SignupRequestDTO member1 = SignupRequestDTO.builder()
                .loginId("hyun3478")
                .loginPw("a12345678")
@@ -130,7 +136,67 @@ public class MemberController {
                .age(24)
                .build();
 
+       SignupRequestDTO member3 = SignupRequestDTO.builder()
+               .loginId("solim14")
+               .loginPw("a12345678")
+               .verifiedLoginPw("a12345678")
+               .nickname("이소림")
+               .gender("FEMALE")
+               .age(24)
+               .build();
+
        memberService.createMember(member1);
        memberService.createMember(member2);
+       memberService.createMember(member3);
+
+       initFriendshipData();
    }
+
+    public void initFriendshipData() throws BadRequestException {
+        Member fromMember = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember = memberRepository.findByLoginId("lim3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom = Friendship.builder()
+                .member(fromMember)
+                .memberLoginId("hyun3478")
+                .friendLoginId("lim3478")
+                .status(FriendshipStatus.WAITING)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo = Friendship.builder()
+                .member(toMember)
+                .memberLoginId("lim3478")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.WAITING)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo);
+        friendshipRepository.save(friendshipFrom);
+
+        Member fromMember2 = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember2 = memberRepository.findByLoginId("solim14").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom2 = Friendship.builder()
+                .member(fromMember2)
+                .memberLoginId("hyun3478")
+                .friendLoginId("solim14")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo2 = Friendship.builder()
+                .member(toMember2)
+                .memberLoginId("solim14")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo2);
+        friendshipRepository.save(friendshipFrom2);
+    }
 }

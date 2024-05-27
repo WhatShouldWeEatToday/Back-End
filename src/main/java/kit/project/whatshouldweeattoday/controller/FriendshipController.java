@@ -1,9 +1,16 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
+import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
+import kit.project.whatshouldweeattoday.domain.entity.Friendship;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
+import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
+import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.service.FriendshipService;
 import kit.project.whatshouldweeattoday.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +37,11 @@ public class FriendshipController {
 
     /* 친구 검색 */
     @GetMapping("/friend/search")
-    public ResponseEntity<Page<FriendListResponseDTO>> searchFriend(String friendId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) throws Exception {
-        if(!memberService.confirmId(friendId)) {
+    public ResponseEntity<Page<FriendListResponseDTO>> searchFriend(@RequestParam(name = "loginId") String loginId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) throws Exception {
+        if(!memberService.confirmId(loginId)) {
             throw new BadRequestException("존재하지 않는 사용자입니다.");
         }
-        Page<FriendListResponseDTO> responseDTOS = friendshipService.searchByLoginId(friendId, pageable);
+        Page<FriendListResponseDTO> responseDTOS = memberService.searchByLoginId(loginId, pageable);
         return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
 

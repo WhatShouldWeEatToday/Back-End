@@ -1,6 +1,9 @@
 package kit.project.whatshouldweeattoday.repository;
 
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,5 +16,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByNickname(String nickname);
     Optional<Member> findByLoginId(String loginId);
     Set<Member> findAllByLoginIdIn(List<String> loginId);
-    Optional<Member> findByRefreshToken(String refreshToke);
-}
+    Page<FriendListResponseDTO> findByLoginIdContaining(String loginId, Pageable pageable);}

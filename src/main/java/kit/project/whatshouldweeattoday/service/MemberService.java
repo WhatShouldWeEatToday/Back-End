@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateRequestDTO;
@@ -8,6 +9,8 @@ import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.security.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -19,6 +22,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -27,7 +31,10 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
+    public Page<FriendListResponseDTO> searchByLoginId(String loginId, Pageable pageable) {
+        return memberRepository.findByLoginIdContaining(loginId, pageable);
+    }
+
     public JwtTokenDTO signIn(String username, String password) {
         // 1. username + password 를 기반으로 Authentication 객체 생성
         // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
@@ -41,7 +48,6 @@ public class MemberService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
-    @Transactional
     public void createMember(SignupRequestDTO signupRequestDTO) throws BadRequestException {
         Member member = signupRequestDTO.toEntity();
 
@@ -54,17 +60,14 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    @Transactional
     public boolean confirmId(String loginId) {
         return memberRepository.existsByLoginId(loginId);
     }
 
-    @Transactional
     public boolean confirmNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
     }
 
-    @Transactional
     public void updateMember(MemberUpdateRequestDTO requestDTO, String loginId) throws BadRequestException {
         Member member = memberRepository.findByLoginId(loginId) // SecurityContextHolder 에 들어있는 loginId 가져옴, TODO : 이거 변경함
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 회원입니다."));
@@ -74,7 +77,6 @@ public class MemberService {
         requestDTO.age().ifPresent(member::updateAge);
     }
 
-    @Transactional
     public void deleteMember(String checkPassword, String loginId) throws Exception {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 회원입니다."));
@@ -85,7 +87,6 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    @Transactional
     public Optional<Member> findByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId);
     }
