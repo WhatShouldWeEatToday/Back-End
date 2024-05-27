@@ -4,6 +4,7 @@ import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
 import kit.project.whatshouldweeattoday.service.OcrService;
+import kit.project.whatshouldweeattoday.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -27,9 +28,9 @@ public class OcrController {
     @Value("${naver.service.secretKey}")
     private String secretKey;
     private final OcrService ocrService;
+    private final RestaurantService restaurantService;
 
 
-    // 파일 업로드 및 OCR 수행을 위한 POST 요청 핸들러 메서드
     @PostMapping("/api/review/receipt")
     public ResponseEntity<MsgResponseDTO> uploadAndOcr(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -39,18 +40,31 @@ public class OcrController {
         File tempFile = File.createTempFile("temp", file.getOriginalFilename());
         file.transferTo(tempFile);
 
-        List<String> result = ocrService.callAPI("POST", tempFile.getPath(), secretKey, "jpeg");
-        Review.builder()
-                .reviewType(ReviewType.CERTIFY)
-                .build();
+        List<String> ocrResult = ocrService.callAPI("POST", tempFile.getPath(), secretKey, "jpeg");
         tempFile.delete(); // 임시 파일 삭제
-        return ResponseEntity.ok(new MsgResponseDTO("영수증 인증 완료", HttpStatus.OK.value()));
+
+        String storeName = extractStoreName(ocrResult); // 추출된 텍스트에서 상점명 추출
+
+        if (storeName != null && restaurantService.existsByName(storeName)) { // DB에 상점명이 존재하는지 확인
+            Review.builder()
+                    .reviewType(ReviewType.CERTIFY)
+                    .build();
+            return ResponseEntity.ok(new MsgResponseDTO("영수증 인증 완료", HttpStatus.OK.value()));
+        } else {
+            return ResponseEntity.ok(new MsgResponseDTO("영수증 인증 실패: 상점명을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST.value()));
+        }
     }
 
-    private static void convertByRegex(List<String> result, List<String> convertResult) {
-        for(String s : result){
-            s = s.replaceAll("[<>&\"'/: ]","");
-            convertResult.add(s);
+    private String extractStoreName(List<String> ocrResult) {
+        for (int i = 0; i < ocrResult.size(); i++) {
+            String line = ocrResult.get(i);
+            if (line.contains("매장명") || line.contains("상호명") || line.contains("점포명")) {
+                // 매장명 또는 상호명 뒤에 나오는 단어를 상점명으로 간주
+                if (i + 1 < ocrResult.size()) {
+                    return ocrResult.get(i + 1).trim();
+                }
+            }
         }
+        return null;
     }
 }

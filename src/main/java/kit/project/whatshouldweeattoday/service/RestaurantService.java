@@ -26,6 +26,10 @@ public class RestaurantService {
     private final TMapService tmapService;
     private final ReviewService reviewService;
 
+    public boolean existsByName(String name) {
+        return restaurantRepository.existsByName(name);
+    }
+
     //keyword로 맛집을 검색함(메뉴명, 점포명)
     @Transactional
     public Page<RestaurantResponseDTO> searchRestaurants(String keyword, Pageable pageable) {
