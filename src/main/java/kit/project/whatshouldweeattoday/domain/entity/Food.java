@@ -16,7 +16,7 @@ public class Food {
     private String foodName;
     private String restaurantType;
     private String imageRoute;
-    private Long count; //채팅방에서 나올때마다 count됨
+    private Long count; //채팅방에서 나올때마다 count 됨
 
     @OneToOne(mappedBy = "food", fetch = FetchType.LAZY)
     private Meet meet;
@@ -28,4 +28,8 @@ public class Food {
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_type_rank_id")
     private WeeklyFoodTypeRank weeklyFoodTypeRank;*/
+
+    public void setCount(Long count) {
+        this.count = count;
+    }
 }

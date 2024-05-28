@@ -41,6 +41,11 @@ public class Chat {
     @JoinColumn(name = "notice_id")
     private Notice notice;
 
+    @PrePersist
+    protected void onCreate() {
+        sendDate = LocalDateTime.now();
+    }
+
     @Builder
     public Chat(ChatRoom room, Vote vote, Meet meet, String sender) {
         this.room = room;

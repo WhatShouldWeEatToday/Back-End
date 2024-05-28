@@ -17,7 +17,7 @@ public class Vote {
     @Column(name = "VOTE_ID")
     private Long id;
     private String menu;
-    private Long voteCount;
+    private Integer voteCount = 0;
 
     @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY)
     private Chat chat;
