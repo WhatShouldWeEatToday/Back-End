@@ -23,6 +23,10 @@ public class PathService {
     private int serialNum = 0; // 음식점 배열 일련번호
     private List<PersonalPath> weightArray = new ArrayList<>(); // 전체 가중치
 
+    public void registerDeparture(String meetMenu, Long chatId) {
+        System.out.println("MeetMenu: " + meetMenu + ", ChatId: " + chatId);
+    }
+
     // num = 채팅방사람들 수, startAddres = 채팅방 사람들의 출발지 list
     @Transactional
     public List<PersonalPath> getWeight(String keyword, List<String> startAddress) {

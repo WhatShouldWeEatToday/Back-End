@@ -8,21 +8,29 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class VoteService {
 
     private final VoteRepository voteRepository;
 
-    @Transactional
-    public VoteRequestDTO incrementVoteCount(Long voteId) throws BadRequestException {
-        Vote vote = voteRepository.findById(voteId).orElseThrow(() -> new BadRequestException("존재하지 않는 메뉴 투표입니다."));
+    public Vote incrementVote(String menu) {
+        Vote vote = voteRepository.findByMenu(menu)
+                .orElseGet(() -> voteRepository.save(Vote.createVote(menu)));
         vote.incrementVoteCount();
-        Vote savedVote = voteRepository.save(vote);
+        return voteRepository.save(vote);
+    }
 
-        return VoteRequestDTO.builder()
-                .menu(savedVote.getMenu())
-                .voteCount(savedVote.getVoteCount())
-                .build();
+    @Transactional(readOnly = true)
+    public String getMostVotedMenu() {
+        List<Vote> votes = voteRepository.findAll();
+        return votes.stream()
+                .max(Comparator.comparingLong(Vote::getVoteCount))
+                .map(Vote::getMenu)
+                .orElse(null);
     }
 }

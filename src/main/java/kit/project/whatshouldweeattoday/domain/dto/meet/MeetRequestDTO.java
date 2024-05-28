@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -13,6 +13,5 @@ import java.util.Date;
 @NoArgsConstructor
 public class MeetRequestDTO {
     private String meetLocate;
-    private String meetMenu;
-    private Date meetTime;
+    private LocalDateTime meetTime;
 }
