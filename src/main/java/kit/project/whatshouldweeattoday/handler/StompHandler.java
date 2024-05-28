@@ -25,38 +25,64 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
-
+    // WebSocket 메시지의 핸들링 담당, ChannelInterceptor 인터페이스를 구현하여 메시지가 채널을 통해 전송되기 전에 가로채고, 필요한 처리를 수행함
     public static final String DEFAULT_PATH = "/topic/public/";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final FriendshipRepository friendshipRepository;
 
-    // Websocket 을 통해 들어온 요청이 처리 되기 전 실행
+    /**
+     * 메시지가 채널에 보내지기 전에 호출됨
+     * @param message
+     * @param channel
+     */
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompCommand command = accessor.getCommand();
 
-        if(StompCommand.CONNECT.equals(command)) { // Websocket 연결 요청 -> JWT 인증
-            // JWT 인증
+        log.info("Received WebSocket command: {}", command);
+
+        /**
+         * CONNECT
+         * 클라이언트가 WebSocket 연결을 시도할 때 호출됨
+         * Authorization 헤더에서 JWT 토큰을 추출하고, 이를 통해 사용자 정보를 조회함
+         * 조회한 사용자 정보 (loginId, nickname)를 세션 속성에 저장함
+         */
+        if(StompCommand.CONNECT.equals(command)) {
+            log.info("WebSocket CONNECT request received");
+
             Member member = getMemberByAuthorizationHeader(
                     accessor.getFirstNativeHeader("Authorization"));
 
-            // 인증 후 데이터를 헤더에 추가
+            log.info("User authenticated: loginId={}, nickname={}", member.getLoginId(), member.getNickname());
+
             setValue(accessor, "loginId", member.getLoginId());
             setValue(accessor, "nickname", member.getNickname());
-
-        } else if (StompCommand.SUBSCRIBE.equals(command)) {
+        }
+        /**
+         * SUBSCRIBE
+         * 클라이언트가 특정 채팅방을 구독할 때 호출됨
+         * 세션 속성에서 loginId를 가져오고, 구독하려는 채널 경로에서 친구의 loginId를 추출함
+         * 사용자와 친구 관계를 검증
+         */
+        else if (StompCommand.SUBSCRIBE.equals(command)) {
             String loginId = (String) getValue(accessor, "loginId");
             String friendLoginId = parseFriendLoginIdFromPath(accessor);
-            log.info("loginId = {}, friendLoginId = {}", loginId, friendLoginId);
+            log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
             setValue(accessor, "friendLoginId", friendLoginId);
             validateMemberInFriendship(loginId, friendLoginId);
 
-        } else if(StompCommand.DISCONNECT == command) { // Websocket 연결 종료
+        }
+        /**
+         * DISCONNECT
+         * 클라이언트가 WebSocket 연결을 해제할 때 호출됨
+         * 세션 속성에서 loginId를 가져와 로그를 남김
+         */
+        else if(StompCommand.DISCONNECT == command) {
             Long loginId = (Long) getValue(accessor, "loginId");
-            log.info("DISCONNECTED loginId = {}", loginId);
+            log.info("WebSocket DISCONNECTED request received: loginId = {}", loginId);
         }
 
         log.info("header = {}", message.getHeaders());
@@ -65,36 +91,62 @@ public class StompHandler implements ChannelInterceptor {
         return message;
     }
 
+    /**
+     * Authorization 헤더에서 JWT 토큰을 추출하고, 이를 통해 사용자 정보를 조회함
+     * @param authHeaderValue
+     */
     private Member getMemberByAuthorizationHeader(String authHeaderValue) {
+        log.info("Extracting member from authorization header");
         String accessToken = getTokenByAuthorizationHeader(authHeaderValue);
 
         Claims claims = (Claims) jwtTokenProvider.getAuthentication(accessToken);
         String loginId = claims.get("loginId", String.class);
 
+        log.info("Member extracted: loginId={}", loginId);
+
         return memberRepository.findByLoginId(loginId).orElseThrow(() -> new UsernameNotFoundException(loginId));
     }
 
+    /**
+     * Authorization 헤더에서 JWT 토큰을 추출하고 유효성을 검증하는 메서드
+     * @param authHeaderValue
+     */
     private String getTokenByAuthorizationHeader(String authHeaderValue) {
         if(Objects.isNull(authHeaderValue) || authHeaderValue.isBlank()) {
             throw new WebSocketException("authHeaderValue : " + authHeaderValue);
         }
 
+        log.info("Validating JWT token");
         String accessToken = ExtractUtil.extractToken(authHeaderValue);
         jwtTokenProvider.validateToken(accessToken); // 예외 발생 가능
 
         return accessToken;
     }
 
+    /**
+     * 구독 경로에서 친구의 loginId를 추출하는 메서드
+     * @param accessor
+     */
     private String parseFriendLoginIdFromPath(StompHeaderAccessor accessor) {
         String destination = accessor.getDestination();
         return destination.substring(DEFAULT_PATH.length());
     }
 
+    /**
+     * 사용자와 친구 관계를 검증하는 메서드
+     * @param memberLoginId
+     * @param friendLoginId
+     */
     private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
         friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
                 .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
     }
 
+    /**
+     * 세션 속성에서 값을 가져오는 메서드
+     * @param accessor
+     * @param key
+     */
     private Object getValue(StompHeaderAccessor accessor, String key) {
         Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
         Object value = sessionAttributes.get(key);
@@ -105,11 +157,21 @@ public class StompHandler implements ChannelInterceptor {
         return value;
     }
 
+    /**
+     * 세션 속성에 값을 설정하는 메서드
+     * @param accessor
+     * @param key
+     * @param value
+     */
     private void setValue(StompHeaderAccessor accessor, String key, String value) {
         Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
         sessionAttributes.put(key, value);
     }
 
+    /**
+     * 세션 속성을 가져오는 메서드
+     * @param accessor
+     */
     private Map<String, Object> getSessionAttributes(StompHeaderAccessor accessor) {
         Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
 
@@ -118,6 +180,4 @@ public class StompHandler implements ChannelInterceptor {
         }
         return sessionAttributes;
     }
-
-
 }

@@ -1,11 +1,10 @@
 package kit.project.whatshouldweeattoday.controller;
 
-import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomDTO;
+import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.dto.friend.InviteFriendRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.service.ChatRoomService;
-import kit.project.whatshouldweeattoday.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -33,8 +31,8 @@ public class ChatRoomController {
      * @param roomId
      * @param inviteRequestDTO
      */
-    @MessageMapping("/chat/invite/{roomId}")
-    @SendTo("/topic/room/{roomId}")
+    @MessageMapping("/chat.inviteFriend/{roomId}")
+    @SendTo("/topic/{roomId}")
     public void inviteFriends(@DestinationVariable("roomId") Long roomId,
                               @Payload InviteFriendRequestDTO inviteRequestDTO) {
         try {
@@ -43,6 +41,23 @@ public class ChatRoomController {
             log.error("친구 초대 오류: {}", e.getMessage());
         }
     }
+
+    /**
+     * 채팅방 등록
+     * @param chatRoom
+     */
+//    @PostMapping("/room")
+//    public String createRoom(ChatRoomDTO chatRoom) {
+//        chatRoomService.createChatRoom(chatRoom.getName());
+//        return "redirect:/roomList";
+//    }
+
+//    @MessageMapping("/chat.createRoom")
+//    @SendTo("/topic/public")
+//    public ChatRoomMessage createRoom(ChatRoomMessage chatRoomMessage) {
+//        // 채팅방 생성 로직 추가
+//        return chatRoomMessage;
+//    }
 
     /**
      * 채팅방 참여
@@ -58,16 +73,6 @@ public class ChatRoomController {
     }
 
     /**
-     * 채팅방 등록
-     * @param chatRoom
-     */
-//    @PostMapping("/room")
-//    public String createRoom(ChatRoomDTO chatRoom) {
-//        chatRoomService.createChatRoom(chatRoom.getName());
-//        return "redirect:/roomList";
-//    }
-
-    /**
      * 채팅방 리스트 보기
      */
     @GetMapping("/roomList")
@@ -78,10 +83,14 @@ public class ChatRoomController {
     }
 
     /**
-     * 방만들기 폼
+     * 채팅방 나가기
+     * @param roomId
+     * @param chatRoomMessage
      */
-    @GetMapping("/roomForm")
-    public String roomForm() {
-        return "chat/roomForm";
+    @MessageMapping("/chat.endRoom/{roomId}")
+    @SendTo("/topic/{roomId}")
+    public ChatRoomMessage endRoom(@DestinationVariable("roomId") Long roomId, ChatRoomMessage chatRoomMessage) {
+        // 채팅방 종료 로직 추가
+        return chatRoomMessage;
     }
 }
