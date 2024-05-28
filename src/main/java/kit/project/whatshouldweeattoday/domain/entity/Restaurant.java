@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -39,10 +40,11 @@ public class Restaurant {
     // null값을 허용하기 위해
     private Integer pathTime;
     private Double distance;
-    private int count; // 음식종류별 순위
+    private Long count; // 음식종류별 순위
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bookmark_id")
+    @JsonBackReference
     private Bookmark bookmark;
 
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
