@@ -1,8 +1,10 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.entity.Notice;
 import kit.project.whatshouldweeattoday.repository.ChatRepository;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
@@ -24,32 +26,40 @@ public class ChatRoomService {
     private final ChatRepository chatRepository;
 
     /**
-     * 채팅방에 친구 초대
-     * @param roomId 채팅방 id
-     * @param friendIds 친구 id 리스트
+     * 채팅방 생성 및 친구 초대
+     * @param name
+     * @param friendIds
      */
-    public void inviteFriends(Long roomId, List<String> friendIds) throws BadRequestException {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
+
+    public ChatRoom createRoomAndInviteFriends(String name, List<String> friendIds) throws BadRequestException {
+        ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createRoom(name));
+
+        // 친구를 채팅방에 초대
         Set<Member> friends = memberRepository.findAllByLoginIdIn(friendIds);
         if (friends.isEmpty()) {
             throw new BadRequestException("초대할 친구가 없습니다.");
         }
         chatRoom.addMembers(friends);
         chatRoomRepository.save(chatRoom);
+
+//        for (Member friend : friends) {
+//            Notice notice = new Notice();
+//            notice.setContent(friend.getNickname() + "님을 " + chatRoom.getName() + "채팅방에 초대합니다!");
+//            notice.setNoticeType(NoticeType.CHAT_INVITE);
+//            notice.setUserId(friend.getId());
+//            noticeRepository.save(notice);
+//        }
+
+        return chatRoom;
     }
 
-    /**
-     * 채팅방 생성
-     * @param name 방 이름
-     */
-    public ChatRoom createChatRoom(String name) {
-        return chatRoomRepository.save(ChatRoom.createRoom(name));
-    }
+    public ChatRoom endRoom(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+        chatRoom = chatRoomRepository.save(chatRoom);
 
-//    public ChatRoom createChatRoom(String name) {
-//        return chatRoomRepository.save(ChatRoom.createRoom(name));
-//    }
+        return chatRoom;
+    }
 
     /**
      * 모든 채팅방 찾기

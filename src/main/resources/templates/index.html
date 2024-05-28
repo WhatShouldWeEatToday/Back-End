@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <script src="/static/websocket-client.js"></script> <!-- 경로 수정 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+<div>
+    <button id="connect">Connect</button>
+    <button id="disconnect" disabled="disabled">Disconnect</button>
+</div>
+<div>
+    <form id="createRoomForm">
+        <input type="text" id="roomName" placeholder="Room Name"/>
+        <input type="text" id="friendLoginIds" placeholder="Friend Login IDs (comma separated)"/>
+        <button id="createRoomAndInviteFriends">Create Room and Invite Friends</button>
+    </form>
+</div>
+<div id="response"></div>
+</body>
+</html>
