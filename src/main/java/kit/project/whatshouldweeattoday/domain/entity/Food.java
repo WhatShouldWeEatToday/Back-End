@@ -14,7 +14,10 @@ public class Food {
     @Column(name = "FOOD_ID")
     private Long id;
     private String foodName;
-    private String restaurantType;
+    //private String restaurantType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "foodType_id")
+    private FoodType foodType;
     private String imageRoute;
     private Long count; //채팅방에서 나올때마다 count 됨
 

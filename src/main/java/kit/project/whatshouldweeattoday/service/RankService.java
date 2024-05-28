@@ -57,7 +57,7 @@ public class RankService {
     public void resetRestaurantCounts() {
         List<Restaurant> allRestaurants = restaurantRepository.findAll();
         for (Restaurant restaurant : allRestaurants) {
-            restaurant.setCount(0); // count 필드를 0으로 초기화
+            restaurant.setCount(0L); // count 필드를 0으로 초기화
         }
         restaurantRepository.saveAll(allRestaurants);
     }
@@ -76,7 +76,7 @@ public class RankService {
         return new RestaurantResponseDTO(
                 restaurant.getId(),
                 restaurant.getName(),
-                restaurant.getCount(),
+                Math.toIntExact(restaurant.getCount()),
                 restaurant.getRestaurantType(),
                 rank
         );
