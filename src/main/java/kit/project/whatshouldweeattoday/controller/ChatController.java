@@ -7,8 +7,13 @@ import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
+import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
+import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
+import kit.project.whatshouldweeattoday.service.ChatRoomService;
 import kit.project.whatshouldweeattoday.service.ChatService;
+import kit.project.whatshouldweeattoday.service.NoticeService;
 import kit.project.whatshouldweeattoday.service.PathService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -16,6 +21,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
@@ -24,16 +31,15 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
     private final PathService pathService;
+    private final NoticeService noticeService;
 
-    /**
-     * 채팅 메시지 전송
-     * @param chatRoomMessage
-     */
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public ChatRoomMessage sendMessage(ChatRoomMessage chatRoomMessage) {
-        return chatRoomMessage;
+    @GetMapping("/chat")
+    public String chatPage(Model model) {
+        List<ChatRoom> chatRooms = chatRoomService.findAllChatRoom();
+        model.addAttribute("chatRooms", chatRooms);
+        return "index";
     }
 
     /**
@@ -56,6 +62,8 @@ public class ChatController {
     @SendTo("/topic/{roomId}") // 구독하고 있는 장소로 메시지 전송(목적지)  -> WebSocketConfig Broker 에서 적용한건 앞에 붙어줘야됨
     public VoteChatResponseDTO createVote(@DestinationVariable("roomId") Long roomId, VoteRequestDTO voteRequestDTO) throws BadRequestException {
         Chat chat = chatService.createVote(roomId, voteRequestDTO.getMenu());
+
+        noticeService.sendNotice("새로운 투표가 생성되었습니다.", NoticeType.VOTE, SecurityUtil.getLoginId()); // userId를 실제 사용자 id로 변경
 
         return VoteChatResponseDTO.builder()
                 .roomId(roomId)

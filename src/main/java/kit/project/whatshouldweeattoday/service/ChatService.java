@@ -1,13 +1,8 @@
 package kit.project.whatshouldweeattoday.service;
 
-import kit.project.whatshouldweeattoday.domain.entity.Chat;
-import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
-import kit.project.whatshouldweeattoday.domain.entity.Meet;
-import kit.project.whatshouldweeattoday.domain.entity.Vote;
-import kit.project.whatshouldweeattoday.repository.ChatRepository;
-import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
-import kit.project.whatshouldweeattoday.repository.MeetRepository;
-import kit.project.whatshouldweeattoday.repository.VoteRepository;
+import kit.project.whatshouldweeattoday.domain.entity.*;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
+import kit.project.whatshouldweeattoday.repository.*;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -15,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +21,9 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final VoteRepository voteRepository;
     private final MeetRepository meetRepository;
+    private final MemberRepository memberRepository;
     private final FoodService foodService;
+    private final NoticeService noticeService;
 
     /**
      * 채팅에서 투표 생성
@@ -35,6 +33,12 @@ public class ChatService {
     public Chat createVote(Long roomId, String menu) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
         Vote vote = voteRepository.save(Vote.createVote(menu));
+
+        List<Member> members = memberRepository.findAllByChatRoomId(roomId);
+        for (Member member : members) {
+            noticeService.sendNotice("메뉴가 선정되었습니다. 오늘의 메뉴는? " + menu, NoticeType.VOTE, member.getLoginId());
+        }
+
         return chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }
 
