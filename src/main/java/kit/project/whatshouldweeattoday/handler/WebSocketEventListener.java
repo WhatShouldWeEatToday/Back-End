@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import java.util.Map;
@@ -38,53 +39,66 @@ public class WebSocketEventListener {
         log.info("Received a new web socket subscribe");
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        String nickname = (String) getValue(accessor, "nickname");
-        Long memberId = (Long) getValue(accessor, "memberId");
-        Long friendId = (Long) getValue(accessor, "friendId");
+        String nickname = getValue(accessor, "nickname");
+        String loginId = getValue(accessor, "loginId");
+        String friendLoginId = getValue(accessor, "friendLoginId");
 
-        log.info("Member: {} {} Disconnected Crew : {}", memberId, nickname, friendId);
+        log.info("Member: {} {} Disconnected Crew : {}", loginId, nickname, friendLoginId);
 
         ChatRoomMessage chatRoomMessage = new ChatRoomMessage(
-                MessageType.JOIN, memberId, nickname + "님이 입장하셨습니다."
+                MessageType.JOIN, loginId, nickname + "님이 입장하셨습니다."
         );
-        messagingTemplate.convertAndSend("/topic/public/" + friendId, chatRoomMessage);
+        messagingTemplate.convertAndSend("/topic/public/" + friendLoginId, chatRoomMessage);
     }
 
     /**
      * 연결 해제
      */
     @EventListener
-    public void handleWebSocketDisconnectListener(SessionSubscribeEvent event) throws BadRequestException {
+    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) throws BadRequestException {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        String nickname = (String) getValue(accessor, "nickname");
-        Long memberId = (Long) getValue(accessor, "memberId");
-        Long friendId = (Long) getValue(accessor, "friendId");
+        String nickname = getValue(accessor, "nickname");
+        String loginId = getValue(accessor, "loginId");
+        String friendLoginId = getValue(accessor, "friendLoginId");
 
-        log.info("Member: {} {} Disconnected Crew : {}", memberId, nickname, friendId);
+        log.info("Member: {} {} Disconnected Crew : {}", loginId, nickname, friendLoginId);
 
         ChatRoomMessage chatRoomMessage = new ChatRoomMessage(
-                MessageType.LEAVE, memberId, nickname + "님이 떠났습니다."
+                MessageType.LEAVE, loginId, nickname + "님이 떠났습니다."
         );
-        messagingTemplate.convertAndSend("/topic/public/" + friendId, chatRoomMessage);
+
+        if (friendLoginId != null) {
+            messagingTemplate.convertAndSend("/topic/public/" + friendLoginId, chatRoomMessage);
+        } else {
+            log.error("friendLoginId is null.");
+        }
     }
 
-    private Object getValue(StompHeaderAccessor accessor, String key) throws BadRequestException {
-        Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
-        Object value = sessionAttributes.get(key);
+    private String getValue(StompHeaderAccessor accessor, String key) throws BadRequestException {
+        try {
+            Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
+            Object value = sessionAttributes.get(key);
 
-        if(Objects.isNull(value)) {
-            throw new BadRequestException(key + " 에 해당하는 값이 없습니다.");
+            if (Objects.isNull(value)) {
+                throw new BadRequestException(key + " 에 해당하는 값이 없습니다.");
+            }
+            return String.valueOf(value);
+        } catch (Exception e) {
+            throw new BadRequestException("값을 가져오는 동안 오류가 발생했습니다: " + e.getMessage());
         }
-        return value;
     }
 
     private Map<String, Object> getSessionAttributes(StompHeaderAccessor accessor) throws BadRequestException {
-        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        try {
+            Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
 
-        if(Objects.isNull(sessionAttributes)) {
-            throw new BadRequestException("SessionAttributes가 null입니다.");
+            if (Objects.isNull(sessionAttributes)) {
+                throw new BadRequestException("SessionAttributes가 null입니다.");
+            }
+            return sessionAttributes;
+        } catch (Exception e) {
+            throw new BadRequestException("세션 속성을 가져오는 동안 오류가 발생했습니다: " + e.getMessage());
         }
-        return sessionAttributes;
     }
 }

@@ -1,10 +1,8 @@
 package kit.project.whatshouldweeattoday.service;
 
-import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
-import kit.project.whatshouldweeattoday.domain.entity.Notice;
 import kit.project.whatshouldweeattoday.repository.ChatRepository;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
@@ -63,6 +61,7 @@ public class ChatRoomService {
 
         return chatRoom;
     }
+
 
     /**
      * 모든 채팅방 찾기

@@ -17,6 +17,7 @@ import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.MemberService;
+import kit.project.whatshouldweeattoday.service.MemberStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberStatusService memberStatusService;
     private final MemberRepository memberRepository;
     private final FriendshipRepository friendshipRepository;
 
@@ -96,6 +98,8 @@ public class MemberController {
 
         log.info("request username = {}, password = {}", username, password);
         log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
+
+        memberStatusService.broadcastUserStatus(username, "LOGIN");
 
         return jwtToken;
     }
