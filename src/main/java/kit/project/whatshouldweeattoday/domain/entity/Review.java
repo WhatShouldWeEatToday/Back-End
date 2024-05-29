@@ -59,6 +59,9 @@ public class Review extends BaseTimeEntity {
     public void setWriter(String writer) {
         this.writer = writer;
     }
+    public void setStars(double stars) {
+        this.stars=stars;
+    }
 
     public Review(ReviewRequestDTO requestDTO){
         this.taste = requestDTO.getTaste();
