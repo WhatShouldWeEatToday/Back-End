@@ -8,11 +8,13 @@ import kit.project.whatshouldweeattoday.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Controller
@@ -25,14 +27,20 @@ public class ChatRoomController {
      * 채팅방 생성 및 친구 초대
      * @param requestDTO
      */
-    @MessageMapping("/chat.createRoomAndInviteFriends")
-    @SendTo("/topic/public")
-    public ChatRoom createRoomAndInviteFriends(@Payload RoomAndFriendsRequestDTO requestDTO) {
+    @MessageMapping("/chat.createRoomAndInviteFriends") // PUB
+//    @SendTo("/topic/public/{friendLoginId}") // SUB
+    public void createRoomAndInviteFriends(@Payload RoomAndFriendsRequestDTO requestDTO) {
         try {
-            return chatRoomService.createRoomAndInviteFriends(requestDTO.getName(), requestDTO.getFriendLoginIds());
+            // 채팅방 생성 및 친구 초대 로직
+            chatRoomService.createRoomAndInviteFriends(requestDTO.getName(), requestDTO.getFriendLoginIds());
         } catch (BadRequestException e) {
+            // BadRequestException이 발생한 경우 클라이언트에게 오류 메시지를 보냅니다.
             log.error("채팅방 생성 및 친구 초대 오류: {}", e.getMessage());
-            return null;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외가 발생한 경우 서버 오류 메시지를 보냅니다.
+            log.error("채팅방 생성 및 친구 초대 오류: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.", e);
         }
     }
 

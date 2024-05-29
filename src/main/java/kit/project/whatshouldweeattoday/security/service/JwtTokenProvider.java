@@ -102,8 +102,14 @@ public class JwtTokenProvider {
         return false;
     }
 
+    public Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
-    // accessToken
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder()
@@ -115,5 +121,4 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
-
 }

@@ -17,9 +17,14 @@ import kit.project.whatshouldweeattoday.service.NoticeService;
 import kit.project.whatshouldweeattoday.service.PathService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +39,19 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final PathService pathService;
     private final NoticeService noticeService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
+
+    @SubscribeMapping("/public")
+    public void handleSubscribe(SimpMessageHeaderAccessor headerAccessor) {
+        logger.info("Subscription received: sessionId={}, destination={}", headerAccessor.getSessionId(), headerAccessor.getDestination());
+        // 구독 처리 로직 추가
+    }
+
+    @MessageExceptionHandler
+    public void handleException(Throwable exception) {
+        logger.error("Error handling message: ", exception);
+    }
 
     @GetMapping("/chat")
     public String chatPage(Model model) {

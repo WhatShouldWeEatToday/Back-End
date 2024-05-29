@@ -10,7 +10,11 @@ import kit.project.whatshouldweeattoday.domain.dto.member.login.LoginRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.update.MemberUpdateResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.Friendship;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
+import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
+import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final FriendshipRepository friendshipRepository;
 
     /* 회원가입 */
     @PostMapping("/api/signup")
@@ -79,7 +85,7 @@ public class MemberController {
     }
 
     public record UserDeleteDTO(@NotBlank(message = "비밀번호를 입력해주세요")
-                                    String checkPassword) {
+                                String checkPassword) {
     }
 
     @PostMapping("/api/signin")
@@ -111,26 +117,185 @@ public class MemberController {
     }
 
     @PostConstruct
-    public void initData() throws BadRequestException {
-       SignupRequestDTO member1 = SignupRequestDTO.builder()
-               .loginId("hyun3478")
-               .loginPw("a12345678")
-               .verifiedLoginPw("a12345678")
-               .nickname("이지현")
-               .gender("FEMALE")
-               .age(24)
-               .build();
+    public void initMemberData() throws BadRequestException {
+        SignupRequestDTO member1 = SignupRequestDTO.builder()
+                .loginId("hyun3478")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("이지현")
+                .gender("FEMALE")
+                .age(24)
+                .build();
 
-       SignupRequestDTO member2 = SignupRequestDTO.builder()
-               .loginId("lim3478")
-               .loginPw("a12345678")
-               .verifiedLoginPw("a12345678")
-               .nickname("임수연")
-               .gender("FEMALE")
-               .age(24)
-               .build();
+        SignupRequestDTO member2 = SignupRequestDTO.builder()
+                .loginId("lim3478")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("임수연")
+                .gender("FEMALE")
+                .age(24)
+                .build();
 
-       memberService.createMember(member1);
-       memberService.createMember(member2);
-   }
+        SignupRequestDTO member3 = SignupRequestDTO.builder()
+                .loginId("solim12")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("이소림")
+                .gender("FEMALE")
+                .age(24)
+                .build();
+
+        SignupRequestDTO member4 = SignupRequestDTO.builder()
+                .loginId("lee12")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("이준현")
+                .gender("FEMALE")
+                .age(24)
+                .build();
+
+        SignupRequestDTO member5 = SignupRequestDTO.builder()
+                .loginId("member5")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("이민형")
+                .gender("FEMALE")
+                .age(24)
+                .build();
+
+        SignupRequestDTO member6 = SignupRequestDTO.builder()
+                .loginId("member6")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("이동혁")
+                .gender("FEMALE")
+                .age(24)
+                .build();
+
+        memberService.createMember(member1);
+        memberService.createMember(member2);
+        memberService.createMember(member3);
+        memberService.createMember(member4);
+        memberService.createMember(member5);
+        memberService.createMember(member6);
+
+        initFriendshipData();
+    }
+
+    public void initFriendshipData() throws BadRequestException {
+        Member fromMember = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember = memberRepository.findByLoginId("lim3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom = Friendship.builder()
+                .member(fromMember)
+                .memberLoginId("hyun3478")
+                .friendLoginId("lim3478")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo = Friendship.builder()
+                .member(toMember)
+                .memberLoginId("lim3478")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo);
+        friendshipRepository.save(friendshipFrom);
+
+        Member fromMember2 = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember2 = memberRepository.findByLoginId("solim12").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom2 = Friendship.builder()
+                .member(fromMember2)
+                .memberLoginId("hyun3478")
+                .friendLoginId("solim12")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo2 = Friendship.builder()
+                .member(toMember2)
+                .memberLoginId("solim12")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo2);
+        friendshipRepository.save(friendshipFrom2);
+
+        Member fromMember3 = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember3 = memberRepository.findByLoginId("lee12").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom3 = Friendship.builder()
+                .member(fromMember3)
+                .memberLoginId("hyun3478")
+                .friendLoginId("lee12")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo3 = Friendship.builder()
+                .member(toMember3)
+                .memberLoginId("lee12")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo3);
+        friendshipRepository.save(friendshipFrom3);
+
+        Member fromMember4 = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember4 = memberRepository.findByLoginId("member5").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom4 = Friendship.builder()
+                .member(fromMember4)
+                .memberLoginId("hyun3478")
+                .friendLoginId("member5")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo4 = Friendship.builder()
+                .member(toMember4)
+                .memberLoginId("member5")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo4);
+        friendshipRepository.save(friendshipFrom4);
+
+        Member fromMember5 = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember5 = memberRepository.findByLoginId("member6").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom5 = Friendship.builder()
+                .member(fromMember5)
+                .memberLoginId("hyun3478")
+                .friendLoginId("member6")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo5 = Friendship.builder()
+                .member(toMember5)
+                .memberLoginId("member6")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.ACCEPT)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo5);
+        friendshipRepository.save(friendshipFrom5);
+    }
 }

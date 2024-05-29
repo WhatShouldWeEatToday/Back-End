@@ -9,6 +9,7 @@ import kit.project.whatshouldweeattoday.repository.ChatRepository;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ChatRoomService {
 
     private final MemberRepository memberRepository;
@@ -40,7 +42,8 @@ public class ChatRoomService {
             throw new BadRequestException("초대할 친구가 없습니다.");
         }
         chatRoom.addMembers(friends);
-        chatRoomRepository.save(chatRoom);
+        ChatRoom save = chatRoomRepository.save(chatRoom);
+        log.info("채팅방 생성 아이디={}", save.getId());
 
 //        for (Member friend : friends) {
 //            Notice notice = new Notice();
