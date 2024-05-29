@@ -51,6 +51,11 @@ public class Restaurant {
     @JsonManagedReference
     private List<Review> reviewList = new ArrayList<>();
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "foodType_id")
+    private FoodType foodType;
+
     public void setCoordinates(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;

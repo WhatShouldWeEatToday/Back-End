@@ -2,15 +2,16 @@ package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.rank.WeeklyFoodRankResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.rank.WeeklyFoodTypeRankResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
+import kit.project.whatshouldweeattoday.domain.entity.FoodType;
+import kit.project.whatshouldweeattoday.repository.FoodRepository;
+import kit.project.whatshouldweeattoday.repository.FoodTypeRepository;
+import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import kit.project.whatshouldweeattoday.service.RankService;
 import kit.project.whatshouldweeattoday.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class RankController {
 
     private final RestaurantService restaurantService;
     private final RankService rankService;
+
 
     //주간 음식종류별 순위
     @GetMapping("/foodType")
@@ -42,4 +44,11 @@ public class RankController {
         rankService.updateWeeklyRankings();
         return ResponseEntity.ok().build();
     }
+
+    //setFoodType
+    @PatchMapping("/init")
+    public void initData() {
+        rankService.initData();
+    }
+
 }
