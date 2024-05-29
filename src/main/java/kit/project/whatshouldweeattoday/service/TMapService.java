@@ -110,8 +110,11 @@ public class TMapService {
             JsonNode addressInfo = rootNode.path("addressInfo");
             JsonNode dong = addressInfo.path("legalDong");
             JsonNode bunji = addressInfo.path("bunji");
-            String fullAddress = dong.asText() + bunji.asText();
-            System.out.println("주소 : " + fullAddress);
+            String bunjiString = bunji.asText();
+            bunjiString= String.valueOf(bunjiString.charAt(0));
+           // System.out.println("번지글자수 : "+bunjiString.length());
+            String fullAddress = dong.asText() + bunjiString;
+           // System.out.println("주소 : " + fullAddress);
             return fullAddress;
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to retrieve legalDong: " + e.getMessage());

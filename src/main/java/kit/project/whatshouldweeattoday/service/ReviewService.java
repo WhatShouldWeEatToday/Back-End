@@ -31,6 +31,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
 
+    //리뷰등록
     @Transactional
     public void save(Long id, ReviewRequestDTO requestDTO) {
         Restaurant restaurant = restaurantRepository.findById(id)
@@ -42,13 +43,16 @@ public class ReviewService {
         review.setWriter(member.getNickname());
         review.confirmMember(member);
         review.setRestaurant(restaurant);
+        review.setStars(requestDTO.getStars());
         reviewRepository.save(review);
         updateRestaurantScores(restaurant, review, true);
         restaurant.calculateDegree(review.getStars());
     }
 
+    //Restaurant 개인별 점수 등록
     private void updateRestaurantScores(Restaurant restaurant, Review review, boolean isAdding) {
         int delta = isAdding ? 1 : -1;
+        restaurant.calculateDegree(review.getStars());//-> 리뷰평점
         if (review.getMood() == 1) {
             restaurant.setTotalMood(restaurant.getTotalMood() + delta);
         }
@@ -86,6 +90,7 @@ public class ReviewService {
     }
 
 
+    //리뷰수정
     @Transactional
     public ReviewResponseDTO update(Long id, ReviewRequestDTO requestDTO) {
         Review review = reviewRepository.findById(id)
@@ -97,6 +102,7 @@ public class ReviewService {
         return new ReviewResponseDTO(review);
     }
 
+    //리뷰수정 로직
     private void updateRestaurantScoresForReviewUpdate(Restaurant restaurant, Review oldReview, ReviewRequestDTO newReview) {
         if (oldReview.getTaste() != newReview.getTaste()) {
             restaurant.setTotalTaste(restaurant.getTotalTaste() + (newReview.getTaste() - oldReview.getTaste()));

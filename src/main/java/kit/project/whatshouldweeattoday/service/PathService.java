@@ -27,7 +27,7 @@ public class PathService {
         System.out.println("MeetMenu: " + meetMenu + ", ChatId: " + chatId);
     }
 
-    // num = 채팅방사람들 수, startAddres = 채팅방 사람들의 출발지 list
+    // startAddres = 채팅방 사람들의 출발지 list
     @Transactional
     public List<PersonalPath> getWeight(String keyword, List<String> startAddress) {
         List<PersonalPath> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
@@ -91,7 +91,7 @@ public class PathService {
         Double startY = coordinates.get("latitude");
         System.out.println("이 사람의 출발 위치 :" + startX + " " + startY);
         //2. 사용자의 위치정보를 주소로 반환후 XX동 XX까지 추출
-        String userAddress = tmapService.getAddressByCoordinates(startX, startY);
+        String userAddress = tmapService.getAddressByCoordinates2(startX, startY);
         //3. 주소 & 키워드로 음식점 검색
         restaurants = restaurantRepository.findByKeywordAndAddress(keyword, userAddress);
         //4.리뷰평점순으로 20개 추출(1차 필터링)

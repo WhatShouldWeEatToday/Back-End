@@ -217,7 +217,14 @@ public class RestaurantController {
         }
 
         return ResponseEntity.ok(routeInfo);
+
     }
+    @GetMapping("/search/showAddress")
+    public ResponseEntity<String> addressTest() {
+        String address = tmapService.getAddressByCoordinates2(128.3592031, 36.0888125);
+       return ResponseEntity.ok(address);
+    }
+
 }
 
 
