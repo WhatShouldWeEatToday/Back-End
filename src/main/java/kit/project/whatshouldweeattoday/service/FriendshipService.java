@@ -80,7 +80,7 @@ public class FriendshipService {
                 Member friend = memberRepository.findByLoginId(request.getFriendLoginId()).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
                 FriendListDTO friendList = FriendListDTO.builder()
                         .friendshipId(request.getId())
-                        .friendloginId(friend.getLoginId())
+                        .friendLoginId(friend.getLoginId())
                         .friendNickname(friend.getNickname())
                         .status(request.getStatus())
                         .build();
@@ -102,7 +102,7 @@ public class FriendshipService {
                 Member friend = memberRepository.findByLoginId(request.getFriendLoginId()).orElseThrow(() -> new BadRequestException("회원 조회 실패"));
                 FriendListDTO waitingFriendList = FriendListDTO.builder()
                         .friendshipId(request.getId())
-                        .friendloginId(friend.getLoginId())
+                        .friendLoginId(friend.getLoginId())
                         .friendNickname(friend.getNickname())
                         .status(request.getStatus())
                         .build();
