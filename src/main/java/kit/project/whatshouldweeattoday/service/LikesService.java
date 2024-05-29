@@ -1,6 +1,8 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.likes.LikesResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Likes;
@@ -9,6 +11,7 @@ import kit.project.whatshouldweeattoday.repository.LikesRepository;
 import kit.project.whatshouldweeattoday.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +25,15 @@ public class LikesService {
 
     //리뷰 좋아요
     @Transactional
-    public void save(Long reviewId, LikesRequestDTO likesRequestDTO){
+    public LikesResponseDTO save(Long reviewId, LikesRequestDTO likesRequestDTO){
        Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
         Likes likes = likesRequestDTO.toSaveEntity();
         likes.setReview(review);
         likes.setState(true);
         review.setTotalLikes(review.getTotalLikes()+1);
         likesRepository.save(likes);
+
+        return new LikesResponseDTO(likes);
     }
 
     //리뷰 좋아요 취소

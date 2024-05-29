@@ -98,6 +98,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     //읍,면, 동별로 찾기 -> 음식점과 리뷰 모두 출력
     @Query("SELECT r FROM Restaurant r WHERE r.addressNumber LIKE CONCAT('%', :address, '%')")
     List<Restaurant> findByAddressLatestReview(@Param("address") String address);
+
+    List<Restaurant> findByRestaurantTypeIn(List<String> restaurantTypes);
 }
 
 

@@ -1,6 +1,7 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.likes.LikesResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.repository.ReviewRepository;
@@ -21,10 +22,10 @@ public class LikesController {
 
     //리뷰 좋아요 등록
     @PostMapping("/api/review/{reviewId}/likes")
-    public Long reviewLikes(@PathVariable Long reviewId) {
+    public ResponseEntity<LikesResponseDTO> reviewLikes(@PathVariable Long reviewId) {
         LikesRequestDTO likesRequestDTO = new LikesRequestDTO();
-        likesService.save(reviewId, likesRequestDTO);
-        return reviewId;
+        LikesResponseDTO responseDTOS= likesService.save(reviewId, likesRequestDTO);
+        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
     }
 
     //리뷰 좋아요 취소

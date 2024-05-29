@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -14,4 +16,6 @@ public class FoodType {
     private Long id;
     private String foodTypeName;
     private Long count;
+    @OneToMany(mappedBy = "foodType",fetch = FetchType.LAZY)
+    private List<Restaurant>  restaurants;
 }

@@ -223,4 +223,11 @@ public class RestaurantService {
         );
         return new RestaurantResponseDTO(restaurant, reviewPage);
     }
+
+    public void updateFoodType() {
+        List<Restaurant> list = restaurantRepository.findAll();
+        for (Restaurant restaurant : list) {
+
+        }
+    }
 }
