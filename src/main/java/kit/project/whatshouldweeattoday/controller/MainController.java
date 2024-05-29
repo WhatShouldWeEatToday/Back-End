@@ -6,6 +6,7 @@ import kit.project.whatshouldweeattoday.service.FoodService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,11 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,22 +41,32 @@ public class MainController {
     }
 
 
-    /*@GetMapping("/{filename}")
-    public ResponseEntity<Resource> getImage(@PathVariable String filename) {
-        try {
-            Path filePath = Paths.get(IMAGE_DIRECTORY).resolve(filename).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
+    //음식 이미지 반환
+    @GetMapping("/image/{foodName}")
+    public ResponseEntity<InputStreamResource> getImageByFoodName(@PathVariable String foodName) {
+        Optional<Food> foodOpt = foodService.findByFoodName(foodName);
+        if (foodOpt.isPresent()) {
+            Food food = foodOpt.get();
+            Path imagePath = Paths.get(IMAGE_DIRECTORY, food.getImageRoute().replace("/images/", "")).normalize();
+            File imageFile = imagePath.toFile();
 
-            if (resource.exists() && resource.isReadable()) {
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath));
+            if (imageFile.exists() && imageFile.isFile()) {
+                try {
+                    InputStreamResource resource = new InputStreamResource(new FileInputStream(imageFile));
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(imagePath));
 
-                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+                    return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+                } catch (FileNotFoundException e) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } catch (IOException e) {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }*/
+    }
 }

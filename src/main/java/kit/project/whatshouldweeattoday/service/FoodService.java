@@ -34,6 +34,9 @@ public class FoodService {
         food.setCount(food.getCount() + 1);
         foodRepository.save(food);
     }
+    public Optional<Food> findByFoodName(String foodName) {
+        return foodRepository.findByFoodName(foodName);
+    }
     //=========================이미지 업로드=================================
 
     public void updateImageRoutes() {
