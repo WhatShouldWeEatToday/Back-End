@@ -9,25 +9,18 @@ import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
+import kit.project.whatshouldweeattoday.domain.type.MessageType;
 import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
-import kit.project.whatshouldweeattoday.service.ChatRoomService;
 import kit.project.whatshouldweeattoday.service.ChatService;
 import kit.project.whatshouldweeattoday.service.NoticeService;
 import kit.project.whatshouldweeattoday.service.PathService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
@@ -36,29 +29,8 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final ChatRoomService chatRoomService;
     private final PathService pathService;
     private final NoticeService noticeService;
-
-    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
-
-    @SubscribeMapping("/public")
-    public void handleSubscribe(SimpMessageHeaderAccessor headerAccessor) {
-        logger.info("Subscription received: sessionId={}, destination={}", headerAccessor.getSessionId(), headerAccessor.getDestination());
-        // 구독 처리 로직 추가
-    }
-
-    @MessageExceptionHandler
-    public void handleException(Throwable exception) {
-        logger.error("Error handling message: ", exception);
-    }
-
-    @GetMapping("/chat")
-    public String chatPage(Model model) {
-        List<ChatRoom> chatRooms = chatRoomService.findAllChatRoom();
-        model.addAttribute("chatRooms", chatRooms);
-        return "index";
-    }
 
     /**
      * 채팅방 참여
@@ -67,7 +39,7 @@ public class ChatController {
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public ChatRoomMessage addUser(ChatRoomMessage chatRoomMessage) {
-        chatRoomMessage.setContent(chatRoomMessage.getUserId() + " joined");
+        chatRoomMessage.setContent(chatRoomMessage.getLoginId() + " joined");
         return chatRoomMessage;
     }
 

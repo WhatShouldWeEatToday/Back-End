@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChatRoomMessage {
-
     private MessageType messageType;
-    private Long userId;
+    private String loginId;
     private String content;
 }
