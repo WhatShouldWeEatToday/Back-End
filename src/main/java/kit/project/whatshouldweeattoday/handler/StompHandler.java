@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
     public static final String DEFAULT_PATH = "/topic/public/";
+    public static final String DEFAULT_PATH_NO_TRAILING_SLASH = "/topic/public";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
@@ -51,27 +52,11 @@ public class StompHandler implements ChannelInterceptor {
                 setValue(accessor, "nickname", member.getNickname());
 
             } else if (StompCommand.SUBSCRIBE.equals(command)) {
-                log.info("Headers: {}", accessor.toNativeHeaderMap());
-                String friendLoginIds = accessor.getFirstNativeHeader("friendLoginIds");
-                log.info("Extracted friendLoginIds: {}", friendLoginIds);
-
-                if (friendLoginIds == null || friendLoginIds.isEmpty()) {
-                    throw new WebSocketException("friendLoginIds를 헤더에서 추출할 수 없습니다.");
-                }
-
-                List<String> friendLoginIdList = Arrays.stream(friendLoginIds.split(","))
-                        .map(String::trim)
-                        .collect(Collectors.toList());
-
                 String loginId = (String) getValue(accessor, "loginId");
-                log.info("User subscribed: loginId = {}, friendLoginIdList = {}", loginId, friendLoginIdList);
-                setValue(accessor, "friendLoginIds", friendLoginIds);
-                validateMemberInFriendship(loginId, friendLoginIdList);
-//                String loginId = (String) getValue(accessor, "loginId");
-//                List<String> friendLoginIds = parseFriendLoginIdFromPath(accessor);
-//                log.info("User subscribed: loginId = {}, friendLoginIds = {}", loginId, friendLoginIds);
-//                setValue(accessor, "friendLoginIds", String.join(",", friendLoginIds));
-//                validateMemberInFriendship(loginId, friendLoginIds);
+                String friendLoginId = parseFriendLoginIdFromPath(accessor);
+                log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
+                setValue(accessor, "friendLoginId", friendLoginId);
+                validateMemberInFriendship(loginId, friendLoginId);
 
             } else if (StompCommand.DISCONNECT.equals(command)) {
                 String loginId = (String) getValue(accessor, "loginId");
@@ -82,7 +67,7 @@ public class StompHandler implements ChannelInterceptor {
             log.info("message = {}", message);
         } catch (Exception e) {
             log.error("Error during preSend: ", e);
-            throw e; // 예외를 다시 던져서 상위 레이어에서 처리할 수 있게 합니다.
+            throw e;
         }
 
         return message;
@@ -108,27 +93,38 @@ public class StompHandler implements ChannelInterceptor {
 
         log.info("Validating JWT token");
         String accessToken = ExtractUtil.extractToken(authHeaderValue);
-        jwtTokenProvider.validateToken(accessToken); // 예외 발생 가능
+        jwtTokenProvider.validateToken(accessToken);
 
         return accessToken;
     }
 
-    private List<String> parseFriendLoginIdFromPath(StompHeaderAccessor accessor) {
-        String friendLoginIds = accessor.getFirstNativeHeader("friendLoginIds");
-        if (friendLoginIds == null || friendLoginIds.isEmpty()) {
-            throw new WebSocketException("friendLoginIds를 헤더에서 추출할 수 없습니다.");
+    private String parseFriendLoginIdFromPath(StompHeaderAccessor accessor) {
+        String destination = accessor.getDestination();
+
+        if (destination == null) {
+            log.error("Destination is null.");
+            throw new IllegalArgumentException("Destination cannot be null.");
         }
-        // friendLoginIds를 쉼표(,)로 구분하여 리스트로 변환
-        return Arrays.stream(friendLoginIds.split(","))
-                .map(String::trim)
-                .collect(Collectors.toList());
+
+        if (!destination.startsWith(DEFAULT_PATH) && !destination.equals(DEFAULT_PATH_NO_TRAILING_SLASH)) {
+            log.error("Destination does not start with the default path: " + destination);
+            throw new IllegalArgumentException("Invalid destination path.");
+        }
+
+        String pathSuffix = destination.startsWith(DEFAULT_PATH) ? destination.substring(DEFAULT_PATH.length()) : "";
+
+        if (pathSuffix.isEmpty() && !destination.equals(DEFAULT_PATH_NO_TRAILING_SLASH)) {
+            log.error("Destination path suffix is empty.");
+            throw new IllegalArgumentException("Destination path is too short.");
+        }
+
+        log.info("Parsed friendLoginId from path: {}", pathSuffix);
+        return pathSuffix;
     }
 
-    private void validateMemberInFriendship(String memberLoginId, List<String> friendLoginIds) {
-        for (String friendLoginId : friendLoginIds) {
-            friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
-                    .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
-        }
+    private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
+        friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
+                .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
     }
 
     private Object getValue(StompHeaderAccessor accessor, String key) {
