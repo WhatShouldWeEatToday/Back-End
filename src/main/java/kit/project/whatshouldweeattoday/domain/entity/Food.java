@@ -35,4 +35,5 @@ public class Food {
     public void setCount(Long count) {
         this.count = count;
     }
+    public void setImageRoute(String imageRoute){this.imageRoute=imageRoute;}
 }

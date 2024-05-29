@@ -13,4 +13,5 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     List<Food> findTop5ByCount();
 
     Optional<Food> findByFoodName(String foodName);
+
 }
