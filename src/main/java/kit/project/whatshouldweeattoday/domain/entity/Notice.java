@@ -1,9 +1,11 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
-import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -13,9 +15,7 @@ public class Notice {
     @Column(name = "NOTICE_ID")
     private Long id;
     private String content;
-
-    @Enumerated(EnumType.STRING)
-    private NoticeType noticeType;
+    private String createdDate;
 
     @OneToOne(mappedBy = "notice", fetch = FetchType.LAZY)
     private Chat chat;
@@ -24,9 +24,10 @@ public class Notice {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    public Notice(String content, NoticeType noticeType, Member member) {
-        this.content = content;
-        this.noticeType = noticeType;
+    public Notice(Member member, String content, String createdDate) {
         this.member = member;
+        this.content = content;
+        LocalDateTime localDateTime = LocalDateTime.now();
+        this.createdDate = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
     }
 }

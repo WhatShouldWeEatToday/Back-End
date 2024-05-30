@@ -1,6 +1,5 @@
 package kit.project.whatshouldweeattoday.controller;
 
-import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.VoteChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
@@ -8,8 +7,6 @@ import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
-import kit.project.whatshouldweeattoday.domain.type.NoticeType;
-import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.ChatService;
 import kit.project.whatshouldweeattoday.service.NoticeService;
 import kit.project.whatshouldweeattoday.service.PathService;
@@ -40,7 +37,7 @@ public class ChatController {
     public VoteChatResponseDTO createVote(@DestinationVariable("roomId") Long roomId, VoteRequestDTO voteRequestDTO) throws BadRequestException {
         Chat chat = chatService.createVote(roomId, voteRequestDTO.getMenu());
 
-        noticeService.sendNotice("새로운 투표가 생성되었습니다.", NoticeType.VOTE, SecurityUtil.getLoginId()); // userId를 실제 사용자 id로 변경
+//        noticeService.sendNotice("새로운 투표가 생성되었습니다.", NoticeType.VOTE, SecurityUtil.getLoginId()); // userId를 실제 사용자 id로 변경
 
         return VoteChatResponseDTO.builder()
                 .roomId(roomId)

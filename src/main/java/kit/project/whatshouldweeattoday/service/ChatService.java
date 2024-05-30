@@ -1,7 +1,6 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.entity.*;
-import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.repository.*;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +34,9 @@ public class ChatService {
         Vote vote = voteRepository.save(Vote.createVote(menu));
 
         List<Member> members = memberRepository.findAllByChatRoomId(roomId);
-        for (Member member : members) {
-            noticeService.sendNotice("메뉴가 선정되었습니다. 오늘의 메뉴는? " + menu, NoticeType.VOTE, member.getLoginId());
-        }
+//        for (Member member : members) {
+//            noticeService.sendNotice("메뉴가 선정되었습니다. 오늘의 메뉴는? " + menu, NoticeType.VOTE, member.getLoginId());
+//        }
 
         return chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }

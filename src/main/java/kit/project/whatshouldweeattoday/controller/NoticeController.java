@@ -2,7 +2,6 @@ package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.notice.NoticeRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Notice;
-import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +15,17 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-    @GetMapping("/{loginId}/{noticeType}")
-    public List<Notice> getNoticesByType(@PathVariable(name = "loginId") String loginId, @PathVariable(name = "noticeType") NoticeType noticeType) {
-        return noticeService.getNoticesByType(loginId, noticeType);
+    @GetMapping("/{loginId}")
+    public List<Notice> getNoticesByType(@PathVariable(name = "loginId") String loginId) {
+        return noticeService.getNoticesByMember(loginId);
     }
 
     @PostMapping("/send")
     public void sendNotice(@RequestBody NoticeRequestDTO noticeRequestDTO) {
         noticeService.sendNotice(
                 noticeRequestDTO.getLoginId(),
-                noticeRequestDTO.getNoticeType(),
-                noticeRequestDTO.getContent()
+                noticeRequestDTO.getContent(),
+                noticeRequestDTO.getCreatedDate()
         );
     }
 }
