@@ -30,4 +30,5 @@ public class Notice {
         LocalDateTime localDateTime = LocalDateTime.now();
         this.createdDate = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
     }
+
 }

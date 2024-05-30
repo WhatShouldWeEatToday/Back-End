@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.dto.rank;
 
+import kit.project.whatshouldweeattoday.domain.dto.foodType.FoodTypeResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +14,16 @@ public class WeeklyFoodTypeRankResponseDTO {
     private int ranks;
     private String foodTypeName;
     private String date;
-    private List<RestaurantResponseDTO> topRestaurants;
-    public WeeklyFoodTypeRankResponseDTO(String date, List<RestaurantResponseDTO> topRestaurants) {
+    private List<FoodTypeResponseDTO> topFoodTypes;
+    public WeeklyFoodTypeRankResponseDTO(String date, List<FoodTypeResponseDTO> topFoodTypes) {
         this.date = date;
-        this.topRestaurants = topRestaurants;
+        this.topFoodTypes = topFoodTypes;
     }
 
     public void setDate(String date) {
         this.date = date;
     }
-    public void setTopRestaurants(List<RestaurantResponseDTO> topRestaurants) {
-        this.topRestaurants = topRestaurants;
+    public void setTopRestaurants(List<FoodTypeResponseDTO> topFoodTypes) {
+        this.topFoodTypes = topFoodTypes;
     }
 }

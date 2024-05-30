@@ -51,4 +51,16 @@ public class RankController {
         rankService.initData();
     }
 
+    //restaurant의 foodType count 초기화
+    @PatchMapping("/initCountFoodType")
+    public void initCount() {
+        rankService.initCount();
+    }
+
+    //food count 초기화
+    @PatchMapping("/initCountFood")
+    public void initFoodCount() {
+        rankService.initFoodCount();
+    }
+
 }
