@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.entity.Likes;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Notice;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
@@ -29,4 +30,5 @@ public class NoticeService {
 
         return noticeRepository.save(notice);
     }
+
 }

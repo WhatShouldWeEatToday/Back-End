@@ -1,6 +1,7 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
+import kit.project.whatshouldweeattoday.domain.dto.foodType.FoodTypeResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ public class WeeklyFoodTypeRank extends BaseTimeEntity{
 
     //Transient : 실제 데이터베이스에 저장되지 않고 티티 객체의 라이프사이클 동안 메모리에서만 유지
     @Transient
-    private List<RestaurantResponseDTO> restaurant = new ArrayList<>();
+    private List<FoodTypeResponseDTO> foodTypes = new ArrayList<>();
 
     public WeeklyFoodTypeRank(int rank, String date, String foodTypeName) {
         this.ranks = ranks;

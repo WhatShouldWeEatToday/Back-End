@@ -4,9 +4,11 @@ import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponse
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.FoodType;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
+import kit.project.whatshouldweeattoday.repository.FoodTypeRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import kit.project.whatshouldweeattoday.repository.ReviewRepository;
@@ -30,14 +32,17 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
+    private final FoodTypeRepository foodTypeRepository;
 
     //리뷰등록
     @Transactional
     public void save(Long id, ReviewRequestDTO requestDTO) {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
+        FoodType foodType = foodTypeRepository.findById(restaurant.getFoodType().getId()).orElseThrow(IllegalArgumentException::new);
         restaurant.setTotalReviews(restaurant.getTotalReviews() + 1);
         restaurant.setCount(restaurant.getCount() + 1);
+        foodType.setCount(foodType.getCount()+1);
         Review review = new Review(requestDTO);
         Member member = memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
         review.setWriter(member.getNickname());

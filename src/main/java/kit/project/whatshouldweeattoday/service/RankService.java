@@ -1,6 +1,7 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.dto.food.FoodResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.foodType.FoodTypeResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.rank.WeeklyFoodRankResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.rank.WeeklyFoodTypeRankResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -31,23 +33,37 @@ public class RankService {
     //주간 음식종류 순위
     @Transactional
     public WeeklyFoodTypeRankResponseDTO getTop5RestaurantsByCount() {
-        List<Restaurant> topRestaurants = restaurantRepository.findTop5ByCount();
+        List<FoodType> allFoodTypes = foodTypeRepository.findAll();
         String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 
-        List<RestaurantResponseDTO> restaurantResponseDTOs = IntStream.range(0, topRestaurants.size())
+        List<FoodType> topFoodTypes = allFoodTypes.stream()
+                .sorted(Comparator.comparing(FoodType::getCount).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+
+        List<FoodTypeResponseDTO> foodTypeResponseDTOS = IntStream.range(0, topFoodTypes.size())
                 .mapToObj(i -> {
-                    Restaurant restaurant = topRestaurants.get(i);
-                    RestaurantResponseDTO dto = convertToRestaurantDTO(restaurant, i + 1);
+                    FoodType foodType = topFoodTypes.get(i);
+                    FoodTypeResponseDTO dto = convertToFoodTypeDTO(foodType, i + 1);
                     return dto;
                 })
                 .collect(Collectors.toList());
 
         WeeklyFoodTypeRank weeklyFoodTypeRank = new WeeklyFoodTypeRank();
         weeklyFoodTypeRank.setDate(currentDate);
-        weeklyFoodTypeRank.setRestaurant(restaurantResponseDTOs);
+        weeklyFoodTypeRank.setFoodTypes(foodTypeResponseDTOS); // Assuming this sets the food types, you may want to rename the method
         weeklyFoodTypeRankRepository.save(weeklyFoodTypeRank);
 
-        return new WeeklyFoodTypeRankResponseDTO(currentDate, restaurantResponseDTOs);
+        return new WeeklyFoodTypeRankResponseDTO(currentDate, foodTypeResponseDTOS);
+    }
+    @Transactional
+    public FoodTypeResponseDTO convertToFoodTypeDTO(FoodType foodType, int rank) {
+        return new FoodTypeResponseDTO(
+                foodType.getId(),
+                foodType.getFoodTypeName(),
+                Math.toIntExact(foodType.getCount()),
+                rank
+        );
     }
 
     @Transactional
@@ -140,5 +156,27 @@ public class RankService {
             restaurant.setFoodType(foodType);
             restaurantRepository.save(restaurant);
         });
+    }
+
+    @Transactional
+    public void initCount() {
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+
+        for (Restaurant restaurant : restaurants) {
+            restaurant.setCount(0L);  // assuming count is of type Long
+        }
+
+        restaurantRepository.saveAll(restaurants);
+    }
+
+    @Transactional
+    public void initFoodCount() {
+        List<Food> foods = foodRepository.findAll();
+
+        for (Food food : foods) {
+            food.setCount(0L);  // assuming count is of type Long
+        }
+
+       foodRepository.saveAll(foods);
     }
 }
