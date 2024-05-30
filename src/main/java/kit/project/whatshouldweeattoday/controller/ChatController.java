@@ -7,9 +7,7 @@ import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
-import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
-import kit.project.whatshouldweeattoday.domain.type.MessageType;
 import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.ChatService;
@@ -31,17 +29,6 @@ public class ChatController {
     private final ChatService chatService;
     private final PathService pathService;
     private final NoticeService noticeService;
-
-    /**
-     * 채팅방 참여
-     * @param chatRoomMessage
-     */
-    @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
-    public ChatRoomMessage addUser(ChatRoomMessage chatRoomMessage) {
-        chatRoomMessage.setContent(chatRoomMessage.getLoginId() + " joined");
-        return chatRoomMessage;
-    }
 
     /**
      * 채팅방 내 투표 생성
