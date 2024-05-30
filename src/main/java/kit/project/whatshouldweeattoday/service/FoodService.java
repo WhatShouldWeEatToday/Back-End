@@ -11,6 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -50,7 +53,14 @@ public class FoodService {
 
                         if (foodOpt.isPresent()) {
                             Food food = foodOpt.get();
-                            food.setImageRoute("/images/" + fileName);
+                            String encodedFoodName = null;
+                            try {
+                                encodedFoodName = URLEncoder.encode(foodName, StandardCharsets.UTF_8.toString());
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+                            String imageUrl = "https://storage.googleapis.com/food_img/" + encodedFoodName + ".jpg";
+                            food.setImageRoute(imageUrl);
                             foodRepository.save(food);
                         }
                     });
