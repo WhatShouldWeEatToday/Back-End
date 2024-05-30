@@ -17,15 +17,19 @@ public class Vote {
 
     private String menu1;
     private String menu2;
-    private Integer voteCount = 0;
+    private Long voteCount1;
+    private Long voteCount2;
 
     @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY)
     private Chat chat;
 
     @Builder
-    public Vote(String menu1, String menu2) {
+
+    public Vote(String menu1, String menu2, Long voteCount1, Long voteCount2) {
         this.menu1 = menu1;
         this.menu2 = menu2;
+        this.voteCount1 = voteCount1;
+        this.voteCount2 = voteCount2;
     }
 
     public static Vote createVote(String menu1, String menu2) {
@@ -35,7 +39,11 @@ public class Vote {
                 .build();
     }
 
-    public void incrementVoteCount() {
-        this.voteCount++;
+    public void incrementVoteCount1() {
+        this.voteCount1++;
+    }
+
+    public void incrementVoteCount2() {
+        this.voteCount2++;
     }
 }

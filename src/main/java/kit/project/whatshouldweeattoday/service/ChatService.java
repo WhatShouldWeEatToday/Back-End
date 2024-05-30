@@ -29,7 +29,7 @@ public class ChatService {
      * @param menu1
      * @param menu2
      */
-    public Chat createVote(Long roomId, String menu1, String menu2) throws BadRequestException {
+    public void createVote(Long roomId, String menu1, String menu2) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
         Vote vote = voteRepository.save(Vote.createVote(menu1, menu2));
 
@@ -38,7 +38,7 @@ public class ChatService {
 //            noticeService.sendNotice("메뉴가 선정되었습니다. 오늘의 메뉴는? " + menu, NoticeType.VOTE, member.getLoginId());
 //        }
 
-        return chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
+        chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }
 
     /**
