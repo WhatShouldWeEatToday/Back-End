@@ -13,7 +13,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
@@ -65,7 +64,6 @@ public class ChatRoomController {
     /**
      * 채팅방 나가기
      * @param roomId
-     * @param chatRoomMessage
      */
     @MessageMapping("/chat.endRoom/{roomId}")
     @SendTo("/topic/{roomId}")
