@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class MeetService {
 
     private final MeetRepository meetRepository;
-    private final VoteService voteService;
+//    private final VoteService voteService;
 
     public void finalizeMeet(Long meetId) {
         Meet meet = meetRepository.findById(meetId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid meet ID"));
 
-        String mostVotedMenu = voteService.getMostVotedMenu();
+//        String mostVotedMenu = voteService.getMostVotedMenu();
 //        meet.updateMeet(meet.getMeetLocate(), mostVotedMenu, meet.getMeetTime());
         meetRepository.save(meet);
     }

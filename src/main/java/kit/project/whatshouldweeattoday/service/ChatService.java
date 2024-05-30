@@ -25,9 +25,9 @@ public class ChatService {
     private final NoticeService noticeService;
 
     /**
-     * 채팅에서 투표 생성
-     * @param roomId 채팅방 id
-     * @param menu 메뉴 이름
+     * @param roomId
+     * @param menu1
+     * @param menu2
      */
     public Chat createVote(Long roomId, String menu1, String menu2) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
