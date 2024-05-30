@@ -5,13 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class VoteRequestDTO {
-    private List<String> menu;
-    private Long voteCount;
+
+    private String menu1;
+    private String menu2;
 }

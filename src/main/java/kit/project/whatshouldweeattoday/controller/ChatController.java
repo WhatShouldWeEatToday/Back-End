@@ -1,15 +1,16 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.chat.VoteChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
+import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.service.ChatService;
-import kit.project.whatshouldweeattoday.service.NoticeService;
 import kit.project.whatshouldweeattoday.service.PathService;
+import kit.project.whatshouldweeattoday.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -24,25 +25,35 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
+    private final VoteService voteService;
     private final PathService pathService;
-    private final NoticeService noticeService;
 
     /**
+     * 채팅방 내 투표 생성
      * @param roomId
-     * @param menu1
-     * @param menu2
+     * @param voteRequest
      */
-    @MessageMapping("/vote/register/{roomId}") // 여기로 전송되면 메서드 호출 -> WebSocketConfig prefixes 에서 적용한건 앞에 생략
-    @SendTo("/topic/{roomId}") // 구독하고 있는 장소로 메시지 전송(목적지)  -> WebSocketConfig Broker 에서 적용한건 앞에 붙어줘야됨
-    public VoteChatResponseDTO createVote(@DestinationVariable("roomId") Long roomId, String menu1, String menu2) throws BadRequestException {
-        Chat chat = chatService.createVote(roomId, menu1, menu2);
+    @MessageMapping("/vote/register/{roomId}")
+    @SendTo("/topic/votes/{roomId}")
+    public VoteResponseDTO registerVote(@DestinationVariable Long roomId, VoteRequestDTO voteRequest) throws BadRequestException {
+        Vote vote = voteService.createVote(voteRequest.getMenu1(), voteRequest.getMenu2());
+        chatService.createVote(roomId, voteRequest.getMenu1(), voteRequest.getMenu2());
 
-//        noticeService.sendNotice("새로운 투표가 생성되었습니다.", NoticeType.VOTE, SecurityUtil.getLoginId()); // userId를 실제 사용자 id로 변경
-        return VoteChatResponseDTO.builder()
-                .roomId(roomId)
-                .menu1(menu1)
-                .menu2(menu2)
-                .build();
+        return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
+    }
+
+    /**
+     * 메뉴 투표 Count 실시간 관리
+     * @param voteId
+     */
+    @MessageMapping("/vote/increment/{voteId}")
+    @SendTo("/topic/votes")
+    public VoteResponseDTO incrementVote(@DestinationVariable Long voteId) throws BadRequestException {
+        voteService.incrementVoteCount1(voteId);
+        voteService.incrementVoteCount1(voteId);
+
+        Vote vote = voteService.getVote(voteId);
+        return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
     }
 
     /**
