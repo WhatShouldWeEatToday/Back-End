@@ -34,14 +34,14 @@ public class ChatController {
      */
     @MessageMapping("/vote/register/{roomId}") // 여기로 전송되면 메서드 호출 -> WebSocketConfig prefixes 에서 적용한건 앞에 생략
     @SendTo("/topic/{roomId}") // 구독하고 있는 장소로 메시지 전송(목적지)  -> WebSocketConfig Broker 에서 적용한건 앞에 붙어줘야됨
-    public VoteChatResponseDTO createVote(@DestinationVariable("roomId") Long roomId, VoteRequestDTO voteRequestDTO) throws BadRequestException {
-        Chat chat = chatService.createVote(roomId, voteRequestDTO.getMenu());
+    public VoteChatResponseDTO createVote(@DestinationVariable("roomId") Long roomId, String menu1, String menu2) throws BadRequestException {
+        Chat chat = chatService.createVote(roomId, menu1, menu2);
 
 //        noticeService.sendNotice("새로운 투표가 생성되었습니다.", NoticeType.VOTE, SecurityUtil.getLoginId()); // userId를 실제 사용자 id로 변경
-
         return VoteChatResponseDTO.builder()
                 .roomId(roomId)
-                .menu(voteRequestDTO.getMenu())
+                .menu1(menu1)
+                .menu2(menu2)
                 .build();
     }
 

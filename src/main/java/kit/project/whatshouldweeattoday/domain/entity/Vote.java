@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,20 +14,24 @@ public class Vote {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "VOTE_ID")
     private Long id;
-    private String menu;
+
+    private String menu1;
+    private String menu2;
     private Integer voteCount = 0;
 
     @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY)
     private Chat chat;
 
     @Builder
-    public Vote(String menu) {
-        this.menu = menu;
+    public Vote(String menu1, String menu2) {
+        this.menu1 = menu1;
+        this.menu2 = menu2;
     }
 
-    public static Vote createVote(String menu) {
+    public static Vote createVote(String menu1, String menu2) {
         return Vote.builder()
-                .menu(menu)
+                .menu1(menu1)
+                .menu2(menu2)
                 .build();
     }
 

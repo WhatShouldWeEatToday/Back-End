@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class VoteChatResponseDTO {
+
     private Long roomId;
-    private String menu;
+    private String menu1;
+    private String menu2;
 }
