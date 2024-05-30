@@ -71,11 +71,10 @@ public class ChatService {
     }
 
     /**
-     * 채팅에서 약속 생성
-     * @param roomId 채팅방 id
-     * @param meetLocate 약속 장소
-     * @param meetMenu 약속 메뉴
-     * @param meetTime 약속 시간
+     *
+     * @param roomId
+     * @param meetLocate
+     * @param meetTime
      */
     public Chat createMeet(Long roomId, String meetLocate, LocalDateTime meetTime) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
@@ -88,11 +87,10 @@ public class ChatService {
     }
 
     /**
-     * 약속 수정
-     * @param meetId 약속 id
-     * @param meetLocate 약속 장소
-     * @param meetMenu 약속 메뉴
-     * @param meetTime 약속 시간
+     *
+     * @param meetId
+     * @param meetLocate
+     * @param meetTime
      */
     public Meet updateMeet(Long meetId, String meetLocate, LocalDateTime meetTime) throws BadRequestException {
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new BadRequestException("존재하지 않는 약속입니다."));
