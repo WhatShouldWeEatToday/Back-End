@@ -29,9 +29,9 @@ public class ChatService {
      * @param roomId 채팅방 id
      * @param menu 메뉴 이름
      */
-    public Chat createVote(Long roomId, String menu) throws BadRequestException {
+    public Chat createVote(Long roomId, String menu1, String menu2) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
-        Vote vote = voteRepository.save(Vote.createVote(menu));
+        Vote vote = voteRepository.save(Vote.createVote(menu1, menu2));
 
         List<Member> members = memberRepository.findAllByChatRoomId(roomId);
 //        for (Member member : members) {
