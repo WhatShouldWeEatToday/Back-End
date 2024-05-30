@@ -17,15 +17,16 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final MemberRepository memberRepository;
 
-    public void sendNotice(String loginId, String content, String createdDate) {
-        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        Notice notice = new Notice(member, content, createdDate);
-        noticeRepository.save(notice);
-    }
-
     public List<Notice> getNoticesByMember(String loginId) {
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return noticeRepository.findAllByMember(member);
+    }
+
+    public Notice sendNotice(String loginId, String content, String createdDate) {
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Notice notice = new Notice(member, content, createdDate);
+
+        return noticeRepository.save(notice);
     }
 }

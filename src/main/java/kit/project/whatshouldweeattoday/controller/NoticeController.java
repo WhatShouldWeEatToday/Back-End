@@ -21,8 +21,8 @@ public class NoticeController {
     }
 
     @PostMapping("/send")
-    public void sendNotice(@RequestBody NoticeRequestDTO noticeRequestDTO) {
-        noticeService.sendNotice(
+    public Notice sendNotice(@RequestBody NoticeRequestDTO noticeRequestDTO) {
+        return noticeService.sendNotice(
                 noticeRequestDTO.getLoginId(),
                 noticeRequestDTO.getContent(),
                 noticeRequestDTO.getCreatedDate()
