@@ -33,29 +33,22 @@ public class ChatRoomService {
      */
 
     public ChatRoom createRoomAndInviteFriends(String name, List<String> friendIds) throws BadRequestException {
-        ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createRoom(name));
+//        Member member = memberRepository.findByLoginId(SecurityUtil.getLoginId())
+//                .orElseThrow(() -> new BadRequestException("존재하지 않는 회원입니다."));
 
-        // 친구를 채팅방에 초대
+        ChatRoom chatRoom = ChatRoom.createRoom(name);
+//        chatRoom.addMember(member);
+
         Set<Member> friends = memberRepository.findAllByLoginIdIn(friendIds);
         if (friends.isEmpty()) {
             throw new BadRequestException("초대할 친구가 없습니다.");
         }
-//        Member member = memberRepository.findByLoginId(SecurityUtil.getLoginId())
-//                .orElseThrow(() -> new BadRequestException("존재하지 않는 회원입니다."));
-//        chatRoom.addMember(member);
+
         chatRoom.addMembers(friends);
-        ChatRoom save = chatRoomRepository.save(chatRoom);
-        log.info("채팅방 생성 아이디={}", save.getId());
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+        log.info("채팅방 생성 아이디={}", savedChatRoom.getId());
 
-//        for (Member friend : friends) {
-//            Notice notice = new Notice();
-//            notice.setContent(friend.getNickname() + "님을 " + chatRoom.getName() + "채팅방에 초대합니다!");
-//            notice.setNoticeType(NoticeType.CHAT_INVITE);
-//            notice.setUserId(friend.getId());
-//            noticeRepository.save(notice);
-//        }
-
-        return chatRoom;
+        return savedChatRoom;
     }
 
     public ChatRoom endRoom(Long roomId) {

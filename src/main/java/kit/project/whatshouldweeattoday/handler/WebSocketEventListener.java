@@ -13,6 +13,7 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
+import java.security.Principal;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,7 +29,11 @@ public class WebSocketEventListener {
      */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        log.info("Received a new web socket connection");
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        Principal user = accessor.getUser();
+        if (user != null) {
+            log.info("Received a new web socket connection from user: {}", user.getName());
+        }
     }
 
     /**
@@ -69,7 +74,7 @@ public class WebSocketEventListener {
         );
 
         if (friendLoginId != null) {
-            messagingTemplate.convertAndSend("/topic/public/" + friendLoginId, chatRoomMessage);
+            messagingTemplate.convertAndSend("/topic/public/" + friendLoginId, chatRoomMessage); // {9}
         } else {
             log.error("friendLoginId is null.");
         }

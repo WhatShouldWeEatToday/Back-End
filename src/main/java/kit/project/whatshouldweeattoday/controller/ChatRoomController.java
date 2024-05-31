@@ -4,6 +4,7 @@ import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.type.MessageType;
+import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +30,11 @@ public class ChatRoomController {
      * 채팅방 생성 및 친구 초대
      * @param requestDTO
      */
-    @MessageMapping("/chat.createRoomAndInviteFriends") // PUB
-    public void createRoomAndInviteFriends(@Payload RoomAndFriendsRequestDTO requestDTO) {
-        ChatRoom roomAndInviteFriends;
+    @MessageMapping("/chat.createRoomAndInviteFriends") // {1}
+    public void createRoomAndInviteFriends(@Payload RoomAndFriendsRequestDTO requestDTO) {  // {2}
+        ChatRoom chatRoom;
         try {
-            roomAndInviteFriends = chatRoomService.createRoomAndInviteFriends(requestDTO.getName(), requestDTO.getFriendLoginIds());
+            chatRoom = chatRoomService.createRoomAndInviteFriends(requestDTO.getName(), requestDTO.getFriendLoginIds());  // {3}
         } catch (BadRequestException e) {
             log.error("채팅방 생성 및 친구 초대 오류: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -42,12 +43,13 @@ public class ChatRoomController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.", e);
         }
 
-        // 클라이언트로부터 전달된 friendLoginIds 를 순회하며 메시지를 보냅니다.
         for (String friendLoginId : requestDTO.getFriendLoginIds()) {
-            // 생성된 주제 경로로 메시지를 전송합니다.
-            String topic = "/topic/public/" + friendLoginId;
-            messagingTemplate.convertAndSend(topic, roomAndInviteFriends.getId());
+            String topic = "/topic/public/" + friendLoginId;  // {4}
+            messagingTemplate.convertAndSend(topic, chatRoom.getId());  // {5}
         }
+
+//        String currentUserTopic = "/topic/public/" + SecurityUtil.getLoginId();
+//        messagingTemplate.convertAndSend(currentUserTopic, chatRoom.getId());
     }
 
     /**
