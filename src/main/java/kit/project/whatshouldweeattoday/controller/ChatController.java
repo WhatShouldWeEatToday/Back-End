@@ -41,7 +41,7 @@ public class ChatController {
      * @param voteRequest
      */
     @MessageMapping("/vote/register/{roomId}")
-//    @SendTo("/topic/votes/{roomId}")
+    @SendTo("/topic/votes/{roomId}")
     public VoteResponseDTO registerVote(@DestinationVariable("roomId") Long roomId, VoteRequestDTO voteRequest, @Payload RoomAndFriendsRequestDTO requestDTO) throws BadRequestException {
         try {
             Vote vote = voteService.createVote(voteRequest.getMenu1(), voteRequest.getMenu2());
