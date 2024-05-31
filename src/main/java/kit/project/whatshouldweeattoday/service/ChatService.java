@@ -1,6 +1,8 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.dto.chat.ChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.*;
+import kit.project.whatshouldweeattoday.domain.type.ResponseDetails;
 import kit.project.whatshouldweeattoday.repository.*;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -112,5 +116,25 @@ public class ChatService {
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new BadRequestException("존재하지 않는 약속입니다."));
         // 약속 종료 로직을 여기에 추가합니다 (예: 상태 변경)
         meetRepository.save(meet);
+    }
+
+    /**
+     * 채팅방 내 모든 메시지 조회
+     * @param roomId
+     */
+    @Transactional
+    public ResponseDetails findAllMsg(Long roomId) {
+        String path = "/chat/room/" + roomId + "/message";
+        log.info("채팅룸 메시지 조회를 시작합니다. [roomId : {}]", roomId);
+        List<Chat> chatList = chatRepository.findAllByRoomId(roomId);
+        List<ChatResponseDTO> list = new ArrayList<>();
+        for(Chat chat : chatList) {
+            list.add(ChatResponseDTO.builder()
+                    .id(chat.getId())
+                    .voteId(chat.getVote().getId())
+                    .meetId(chat.getMeet().getId())
+                    .build());
+        }
+        return new ResponseDetails(list, 200, path);
     }
 }

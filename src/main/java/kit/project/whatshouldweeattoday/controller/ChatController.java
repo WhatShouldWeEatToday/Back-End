@@ -1,26 +1,30 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
-import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Vote;
-import kit.project.whatshouldweeattoday.service.*;
+import kit.project.whatshouldweeattoday.domain.type.ResponseDetails;
+import kit.project.whatshouldweeattoday.service.ChatService;
+import kit.project.whatshouldweeattoday.service.MeetService;
+import kit.project.whatshouldweeattoday.service.PathService;
+import kit.project.whatshouldweeattoday.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.springframework.messaging.handler.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -33,7 +37,6 @@ public class ChatController {
     private final VoteService voteService;
     private final PathService pathService;
     private final MeetService meetService;
-    private final SimpMessageSendingOperations messagingTemplate;
 
     /**
      * 채팅방 내 투표 생성
@@ -59,12 +62,7 @@ public class ChatController {
      */
     @MessageMapping("/vote/increment/{voteId}")
     @SendTo("/topic/votes")
-    public VoteResponseDTO incrementVote(@DestinationVariable Long voteId, @Payload RoomAndFriendsRequestDTO requestDTO) throws BadRequestException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
-
+    public VoteResponseDTO incrementVote(@DestinationVariable Long voteId) throws BadRequestException {
         try {
             voteService.incrementVoteCount1(voteId);
             voteService.incrementVoteCount2(voteId);
@@ -76,11 +74,6 @@ public class ChatController {
             if (memberCount == totalCount) {
                 String maxVotedMenu = voteService.getMostVotedMenu(voteId);
                 meetService.registerMeetMenu(maxVotedMenu, vote.getChat().getId());
-            }
-
-            for (String friendLoginId : requestDTO.getFriendLoginIds()) {
-                String topic = "/topic/public/" + friendLoginId;
-                messagingTemplate.convertAndSend(topic, vote.getId());
             }
             return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
         } catch (Exception e) {
@@ -154,9 +147,13 @@ public class ChatController {
         return pathService.getWeight("떡볶이", departures);
     }
 
-//    @MessageMapping("/departure/register")
-//    @SendTo("/topic/public")
-//    public List<PersonalPath> findAllChat<String> departures) {
-//        return pathService.getWeight("떡볶이", departures);
-//    }
+    /**
+     * 채팅방 내 모든 메시지 조회
+     * @param roomId
+     */
+    @GetMapping(value = "/chat/room/{roomId}/message")
+    public ResponseEntity<?> message(@PathVariable("roomId") Long roomId) {
+        ResponseDetails responseDetails = chatService.findAllMsg(roomId);
+        return new ResponseEntity<>(responseDetails, HttpStatus.valueOf(responseDetails.getHttpStatus()));
+    }
 }
