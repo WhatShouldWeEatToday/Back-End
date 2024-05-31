@@ -14,21 +14,25 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
     public static final String DEFAULT_PATH = "/topic/public/";
-    public static final String VOTES_PATH = "/topic/votes/";
     public static final String DEFAULT_PATH_NO_TRAILING_SLASH = "/topic/public";
+    public static final String VOTES_PATH = "/topic/votes/";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
@@ -44,13 +48,9 @@ public class StompHandler implements ChannelInterceptor {
         try {
             if (StompCommand.CONNECT.equals(command)) {  // {7}
                 log.info("WebSocket CONNECT request received");
-//                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//                if (authentication != null) {
-//                    accessor.setUser(authentication);
-//                }
-
                 Member member = getMemberByAuthorizationHeader(
                         accessor.getFirstNativeHeader("Authorization"));
+
                 log.info("User authenticated: loginId={}, nickname={}", member.getLoginId(), member.getNickname());
                 setValue(accessor, "loginId", member.getLoginId());
                 setValue(accessor, "nickname", member.getNickname());
@@ -63,9 +63,11 @@ public class StompHandler implements ChannelInterceptor {
                 validateMemberInFriendship(loginId, friendLoginId);
 
             } else if (StompCommand.SEND.equals(command)) {
+//                Member member = getMemberByAuthorizationHeader(
+//                        accessor.getFirstNativeHeader("Authorization"));
+//                setValue(accessor, "loginId", member.getLoginId());
                 String destination = accessor.getDestination();
 
-                // 투표 생성 메시지에 대해서는 검증을 생략
                 if (destination != null && destination.startsWith("/app/vote/register/")) {
                     return message;
                 }
@@ -146,7 +148,7 @@ public class StompHandler implements ChannelInterceptor {
 
     private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
         friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
-                    .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
+                .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
     }
 
     private Object getValue(StompHeaderAccessor accessor, String key) {

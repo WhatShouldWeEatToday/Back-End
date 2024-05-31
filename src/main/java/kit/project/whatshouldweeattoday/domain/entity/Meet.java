@@ -23,6 +23,10 @@ public class Meet extends BaseTimeEntity {
     @OneToOne(mappedBy = "meet", fetch = FetchType.LAZY)
     private Chat chat;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CHAT_ROOM_ID")
+    private ChatRoom chatRoom;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "food_id")
     private Food food;
@@ -44,5 +48,13 @@ public class Meet extends BaseTimeEntity {
     public void updateMeet(String meetLocate, LocalDateTime meetTime) {
         this.meetLocate = meetLocate;
         this.meetTime = meetTime;
+    }
+
+    public void setMeetMenu(String meetMenu) {
+        this.meetMenu = meetMenu;
+    }
+
+    public void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
     }
 }

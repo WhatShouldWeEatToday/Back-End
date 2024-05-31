@@ -4,7 +4,6 @@ import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.type.MessageType;
-import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,9 +46,6 @@ public class ChatRoomController {
             String topic = "/topic/public/" + friendLoginId;  // {4}
             messagingTemplate.convertAndSend(topic, chatRoom.getId());  // {5}
         }
-
-//        String currentUserTopic = "/topic/public/" + SecurityUtil.getLoginId();
-//        messagingTemplate.convertAndSend(currentUserTopic, chatRoom.getId());
     }
 
     /**

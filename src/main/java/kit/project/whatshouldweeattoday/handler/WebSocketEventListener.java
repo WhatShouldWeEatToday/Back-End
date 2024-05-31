@@ -1,11 +1,7 @@
 package kit.project.whatshouldweeattoday.handler;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
-import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
-import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
-import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.domain.type.MessageType;
-import kit.project.whatshouldweeattoday.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -18,8 +14,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import java.security.Principal;
-import java.util.Map;
-import java.util.Objects;
+import java.util.HashMap;
 
 @Slf4j
 @Component
@@ -27,100 +22,51 @@ import java.util.Objects;
 public class WebSocketEventListener {
 
     private final SimpMessageSendingOperations messagingTemplate;
-    private final VoteService voteService;
 
-    /**
-     * 연결 요청
-     */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         Principal user = accessor.getUser();
         if (user != null) {
             log.info("Received a new web socket connection from user: {}", user.getName());
-        }
-    }
-
-    /**
-     * 구독 요청
-     */
-    @EventListener
-    public void handleWebSocketSubscribeListener(SessionSubscribeEvent event) throws BadRequestException {
-        log.info("Received a new web socket subscribe");
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-
-        String nickname = getValue(accessor, "nickname");
-        String loginId = getValue(accessor, "loginId");
-        String friendLoginId = getValue(accessor, "friendLoginId");
-
-        log.info("Member: {} {} Disconnected Crew : {}", loginId, nickname, friendLoginId);
-
-        ChatRoomMessage chatRoomMessage = new ChatRoomMessage(
-                MessageType.JOIN, loginId, nickname + "님이 입장하셨습니다."
-        );
-        messagingTemplate.convertAndSend("/topic/public/" + friendLoginId, chatRoomMessage);
-    }
-
-    @EventListener
-    public void handleVoteCreate(VoteRequestDTO request) {
-        Vote vote = voteService.createVote(request.getMenu1(), request.getMenu2());
-        messagingTemplate.convertAndSend("/topic/votes/" + vote.getId(), vote);
-    }
-
-//    @EventListener
-//    public void handleVoteIncrement(Long voteId, String menu) {
-//        VoteResponseDTO response = voteService.incrementVote(voteId, menu);
-//        messagingTemplate.convertAndSend("/topic/vote/" + response.getVoteId(), response);
-//    }
-
-    /**
-     * 연결 해제
-     */
-    @EventListener
-    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) throws BadRequestException {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-
-        String nickname = getValue(accessor, "nickname");
-        String loginId = getValue(accessor, "loginId");
-        String friendLoginId = getValue(accessor, "friendLoginId");
-
-        log.info("Member: {} {} Disconnected Crew : {}", loginId, nickname, friendLoginId);
-
-        ChatRoomMessage chatRoomMessage = new ChatRoomMessage(
-                MessageType.LEAVE, loginId, nickname + "님이 떠났습니다."
-        );
-
-        if (friendLoginId != null) {
-            messagingTemplate.convertAndSend("/topic/public/" + friendLoginId, chatRoomMessage); // {9}
         } else {
-            log.error("friendLoginId is null.");
+            // 인증되지 않은 사용자의 연결을 거부하고 오류 메시지를 전송하여 연결 종료
+            messagingTemplate.convertAndSendToUser(accessor.getSessionId(), "/queue/errors", "Unauthorized connection");
+            // 세션 속성이 null인 경우 초기화
+            if (accessor.getSessionAttributes() == null) {
+                accessor.setSessionAttributes(new HashMap<>());
+            }
+
+            // 세션 속성에 disconnectAfterSend 속성 추가
+            accessor.getSessionAttributes().put("disconnectAfterSend", true);
         }
     }
 
-    private String getValue(StompHeaderAccessor accessor, String key) throws BadRequestException {
-        try {
-            Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
-            Object value = sessionAttributes.get(key);
-
-            if (Objects.isNull(value)) {
-                throw new BadRequestException(key + " 에 해당하는 값이 없습니다.");
+    @EventListener
+    public void handleWebSocketSubscribeListener(SessionSubscribeEvent event) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        Principal user = accessor.getUser();
+        if (user != null) {
+            log.info("User {} subscribed", user.getName());
+        } else {
+            // 인증되지 않은 사용자의 연결을 거부하고 오류 메시지를 전송하여 연결 종료
+            messagingTemplate.convertAndSendToUser(accessor.getSessionId(), "/queue/errors", "Unauthorized connection");
+            // 세션 속성이 null인 경우 초기화
+            if (accessor.getSessionAttributes() == null) {
+                accessor.setSessionAttributes(new HashMap<>());
             }
-            return String.valueOf(value);
-        } catch (Exception e) {
-            throw new BadRequestException("값을 가져오는 동안 오류가 발생했습니다: " + e.getMessage());
+
+            // 세션 속성에 disconnectAfterSend 속성 추가
+            accessor.getSessionAttributes().put("disconnectAfterSend", true);
         }
     }
 
-    private Map<String, Object> getSessionAttributes(StompHeaderAccessor accessor) throws BadRequestException {
-        try {
-            Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
-
-            if (Objects.isNull(sessionAttributes)) {
-                throw new BadRequestException("SessionAttributes가 null입니다.");
-            }
-            return sessionAttributes;
-        } catch (Exception e) {
-            throw new BadRequestException("세션 속성을 가져오는 동안 오류가 발생했습니다: " + e.getMessage());
+    @EventListener
+    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        Principal user = accessor.getUser();
+        if (user != null) {
+            log.info("User Disconnected: {}", user.getName());
         }
     }
 }
