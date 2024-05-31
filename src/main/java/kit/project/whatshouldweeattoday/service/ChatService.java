@@ -4,6 +4,7 @@ import kit.project.whatshouldweeattoday.domain.entity.*;
 import kit.project.whatshouldweeattoday.repository.*;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -32,6 +34,7 @@ public class ChatService {
     public void createVote(Long roomId, String menu1, String menu2) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
         Vote vote = voteRepository.save(Vote.createVote(menu1, menu2));
+        log.info("loginId = {}", SecurityUtil.getLoginId());
 
         chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }

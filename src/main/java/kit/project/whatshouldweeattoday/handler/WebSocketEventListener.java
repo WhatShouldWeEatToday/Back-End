@@ -1,7 +1,11 @@
 package kit.project.whatshouldweeattoday.handler;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
+import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.domain.type.MessageType;
+import kit.project.whatshouldweeattoday.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -23,6 +27,7 @@ import java.util.Objects;
 public class WebSocketEventListener {
 
     private final SimpMessageSendingOperations messagingTemplate;
+    private final VoteService voteService;
 
     /**
      * 연결 요청
@@ -55,6 +60,18 @@ public class WebSocketEventListener {
         );
         messagingTemplate.convertAndSend("/topic/public/" + friendLoginId, chatRoomMessage);
     }
+
+    @EventListener
+    public void handleVoteCreate(VoteRequestDTO request) {
+        Vote vote = voteService.createVote(request.getMenu1(), request.getMenu2());
+        messagingTemplate.convertAndSend("/topic/votes/" + vote.getId(), vote);
+    }
+
+//    @EventListener
+//    public void handleVoteIncrement(Long voteId, String menu) {
+//        VoteResponseDTO response = voteService.incrementVote(voteId, menu);
+//        messagingTemplate.convertAndSend("/topic/vote/" + response.getVoteId(), response);
+//    }
 
     /**
      * 연결 해제

@@ -27,6 +27,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
     public static final String DEFAULT_PATH = "/topic/public/";
+    public static final String VOTES_PATH = "/topic/votes/";
     public static final String DEFAULT_PATH_NO_TRAILING_SLASH = "/topic/public";
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -43,10 +44,10 @@ public class StompHandler implements ChannelInterceptor {
         try {
             if (StompCommand.CONNECT.equals(command)) {  // {7}
                 log.info("WebSocket CONNECT request received");
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (authentication != null) {
-                    accessor.setUser(authentication);
-                }
+//                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//                if (authentication != null) {
+//                    accessor.setUser(authentication);
+//                }
 
                 Member member = getMemberByAuthorizationHeader(
                         accessor.getFirstNativeHeader("Authorization"));
@@ -56,11 +57,19 @@ public class StompHandler implements ChannelInterceptor {
 
             } else if (StompCommand.SUBSCRIBE.equals(command)) {  // {8}
                 String loginId = (String) getValue(accessor, "loginId");
-                String friendLoginId = parseFriendLoginIdFromPath(accessor);
+                String friendLoginId = parseIdFromPath(accessor);
                 log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
                 setValue(accessor, "friendLoginId", friendLoginId);
                 validateMemberInFriendship(loginId, friendLoginId);
 
+            } else if (StompCommand.SEND.equals(command)) {
+                String destination = accessor.getDestination();
+
+                // 투표 생성 메시지에 대해서는 검증을 생략
+                if (destination != null && destination.startsWith("/app/vote/register/")) {
+                    return message;
+                }
+                return message;
             } else if (StompCommand.DISCONNECT.equals(command)) {
                 String loginId = (String) getValue(accessor, "loginId");
                 log.info("WebSocket DISCONNECTED request received: loginId = {}", loginId);
@@ -101,12 +110,22 @@ public class StompHandler implements ChannelInterceptor {
         return accessToken;
     }
 
-    private String parseFriendLoginIdFromPath(StompHeaderAccessor accessor) {
+    private String parseIdFromPath(StompHeaderAccessor accessor) {
         String destination = accessor.getDestination();
 
         if (destination == null) {
             log.error("Destination is null.");
             throw new IllegalArgumentException("Destination cannot be null.");
+        }
+
+        if (destination.startsWith(VOTES_PATH)) {
+            String pathSuffix = destination.substring(VOTES_PATH.length());
+            try {
+                return pathSuffix;
+            } catch (NumberFormatException e) {
+                log.error("Invalid voteId format: " + pathSuffix);
+                throw new IllegalArgumentException("Invalid voteId format.");
+            }
         }
 
         if (!destination.startsWith(DEFAULT_PATH) && !destination.equals(DEFAULT_PATH_NO_TRAILING_SLASH)) {
@@ -126,12 +145,8 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
-//        String[] sFriendLoginIds = friendLoginId.split(",");
-//
-//        for (String sFriendLoginId : sFriendLoginIds) {
-            friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
+        friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
                     .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
-//        }
     }
 
     private Object getValue(StompHeaderAccessor accessor, String key) {
