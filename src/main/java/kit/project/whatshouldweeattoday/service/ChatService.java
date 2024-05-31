@@ -6,11 +6,12 @@ import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +35,14 @@ public class ChatService {
     public void createVote(Long roomId, String menu1, String menu2) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
         Vote vote = voteRepository.save(Vote.createVote(menu1, menu2));
-        log.info("loginId = {}", SecurityUtil.getLoginId());
 
-        chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
+        chatRepository.save(Chat.createChat(chatRoom, vote, null));
+    }
+
+    public int getMemberCount(Long chatRoomId) throws BadRequestException {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
+        return chatRoom.getMembers().size();
     }
 
     /**
@@ -80,7 +86,7 @@ public class ChatService {
 
         foodService.increaseFoodCount(meetLocate);
 
-        return chatRepository.save(Chat.createChat(chatRoom, null, meet, SecurityUtil.getLoginId()));
+        return chatRepository.save(Chat.createChat(chatRoom, null, meet));
     }
 
     /**

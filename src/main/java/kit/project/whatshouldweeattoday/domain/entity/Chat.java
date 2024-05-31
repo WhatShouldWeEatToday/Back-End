@@ -47,11 +47,11 @@ public class Chat {
     }
 
     @Builder
-    public Chat(ChatRoom room, Vote vote, Meet meet, String sender) {
+    public Chat(ChatRoom room, Vote vote, Meet meet) {
         this.room = room;
         this.vote = vote;
         this.meet = meet;
-        this.sender = sender;
+//        this.sender = sender;
         this.sendDate = LocalDateTime.now();
     }
 
@@ -63,12 +63,12 @@ public class Chat {
      * @param sender  보낸 이
      * @return Chat Entity
      */
-    public static Chat createChat(ChatRoom room, Vote vote, Meet meet, String sender) {
+    public static Chat createChat(ChatRoom room, Vote vote, Meet meet) {
         return Chat.builder()
                 .room(room)
                 .vote(vote)
                 .meet(meet)
-                .sender(sender)
+//                .sender(sender)
                 .build();
     }
 }
