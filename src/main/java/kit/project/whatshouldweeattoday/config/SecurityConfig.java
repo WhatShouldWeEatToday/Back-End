@@ -41,14 +41,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-//                .csrf(AbstractHttpConfigurer::disable) // 정상적인 사용자가 의도치 않은 위조 요청을 보내는 것
+                .csrf(AbstractHttpConfigurer::disable) // 정상적인 사용자가 의도치 않은 위조 요청을 보내는 것
                 .formLogin(AbstractHttpConfigurer::disable) // formLogin 인증방법 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // httpBasic 인증방법 비활성화(특정 리소스에 접근할 때 loginId 와 loginPw 물어봄)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests((authorize) -> authorize // 인증, 인가 필요한 URL 지정
-//                        .requestMatchers("/", "/signup", "/signin","/api/signup", "/api/signin", "/confirmId", "/confirmNickname").permitAll() // 지정된 URL 은 인증, 인가 없이도 접근 허용
+                        .requestMatchers("/", "/signup", "/signin","/api/signup", "/api/signin", "/confirmId", "/confirmNickname").permitAll() // 지정된 URL 은 인증, 인가 없이도 접근 허용
                         .requestMatchers("/ws/**").authenticated()
                         .anyRequest().permitAll())
                 .logout((logout) -> logout

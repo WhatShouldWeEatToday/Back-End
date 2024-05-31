@@ -8,6 +8,4 @@ import java.util.Optional;
 
 public interface ChatRepository extends CrudRepository<Chat, Long> {
     List<Chat> findAllByRoomId(Long roomId);
-
-    Optional<Chat> findTopByRoomIdAndVoteNotNullOrderBySendDateDesc(Long roomId);
 }
