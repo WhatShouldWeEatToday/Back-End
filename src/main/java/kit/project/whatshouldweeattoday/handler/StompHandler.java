@@ -9,20 +9,18 @@ import kit.project.whatshouldweeattoday.security.service.JwtTokenProvider;
 import kit.project.whatshouldweeattoday.security.util.ExtractUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -36,22 +34,27 @@ public class StompHandler implements ChannelInterceptor {
     private final FriendshipRepository friendshipRepository;
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {  // {6}
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompCommand command = accessor.getCommand();
 
         log.info("Received WebSocket command: {}", command);
 
         try {
-            if (StompCommand.CONNECT.equals(command)) {
+            if (StompCommand.CONNECT.equals(command)) {  // {7}
                 log.info("WebSocket CONNECT request received");
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication != null) {
+                    accessor.setUser(authentication);
+                }
+
                 Member member = getMemberByAuthorizationHeader(
                         accessor.getFirstNativeHeader("Authorization"));
                 log.info("User authenticated: loginId={}, nickname={}", member.getLoginId(), member.getNickname());
                 setValue(accessor, "loginId", member.getLoginId());
                 setValue(accessor, "nickname", member.getNickname());
 
-            } else if (StompCommand.SUBSCRIBE.equals(command)) {
+            } else if (StompCommand.SUBSCRIBE.equals(command)) {  // {8}
                 String loginId = (String) getValue(accessor, "loginId");
                 String friendLoginId = parseFriendLoginIdFromPath(accessor);
                 log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
@@ -123,12 +126,12 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
-        String[] sFriendLoginIds = friendLoginId.split(",");
-
-        for (String sFriendLoginId : sFriendLoginIds) {
-            friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, sFriendLoginId)
+//        String[] sFriendLoginIds = friendLoginId.split(",");
+//
+//        for (String sFriendLoginId : sFriendLoginIds) {
+            friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
                     .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
-        }
+//        }
     }
 
     private Object getValue(StompHeaderAccessor accessor, String key) {
