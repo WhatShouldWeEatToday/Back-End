@@ -33,11 +33,6 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
         Vote vote = voteRepository.save(Vote.createVote(menu1, menu2));
 
-        List<Member> members = memberRepository.findAllByChatRoomId(roomId);
-//        for (Member member : members) {
-//            noticeService.sendNotice("메뉴가 선정되었습니다. 오늘의 메뉴는? " + menu, NoticeType.VOTE, member.getLoginId());
-//        }
-
         chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }
 

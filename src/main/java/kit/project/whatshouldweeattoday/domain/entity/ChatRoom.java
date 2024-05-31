@@ -16,7 +16,7 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_id")
     private Long id;
-    private String name;
+    private String roomName;
 
     @ManyToMany
     @JoinTable(
@@ -27,13 +27,13 @@ public class ChatRoom {
     private Set<Member> members = new HashSet<>();
 
     @Builder
-    public ChatRoom(String name) {
-        this.name = name;
+    public ChatRoom(String roomName) {
+        this.roomName = roomName;
     }
 
-    public static ChatRoom createRoom(String name) {
+    public static ChatRoom createRoom(String roomName) {
         return ChatRoom.builder()
-                .name(name)
+                .roomName(roomName)
                 .build();
     }
 

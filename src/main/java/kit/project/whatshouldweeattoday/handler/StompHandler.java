@@ -123,8 +123,12 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
-        friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, friendLoginId)
-                .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
+        String[] sFriendLoginIds = friendLoginId.split(",");
+
+        for (String sFriendLoginId : sFriendLoginIds) {
+            friendshipRepository.findOneByMemberLoginIdAndFriendLoginId(memberLoginId, sFriendLoginId)
+                    .orElseThrow(() -> new WebSocketException("조회된 friendship 결과가 없습니다."));
+        }
     }
 
     private Object getValue(StompHeaderAccessor accessor, String key) {

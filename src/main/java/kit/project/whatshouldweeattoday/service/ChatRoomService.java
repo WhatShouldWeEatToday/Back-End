@@ -6,6 +6,7 @@ import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.repository.ChatRepository;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
+import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -39,6 +40,9 @@ public class ChatRoomService {
         if (friends.isEmpty()) {
             throw new BadRequestException("초대할 친구가 없습니다.");
         }
+//        Member member = memberRepository.findByLoginId(SecurityUtil.getLoginId())
+//                .orElseThrow(() -> new BadRequestException("존재하지 않는 회원입니다."));
+//        chatRoom.addMember(member);
         chatRoom.addMembers(friends);
         ChatRoom save = chatRoomRepository.save(chatRoom);
         log.info("채팅방 생성 아이디={}", save.getId());
