@@ -61,7 +61,7 @@ public class NoticeService {
         // 현재 날짜를 String으로 변환
         String dateString = dateFormat.format(new Date());
 
-        Notice notice = new Notice(member, content, dateString);
+        Notice notice = new Notice(member,content);
         noticeRepository.save(notice);
 
         NoticeResponseDTO responseDTO = new NoticeResponseDTO(
