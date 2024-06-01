@@ -22,10 +22,10 @@ public class LikesController {
 
     //리뷰 좋아요 등록
     @PostMapping("/api/review/{reviewId}/likes")
-    public ResponseEntity<LikesResponseDTO> reviewLikes(@PathVariable Long reviewId) {
+    public ResponseEntity<MsgResponseDTO> reviewLikes(@PathVariable Long reviewId) {
         LikesRequestDTO likesRequestDTO = new LikesRequestDTO();
-        LikesResponseDTO responseDTOS= likesService.save(reviewId, likesRequestDTO);
-        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
+        likesService.save(reviewId, likesRequestDTO);
+        return ResponseEntity.ok(new MsgResponseDTO("좋아요 등록 완료", HttpStatus.OK.value()));
     }
 
     //리뷰 좋아요 취소
