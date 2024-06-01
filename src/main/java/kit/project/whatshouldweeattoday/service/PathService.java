@@ -101,7 +101,7 @@ public class PathService {
             System.out.println(restaurants.get(i).getAddressNumber());
         }
         //3-2. 키워드로만 검색
-        restaurants = restaurantRepository.findByKeyword(keyword);
+        restaurants = filterByKeyword(restaurants,keyword);
         System.out.println("키워드 검색된 식당 수 : "+restaurants.size());
         for(int i = 0;i<restaurants.size();i++){
             System.out.println(restaurants.get(i).getName());
@@ -165,6 +165,14 @@ public class PathService {
             personalPaths.add(target);
         }
         return personalPaths;
+    }
+
+    //키워드로 식당 필터링
+    private List<Restaurant> filterByKeyword(List<Restaurant> restaurants, String keyword) {
+        return restaurants.stream()
+                .filter(restaurant -> restaurant.getName().contains(keyword) ||
+                        restaurant.getMenus().contains(keyword))
+                .collect(Collectors.toList());
     }
 
 }

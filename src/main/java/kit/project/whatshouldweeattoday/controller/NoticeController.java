@@ -16,6 +16,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
+
     @GetMapping("/{loginId}")
     public List<NoticeResponseDTO> getNoticesByType(@PathVariable(name = "loginId") String loginId) {
         return noticeService.getNoticesByMember(loginId);

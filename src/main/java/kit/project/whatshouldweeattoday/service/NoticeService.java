@@ -22,7 +22,7 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final MemberRepository memberRepository;
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
    /* public List<Notice> getNoticesByMember(String loginId) {
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
@@ -71,7 +71,7 @@ public class NoticeService {
                 notice.getCreatedDate()
         );
 
-        messagingTemplate.convertAndSend("/topic/notices", responseDTO);
+        messagingTemplate.convertAndSendToUser(member.getLoginId(), "/topic/notices", responseDTO);
 
         return responseDTO;
     }
