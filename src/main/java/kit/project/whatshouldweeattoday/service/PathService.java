@@ -93,8 +93,21 @@ public class PathService {
         //2. 사용자의 위치정보를 주소로 반환후 XX동 XX까지 추출
         String userAddress = tmapService.getAddressByCoordinates2(startX, startY);
         System.out.println("주소 : "+userAddress);
-        //3. 주소 & 키워드로 음식점 검색
-        restaurants = restaurantRepository.findByKeywordAndAddress(keyword, userAddress);
+        //3-1. 주소로만 검색
+        restaurants = restaurantRepository.findByOnlyAddress(userAddress);
+        System.out.println("주소로 검색된 식당 수 : "+restaurants.size());
+        for(int i = 0;i<restaurants.size();i++){
+            System.out.println(restaurants.get(i).getName());
+            System.out.println(restaurants.get(i).getAddressNumber());
+        }
+        //3-2. 키워드로만 검색
+        restaurants = restaurantRepository.findByKeyword(keyword);
+        System.out.println("키워드 검색된 식당 수 : "+restaurants.size());
+        for(int i = 0;i<restaurants.size();i++){
+            System.out.println(restaurants.get(i).getName());
+            System.out.println(restaurants.get(i).getAddressNumber());
+        }
+
         //4.리뷰평점순으로 20개 추출(1차 필터링)
         restaurants = sortByDegree(restaurants);
         //5. 경로구하기 -> 여기서 personalPath로 변환

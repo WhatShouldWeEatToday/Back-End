@@ -22,8 +22,8 @@ public class Friendship {
 
     private Long counterpartId; // 상대가 보낸 요청 아이디
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
     public void acceptFriendshipRequest() {

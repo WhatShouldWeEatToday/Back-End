@@ -38,9 +38,7 @@ public class BookmarkController {
     //즐겨찾기 조회
     @GetMapping("/restaurant/bookmark")
     public ResponseEntity<Page<BookmarkResponseDTO>> findAll(@PageableDefault(sort = "id", direction = Sort.Direction.ASC, size = 10) Pageable pageable) {
-        Page<BookmarkResponseDTO> page = bookmarkService.findAll(pageable);
+        Page<BookmarkResponseDTO> page = bookmarkService.findAllBookmarks(pageable);
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
-
-
 }
