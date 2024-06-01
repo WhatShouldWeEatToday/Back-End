@@ -26,7 +26,9 @@ public class Likes {
     private Member member;
 
     @Builder
-    public Likes(Boolean state){
+    public Likes(Member member, Boolean state, Review review){
+        this.member=member;
         this.state=state;
+        this.review=review;
     }
 }
