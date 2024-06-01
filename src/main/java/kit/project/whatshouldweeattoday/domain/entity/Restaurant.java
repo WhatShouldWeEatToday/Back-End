@@ -42,7 +42,7 @@ public class Restaurant {
     private Double distance;
     private Long count; // 음식종류별 순위
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonManagedReference
     private List<Bookmark> bookmark;
 

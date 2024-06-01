@@ -1,21 +1,23 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Notice {
+public class Notice extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "NOTICE_ID")
     private Long id;
     private String content;
-    private String createdDate;
+    private NoticeType noticeType;
 
     @OneToOne(mappedBy = "notice", fetch = FetchType.LAZY)
     private Chat chat;
@@ -24,11 +26,9 @@ public class Notice {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    public Notice(Member member, String content, String createdDate) {
+    public Notice(Member member, String content,NoticeType noticeType) {
         this.member = member;
         this.content = content;
-        LocalDateTime localDateTime = LocalDateTime.now();
-        this.createdDate = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+        this.noticeType=noticeType;
     }
-
 }

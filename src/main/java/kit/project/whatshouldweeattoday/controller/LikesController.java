@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import kit.project.whatshouldweeattoday.domain.dto.bookmark.BookmarkRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
@@ -20,17 +21,15 @@ public class LikesController {
     private final LikesService likesService;
     private final ReviewRepository reviewRepository;
 
-    //리뷰 좋아요 등록
+    // 리뷰 좋아요 등록 또는 취소
     @PostMapping("/api/review/{reviewId}/likes")
-    public ResponseEntity<LikesResponseDTO> reviewLikes(@PathVariable Long reviewId) {
-        LikesRequestDTO likesRequestDTO = new LikesRequestDTO();
-        LikesResponseDTO responseDTOS= likesService.save(reviewId, likesRequestDTO);
-        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
-    }
-
-    //리뷰 좋아요 취소
-    @DeleteMapping("/api/review/{reviewId}/likes/{likesId}")
-    public ResponseEntity<MsgResponseDTO> reviewDelete(@PathVariable Long reviewId, @PathVariable Long likesId) {
-        return new ResponseEntity<>(likesService.delete(reviewId,likesId), HttpStatus.OK);
+    public ResponseEntity<?> reviewLikes(@PathVariable Long reviewId) {
+        try {
+            // 좋아요 등록 또는 취소
+            likesService.toggleLike(reviewId);
+            return ResponseEntity.ok().build(); // 성공 응답
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to toggle review likes"); // 실패 응답
+        }
     }
 }

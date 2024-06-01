@@ -18,15 +18,17 @@ public class Likes {
     private Boolean state;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
+    @JoinColumn(name = "REVIEW_ID")
     private Review review;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
     @Builder
-    public Likes(Boolean state){
+    public Likes(Member member, Boolean state, Review review){
+        this.member=member;
         this.state=state;
+        this.review=review;
     }
 }

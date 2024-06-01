@@ -28,6 +28,7 @@ public class PathService {
     }
 
     // startAddres = 채팅방 사람들의 출발지 list
+    // startAddres = 채팅방 사람들의 출발지 list
     @Transactional
     public List<PersonalPath> getWeight(String keyword, List<String> startAddress) {
         List<PersonalPath> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
@@ -51,7 +52,6 @@ public class PathService {
             }
         }
         sortPersonalPathByWeightTop3(resultSort);
-
         return resultSort;
     }
 
@@ -93,8 +93,21 @@ public class PathService {
         //2. 사용자의 위치정보를 주소로 반환후 XX동 XX까지 추출
         String userAddress = tmapService.getAddressByCoordinates2(startX, startY);
         System.out.println("주소 : "+userAddress);
-        //3. 주소 & 키워드로 음식점 검색
-        restaurants = restaurantRepository.findByKeywordAndAddress(keyword, userAddress);
+        //3-1. 주소로만 검색
+        restaurants = restaurantRepository.findByOnlyAddress(userAddress);
+        System.out.println("주소로 검색된 식당 수 : "+restaurants.size());
+        for(int i = 0;i<restaurants.size();i++){
+            System.out.println(restaurants.get(i).getName());
+            System.out.println(restaurants.get(i).getAddressNumber());
+        }
+        //3-2. 키워드로만 검색
+        restaurants = filterByKeyword(restaurants,keyword);
+        System.out.println("키워드 검색된 식당 수 : "+restaurants.size());
+        for(int i = 0;i<restaurants.size();i++){
+            System.out.println(restaurants.get(i).getName());
+            System.out.println(restaurants.get(i).getAddressNumber());
+        }
+
         //4.리뷰평점순으로 20개 추출(1차 필터링)
         restaurants = sortByDegree(restaurants);
         //5. 경로구하기 -> 여기서 personalPath로 변환
@@ -152,6 +165,14 @@ public class PathService {
             personalPaths.add(target);
         }
         return personalPaths;
+    }
+
+    //키워드로 식당 필터링
+    private List<Restaurant> filterByKeyword(List<Restaurant> restaurants, String keyword) {
+        return restaurants.stream()
+                .filter(restaurant -> restaurant.getName().contains(keyword) ||
+                        restaurant.getMenus().contains(keyword))
+                .collect(Collectors.toList());
     }
 
 }
