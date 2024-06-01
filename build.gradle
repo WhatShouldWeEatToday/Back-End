@@ -35,7 +35,7 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-session'
+   // implementation 'org.springframework.boot:spring-boot-starter-session'
 
     /* webjars */
     implementation 'org.webjars:webjars-locator-core'
