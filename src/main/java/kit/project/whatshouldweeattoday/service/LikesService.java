@@ -8,6 +8,7 @@ import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponse
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.*;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.repository.LikesRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.repository.NoticeRepository;
@@ -101,7 +102,7 @@ public class LikesService {
             Member member2 = memberRepository.findByLoginId(likes.getReview().getMember().getLoginId())
                     .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
             content = member.getNickname()+"님이 "+likes.getReview().getRestaurant().getName()+"의 리뷰에 좋아요를 등록했습니다.";
-            Notice notice = new Notice(member2,content);
+            Notice notice = new Notice(member2,content, NoticeType.LIKES);
             likesRepository.save(likes);
             noticeRepository.save(notice);
             review.setTotalLikes(review.getTotalLikes() + 1); // 리뷰 좋아요 개수 증가

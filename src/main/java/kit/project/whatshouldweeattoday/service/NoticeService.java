@@ -50,11 +50,11 @@ public class NoticeService {
                 notice.getId(),
                 notice.getMember().getId(),
                 notice.getContent(),
-                notice.getCreatedDate()
+                notice.getNoticeType()
         )).collect(Collectors.toList());
     }
 
-    public NoticeResponseDTO sendNotice(String loginId, String content, String createdDate) {
+    /*public NoticeResponseDTO sendNotice(String loginId, String content, String createdDate) {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -68,11 +68,11 @@ public class NoticeService {
                 notice.getId(),
                 notice.getMember().getId(),
                 notice.getContent(),
-                notice.getCreatedDate()
+                notice.getNoticeType()
         );
 
         messagingTemplate.convertAndSendToUser(member.getLoginId(), "/topic/notices", responseDTO);
 
         return responseDTO;
-    }
+    }*/
 }
