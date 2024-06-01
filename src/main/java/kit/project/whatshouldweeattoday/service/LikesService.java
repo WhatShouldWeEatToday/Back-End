@@ -41,6 +41,7 @@ public class LikesService {
         String loginId = SecurityUtil.getLoginId();
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+
         Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
         Likes likes = likesRequestDTO.toSaveEntity();
         likes.setReview(review);
