@@ -38,9 +38,10 @@ public class LikesService {
     //리뷰 좋아요
     @Transactional
     public void save(Long reviewId, LikesRequestDTO likesRequestDTO){
-        Member member = getCurrentMember();
-
-       Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
+        String loginId = SecurityUtil.getLoginId();
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+        Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
         Likes likes = likesRequestDTO.toSaveEntity();
         likes.setReview(review);
         likes.setState(true);
