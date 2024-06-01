@@ -37,7 +37,7 @@ public class LikesService {
 
     //리뷰 좋아요
     @Transactional
-    public LikesResponseDTO save(Long reviewId, LikesRequestDTO likesRequestDTO){
+    public void save(Long reviewId, LikesRequestDTO likesRequestDTO){
         Member member = getCurrentMember();
 
        Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
@@ -51,7 +51,6 @@ public class LikesService {
         Notice notice = new Notice(review.getMember(),noticeContent,localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")));// -> 좋아요알림
         likesRepository.save(likes);
         noticeRepository.save(notice);
-        return new LikesResponseDTO(likes);
     }
 
     //리뷰 좋아요 취소
