@@ -35,7 +35,7 @@ public class MemberService {
         return memberRepository.findByLoginIdContaining(loginId, pageable);
     }
 
-    public JwtTokenDTO signIn(String username, String password) {
+    public JwtTokenDTO signIn(String username, String password) { //, String sessionId
         // 1. username + password 를 기반으로 Authentication 객체 생성
         // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
@@ -45,7 +45,7 @@ public class MemberService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        return jwtTokenProvider.generateToken(authentication);
+        return jwtTokenProvider.generateToken(authentication); //, sessionId
     }
 
     public void createMember(SignupRequestDTO signupRequestDTO) throws BadRequestException {
