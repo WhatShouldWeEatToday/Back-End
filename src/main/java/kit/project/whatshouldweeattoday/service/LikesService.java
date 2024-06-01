@@ -44,13 +44,13 @@ public class LikesService {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RuntimeException("리뷰를 찾을 수 없습니다."));
 
         // 좋아요 상태 확인
-        boolean isLiked = likesRepository.existsByReviewIdAndMemberIdAndState(reviewId,member.getId(), true);
+        boolean isLiked = likesRepository.existsByReviewIdAndMemberIdAndState(reviewId, member.getId(), true);
 
         if (isLiked) {
             // 이미 좋아요를 눌렀으면 좋아요 취소
             delete(reviewId);
         } else {
-            // 아직 좋아요를 누르지 않았으면 좋아요 등록
+            // 좋아요를 누르지 않았다면 좋아요 등록
             Likes likes = likesRequestDTO.toSaveEntity(member, review, true);
             likesRepository.save(likes);
             review.setTotalLikes(review.getTotalLikes() + 1); // 리뷰 좋아요 개수 증가
