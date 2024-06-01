@@ -90,12 +90,20 @@ public class LikesService {
             likesRepository.delete(likes);
             review.setTotalLikes(review.getTotalLikes() - 1); // 리뷰 좋아요 개수 감소
         } else {
+
+            String content;
             // 아직 좋아요를 누르지 않았으면 좋아요 등록
             Likes likes = new Likes();
             likes.setMember(member);
             likes.setReview(review);
             likes.setState(true);
+            Member member2 = memberRepository.findByLoginId(likes.getReview().getMember().getLoginId())
+                    .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+            content = member.getNickname()+"님이 "+likes.getReview().getRestaurant().getName()+"의 리뷰에 좋아요를 등록했습니다.";
+            LocalDateTime localDateTime = LocalDateTime.now();
+            Notice notice = new Notice(member2,content,localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")));
             likesRepository.save(likes);
+            noticeRepository.save(notice);
             review.setTotalLikes(review.getTotalLikes() + 1); // 리뷰 좋아요 개수 증가
         }
     }
