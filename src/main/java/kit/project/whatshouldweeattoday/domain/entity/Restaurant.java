@@ -42,10 +42,9 @@ public class Restaurant {
     private Double distance;
     private Long count; // 음식종류별 순위
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bookmark_id")
-    @JsonBackReference
-    private Bookmark bookmark;
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Bookmark> bookmark;
 
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference

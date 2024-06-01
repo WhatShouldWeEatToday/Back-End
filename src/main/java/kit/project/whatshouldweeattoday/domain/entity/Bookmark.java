@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Bookmark {
 
@@ -21,19 +23,22 @@ public class Bookmark {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "bookmark", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Restaurant> restaurants = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
 
-    public void setRestaurants(Restaurant restaurant) {
+    @Builder
+    public Bookmark(Member member, Restaurant restaurant) {
+        this.member = member;
+        this.restaurant = restaurant;
+    }
+   /* public void setRestaurants(Restaurant restaurant) {
         if (restaurant != null) {
             if (restaurants == null) {
                 restaurants = new ArrayList<>();
             }
             restaurants.add(restaurant); // 리스트에 Restaurant 객체 추가
         }
-    }
-    @Builder
-    public Bookmark(Restaurant restaurant) {
-        this.restaurants.add(restaurant);
-    }
+    }*/
+
 }

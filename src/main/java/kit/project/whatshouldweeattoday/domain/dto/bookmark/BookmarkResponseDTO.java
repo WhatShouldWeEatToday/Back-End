@@ -11,19 +11,12 @@ import java.util.stream.Collectors;
 
 @Getter
 public class BookmarkResponseDTO {
-    private long id;
-    private List<RestaurantResponseDTO> restaurants;
-
-    @Builder
-    public BookmarkResponseDTO(Long id, List<RestaurantResponseDTO> restaurants) {
-        this.id = id;
-        this.restaurants = restaurants;
-    }
+    private Long id;
+    private Restaurant restaurant;
+    private Long member_id;
 
     public BookmarkResponseDTO(Bookmark bookmark){
         this.id = bookmark.getId();
-        this.restaurants = bookmark.getRestaurants().stream()
-                .map(RestaurantResponseDTO::new) // 각 Restaurant를 RestaurantResponseDTO로 변환
-                .collect(Collectors.toList());
+        this.restaurant = bookmark.getRestaurant();
     }
 }
