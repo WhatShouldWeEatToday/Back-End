@@ -21,7 +21,7 @@ public class LikesRequestDTO {
         this.review=review;
         this.state=state;
     }
-    public Likes toSaveEntity(Member member, Review review){
+    public Likes toSaveEntity(Member member, Review review,Boolean state ){
         System.out.println("좋아요 테이블에 리뷰 저장");
         return Likes.builder()
                 .member(member)

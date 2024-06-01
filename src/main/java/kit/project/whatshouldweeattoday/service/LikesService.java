@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.dto.bookmark.BookmarkRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.bookmark.BookmarkResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.likes.LikesResponseDTO;
@@ -26,44 +27,48 @@ import java.time.format.DateTimeFormatter;
 @Service
 @RequiredArgsConstructor
 public class LikesService {
-    @Autowired
-    private LikesRepository likesRepository;
-    @Autowired
-    private ReviewRepository reviewRepository;
-    @Autowired
-    private NoticeRepository noticeRepository;
-    @Autowired
-    private MemberRepository memberRepository;
+    private final LikesRepository likesRepository;
+    private final ReviewRepository reviewRepository;
+    private final NoticeRepository noticeRepository;
+    private final MemberRepository memberRepository;
 
     //리뷰 좋아요
+    //리뷰 좋아요 등록
     @Transactional
-    public void save(Long reviewId, LikesRequestDTO likesRequestDTO){
-        Member member = memberRepository.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
-        Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
-        Likes likes = likesRequestDTO.toSaveEntity(member,review);
-        likes.setReview(review);
-        likes.setState(true);
-        likes.setMember(member);
-        review.setTotalLikes(review.getTotalLikes()+1); //-> 리뷰 총 좋아요 개수 up
-        String noticeContent = likes.getMember() +"님이 "+review.getRestaurant().getName()+"의 리뷰에 좋아요를 눌렀습니다.";
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Notice notice = new Notice(review.getMember(),noticeContent,localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")));// -> 좋아요알림
-        likesRepository.save(likes);
-        noticeRepository.save(notice);
-    }
-
-    //리뷰 좋아요 취소
-    @Transactional
-    public MsgResponseDTO delete(Long reviewId, Long likesId){
-        Review review = reviewRepository.findById(reviewId).orElseThrow(RuntimeException::new);
-        review.setTotalLikes(review.getTotalLikes()-1);
-        likesRepository.deleteById(likesId);
-        return new MsgResponseDTO("좋아요 취소", 200);
-    }
-
-    private Member getCurrentMember() {
+    public void save(Long reviewId, LikesRequestDTO likesRequestDTO) {
         String loginId = SecurityUtil.getLoginId();
-        return memberRepository.findByLoginId(loginId)
+        Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+
+        // 리뷰 조회
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RuntimeException("리뷰를 찾을 수 없습니다."));
+
+        // 좋아요 상태 확인
+        boolean isLiked = likesRepository.existsByReviewIdAndMemberIdAndState(reviewId,member.getId(), true);
+
+        if (isLiked) {
+            // 이미 좋아요를 눌렀으면 좋아요 취소
+            delete(reviewId);
+        } else {
+            // 아직 좋아요를 누르지 않았으면 좋아요 등록
+            Likes likes = likesRequestDTO.toSaveEntity(member, review, true);
+            likesRepository.save(likes);
+            review.setTotalLikes(review.getTotalLikes() + 1); // 리뷰 좋아요 개수 증가
+        }
     }
+
+    // 리뷰 좋아요 취소
+    @Transactional
+    public void delete(Long reviewId) {
+        String loginId = SecurityUtil.getLoginId();
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RuntimeException("리뷰를 찾을 수 없습니다."));
+        Long memberId = member.getId();
+        Likes likes = likesRepository.findByReviewIdAndMemberIdAndState(reviewId, memberId, true).orElseThrow(() -> new RuntimeException("좋아요를 찾을 수 없습니다."));
+        likesRepository.delete(likes);
+        review.setTotalLikes(review.getTotalLikes() - 1); // 리뷰 좋아요 개수 감소
+    }
+
 }

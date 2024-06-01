@@ -66,6 +66,9 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Likes> likesList = new ArrayList<>();
 //    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Chat> chatList = new ArrayList<>();
 
