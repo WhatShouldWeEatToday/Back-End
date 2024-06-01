@@ -45,13 +45,16 @@ public class BookmarkService {
     }
 
     @Transactional
-    public Page<BookmarkResponseDTO> findAll(Pageable pageable) {
-        String loginId = SecurityUtil.getLoginId();
-        Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+    public Page<BookmarkResponseDTO> findAllBookmarks(Pageable pageable) {
+        Member member = getCurrentMember();
 
-        Page<Bookmark> bookmarkPage = bookmarkRepository.findAllByMember(member, pageable);
-        Page<BookmarkResponseDTO> dtoPage = bookmarkPage.map(BookmarkResponseDTO::new);
-        return dtoPage;
+        Page<Bookmark> bookmarkPage = bookmarkRepository.findAllByMemberId(member.getId(), pageable);
+        return bookmarkPage.map(BookmarkResponseDTO::new);
+    }
+
+    private Member getCurrentMember() {
+        String loginId = SecurityUtil.getLoginId();
+        return memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
     }
 }

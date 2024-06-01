@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.type.RoleType;
 import lombok.*;
@@ -52,13 +53,14 @@ public class Member {
     }
 
     /* 회원 탈퇴 => 친구, 북마크, 리뷰 모두 삭제 */
-    @OneToMany(mappedBy = "member")
-    private List<Friendship> friendshipList = new ArrayList<>();
+    @OneToMany( mappedBy = "member")
+    private List<Friendship> friendshipList;
 
     @ManyToMany(mappedBy = "members")
     private Set<ChatRoom> chatRooms = new HashSet<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Bookmark> bookmarkList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)

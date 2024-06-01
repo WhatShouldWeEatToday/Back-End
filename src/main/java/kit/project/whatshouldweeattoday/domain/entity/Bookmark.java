@@ -20,11 +20,11 @@ public class Bookmark {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "RESTAURANT_ID")
     private Restaurant restaurant;
 
     @Builder
