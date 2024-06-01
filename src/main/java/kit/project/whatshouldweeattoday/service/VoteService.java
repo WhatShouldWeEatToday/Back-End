@@ -19,20 +19,6 @@ public class VoteService {
         return voteRepository.save(vote);
     }
 
-    @Transactional
-    public void incrementVoteCount1(Long voteId) throws BadRequestException {
-        Vote vote = voteRepository.findById(voteId).orElseThrow(() -> new BadRequestException("존재하지 않는 투표 ID 입니다."));
-        vote.incrementVoteCount1();
-        voteRepository.save(vote);
-    }
-
-    @Transactional
-    public void incrementVoteCount2(Long voteId) throws BadRequestException {
-        Vote vote = voteRepository.findById(voteId).orElseThrow(() -> new BadRequestException("존재하지 않는 투표 ID 입니다."));
-        vote.incrementVoteCount1();
-        voteRepository.save(vote);
-    }
-
     public Vote getVote(Long voteId) throws BadRequestException {
         return voteRepository.findById(voteId).orElseThrow(() -> new BadRequestException("존재하지 않는 투표 ID 입니다."));
     }

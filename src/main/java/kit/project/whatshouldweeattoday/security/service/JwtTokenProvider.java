@@ -32,7 +32,7 @@ public class JwtTokenProvider {
     }
 
     // Member 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
-    public JwtTokenDTO generateToken(Authentication authentication) { // , String sessionId
+    public JwtTokenDTO generateToken(Authentication authentication) { //, String sessionId
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

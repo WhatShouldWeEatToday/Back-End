@@ -3,6 +3,7 @@ package kit.project.whatshouldweeattoday.controller;
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
+import kit.project.whatshouldweeattoday.domain.dto.vote.VoteIdRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
@@ -60,12 +61,14 @@ public class ChatController {
      */
     @MessageMapping("/vote/increment/{roomId}/{voteId}")
     @SendTo("/topic/votes/{roomId}")
-    public VoteResponseDTO incrementVote(@DestinationVariable("voteId") Long voteId) throws BadRequestException {
+    public VoteResponseDTO incrementVote(@DestinationVariable("voteId") Long voteId, VoteIdRequestDTO voteRequest) throws BadRequestException {
         try {
-            voteService.incrementVoteCount1(voteId);
-            voteService.incrementVoteCount2(voteId);
-
             Vote vote = voteService.getVote(voteId);
+            vote.setMenu1(voteRequest.getMenu1());
+            vote.setMenu2(voteRequest.getMenu2());
+            vote.incrementVoteCount1(voteRequest.getVoteCount1());
+            vote.incrementVoteCount2(voteRequest.getVoteCount2());
+
             return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
         } catch (Exception e) {
             log.error("Error incrementing vote for voteId {}: {}", voteId, e.getMessage());

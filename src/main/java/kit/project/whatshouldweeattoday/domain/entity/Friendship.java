@@ -22,7 +22,7 @@ public class Friendship {
 
     private Long counterpartId; // 상대가 보낸 요청 아이디
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
 

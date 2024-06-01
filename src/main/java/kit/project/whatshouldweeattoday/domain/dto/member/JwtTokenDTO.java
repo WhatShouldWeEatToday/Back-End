@@ -11,4 +11,5 @@ public class JwtTokenDTO {
     private String grantType;
     private String accessToken;
     private String refreshToken;
+    private String sessionId;
 }

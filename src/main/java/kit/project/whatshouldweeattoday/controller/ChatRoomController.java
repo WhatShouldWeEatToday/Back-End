@@ -1,21 +1,28 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.type.MessageType;
+import kit.project.whatshouldweeattoday.domain.type.ResponseDetails;
 import kit.project.whatshouldweeattoday.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -73,5 +80,11 @@ public class ChatRoomController {
         endRoomMessage.setMessageType(MessageType.LEAVE);
 
         return endRoomMessage;
+    }
+
+    @GetMapping(value = "/chat/rooms")
+    public ResponseEntity<List<ChatRoom>> message() {
+        List<ChatRoom> allChatRoom = chatRoomService.findAllChatRoom();
+        return new ResponseEntity<>(allChatRoom, HttpStatus.OK);
     }
 }
