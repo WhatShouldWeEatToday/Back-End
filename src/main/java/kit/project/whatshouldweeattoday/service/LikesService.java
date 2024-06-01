@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -100,8 +101,7 @@ public class LikesService {
             Member member2 = memberRepository.findByLoginId(likes.getReview().getMember().getLoginId())
                     .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
             content = member.getNickname()+"님이 "+likes.getReview().getRestaurant().getName()+"의 리뷰에 좋아요를 등록했습니다.";
-            LocalDateTime localDateTime = LocalDateTime.now();
-            Notice notice = new Notice(member2,content,localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")));
+            Notice notice = new Notice(member2,content);
             likesRepository.save(likes);
             noticeRepository.save(notice);
             review.setTotalLikes(review.getTotalLikes() + 1); // 리뷰 좋아요 개수 증가
