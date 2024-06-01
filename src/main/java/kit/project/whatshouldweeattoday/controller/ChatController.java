@@ -5,7 +5,6 @@ import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
-import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
 import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.domain.type.ResponseDetails;
@@ -21,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,13 +58,29 @@ public class ChatController {
      * 메뉴 투표 Count 실시간 관리
      * @param voteId
      */
-    @MessageMapping("/vote/increment/{voteId}")
-    @SendTo("/topic/votes")
-    public VoteResponseDTO incrementVote(@DestinationVariable Long voteId) throws BadRequestException {
+    @MessageMapping("/vote/increment/{roomId}/{voteId}")
+    @SendTo("/topic/votes/{roomId}")
+    public VoteResponseDTO incrementVote(@DestinationVariable("voteId") Long voteId) throws BadRequestException {
         try {
             voteService.incrementVoteCount1(voteId);
             voteService.incrementVoteCount2(voteId);
 
+            Vote vote = voteService.getVote(voteId);
+            return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
+        } catch (Exception e) {
+            log.error("Error incrementing vote for voteId {}: {}", voteId, e.getMessage());
+            throw new BadRequestException("Failed to increment vote count");
+        }
+    }
+
+    /**
+     * 메뉴 투표 종료 및 메뉴 저장
+     * @param voteId
+     */
+    @MessageMapping("/vote/end/{roomId}/{voteId}")
+    @SendTo("/topic/votes/{roomId}")
+    public VoteResponseDTO endVoteAndSaveMenu(@DestinationVariable Long voteId) throws BadRequestException {
+        try {
             Vote vote = voteService.getVote(voteId);
 
             int memberCount = chatService.getMemberCount(vote.getChat().getId());
@@ -83,24 +97,14 @@ public class ChatController {
     }
 
     /**
-     * 채팅방 내 투표 종료
-     * @param roomId
-     */
-    @MessageMapping("/vote/end/{roomId}")
-    @SendTo("/topic/{roomId}")
-    public void endVoteAndCreateMeet(@DestinationVariable("roomId") Long roomId) throws BadRequestException {
-        chatService.endVoteAndCreateMeet(roomId);
-    }
-
-    /**
      * 채팅방 내 약속 생성
      * @param roomId
      * @param meetRequestDTO
      */
     @MessageMapping("/meet/register/{roomId}")
-    @SendTo("/topic/{roomId}")
+    @SendTo("/topic/meet/{roomId}")
     public MeetChatResponseDTO createMeet(@DestinationVariable("roomId") Long roomId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
-        Chat chat = chatService.createMeet(roomId, meetRequestDTO.getMeetLocate(), meetRequestDTO.getMeetTime());
+        chatService.createMeet(roomId, meetRequestDTO.getMeetLocate(), meetRequestDTO.getMeetTime());
 
         return MeetChatResponseDTO.builder()
                 .roomId(roomId)
@@ -115,7 +119,7 @@ public class ChatController {
      * @param meetRequestDTO
      */
     @MessageMapping("/meet/update/{roomId}")
-    @SendTo("/topic/{roomId}")
+    @SendTo("/topic/meet/{roomId}")
     public MeetChatResponseDTO updateMeet(@DestinationVariable("meetId") Long meetId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
         Meet updatedMeet = chatService.updateMeet(meetId, meetRequestDTO.getMeetLocate(), meetRequestDTO.getMeetTime());
 
@@ -132,7 +136,7 @@ public class ChatController {
      * @param meetId
      */
     @MessageMapping("/meet/end/{meetId}")
-    @SendTo("/topic/{roomId}")
+    @SendTo("/topic/meet/{roomId}")
     public void endMeet(@DestinationVariable("meetId") Long meetId) throws BadRequestException {
         chatService.endMeet(meetId);
     }
@@ -142,7 +146,7 @@ public class ChatController {
      * @param departures
      */
     @MessageMapping("/departure/register")
-    @SendTo("/topic/public")
+    @SendTo("/topic/departure/{roomId}")
     public List<PersonalPath> registerDeparture(List<String> departures) {
         return pathService.getWeight("떡볶이", departures);
     }

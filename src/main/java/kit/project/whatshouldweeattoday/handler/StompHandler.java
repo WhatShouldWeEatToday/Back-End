@@ -14,17 +14,11 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
@@ -33,6 +27,8 @@ public class StompHandler implements ChannelInterceptor {
     public static final String DEFAULT_PATH = "/topic/public/";
     public static final String DEFAULT_PATH_NO_TRAILING_SLASH = "/topic/public";
     public static final String VOTES_PATH = "/topic/votes/";
+    public static final String MEET_PATH = "/topic/meet/";
+    public static final String DEPARTURE_PATH = "/topic/departure/";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
@@ -50,22 +46,39 @@ public class StompHandler implements ChannelInterceptor {
                 log.info("WebSocket CONNECT request received");
                 Member member = getMemberByAuthorizationHeader(
                         accessor.getFirstNativeHeader("Authorization"));
-
+                String sessionId = accessor.getSessionId();
                 log.info("User authenticated: loginId={}, nickname={}", member.getLoginId(), member.getNickname());
                 setValue(accessor, "loginId", member.getLoginId());
                 setValue(accessor, "nickname", member.getNickname());
+                setValue(accessor, "sessionId", sessionId);
 
             } else if (StompCommand.SUBSCRIBE.equals(command)) {  // {8}
-                String loginId = (String) getValue(accessor, "loginId");
-                String friendLoginId = parseIdFromPath(accessor);
-                log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
-                setValue(accessor, "friendLoginId", friendLoginId);
-                validateMemberInFriendship(loginId, friendLoginId);
+                String destination = accessor.getDestination();
+                if (destination == null) {
+                    log.error("Destination is null.");
+                    throw new IllegalArgumentException("Destination cannot be null.");
+                }
 
+                if(destination.startsWith(DEFAULT_PATH)) {
+                    String loginId = (String) getValue(accessor, "loginId");
+                    String friendLoginId = extractDefaultPath(destination);
+                    log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
+                    setValue(accessor, "friendLoginId", friendLoginId);
+                    validateMemberInFriendship(loginId, friendLoginId);
+
+                } else if(destination.startsWith(VOTES_PATH)) {
+                    Long roomId = Long.valueOf(extractVotePath(destination));
+                    setLongValue(accessor, "roomId", roomId);
+
+                } else if(destination.startsWith(MEET_PATH)) {
+                    Long roomId = Long.valueOf(extractMeetPath(destination));
+                    setLongValue(accessor, "roomId", roomId);
+
+                } else if(destination.startsWith(DEPARTURE_PATH)) {
+                    Long roomId = Long.valueOf(extractDeparturePath(destination));
+                    setLongValue(accessor, "roomId", roomId);
+                }
             } else if (StompCommand.SEND.equals(command)) {
-//                Member member = getMemberByAuthorizationHeader(
-//                        accessor.getFirstNativeHeader("Authorization"));
-//                setValue(accessor, "loginId", member.getLoginId());
                 String destination = accessor.getDestination();
 
                 if (destination != null && destination.startsWith("/app/vote/register/")) {
@@ -112,38 +125,51 @@ public class StompHandler implements ChannelInterceptor {
         return accessToken;
     }
 
-    private String parseIdFromPath(StompHeaderAccessor accessor) {
-        String destination = accessor.getDestination();
+//    private String parseIdFromPath(StompHeaderAccessor accessor) {
+//        String destination = accessor.getDestination();
+//
+//
+//
+//        if (destination.startsWith(VOTES_PATH)) {
+//            String pathSuffix = destination.substring(VOTES_PATH.length());
+//            try {
+//                return pathSuffix;
+//            } catch (NumberFormatException e) {
+//                log.error("Invalid voteId format: " + pathSuffix);
+//                throw new IllegalArgumentException("Invalid voteId format.");
+//            }
+//        }
+//
+//        if (!destination.startsWith(DEFAULT_PATH) && !destination.equals(DEFAULT_PATH_NO_TRAILING_SLASH)) {
+//            log.error("Destination does not start with the default path: " + destination);
+//            throw new IllegalArgumentException("Invalid destination path.");
+//        }
+//
+//        String pathSuffix = destination.startsWith(DEFAULT_PATH) ? destination.substring(DEFAULT_PATH.length()) : "";
+//
+//        if (pathSuffix.isEmpty() && !destination.equals(DEFAULT_PATH_NO_TRAILING_SLASH)) {
+//            log.error("Destination path suffix is empty.");
+//            throw new IllegalArgumentException("Destination path is too short.");
+//        }
+//
+//        log.info("Parsed friendLoginId from path: {}", pathSuffix);
+//        return pathSuffix;
+//    }
 
-        if (destination == null) {
-            log.error("Destination is null.");
-            throw new IllegalArgumentException("Destination cannot be null.");
-        }
+    private String extractDefaultPath(String destination) {
+        return destination.startsWith(DEFAULT_PATH) ? destination.substring(DEFAULT_PATH.length()) : "";
+    }
 
-        if (destination.startsWith(VOTES_PATH)) {
-            String pathSuffix = destination.substring(VOTES_PATH.length());
-            try {
-                return pathSuffix;
-            } catch (NumberFormatException e) {
-                log.error("Invalid voteId format: " + pathSuffix);
-                throw new IllegalArgumentException("Invalid voteId format.");
-            }
-        }
+    private String extractVotePath(String destination) {
+        return destination.startsWith(VOTES_PATH) ? destination.substring(VOTES_PATH.length()) : "";
+    }
 
-        if (!destination.startsWith(DEFAULT_PATH) && !destination.equals(DEFAULT_PATH_NO_TRAILING_SLASH)) {
-            log.error("Destination does not start with the default path: " + destination);
-            throw new IllegalArgumentException("Invalid destination path.");
-        }
+    private String extractMeetPath(String destination) {
+        return destination.startsWith(MEET_PATH) ? destination.substring(MEET_PATH.length()) : "";
+    }
 
-        String pathSuffix = destination.startsWith(DEFAULT_PATH) ? destination.substring(DEFAULT_PATH.length()) : "";
-
-        if (pathSuffix.isEmpty() && !destination.equals(DEFAULT_PATH_NO_TRAILING_SLASH)) {
-            log.error("Destination path suffix is empty.");
-            throw new IllegalArgumentException("Destination path is too short.");
-        }
-
-        log.info("Parsed friendLoginId from path: {}", pathSuffix);
-        return pathSuffix;
+    private String extractDeparturePath(String destination) {
+        return destination.startsWith(DEPARTURE_PATH) ? destination.substring(DEPARTURE_PATH.length()) : "";
     }
 
     private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
@@ -162,6 +188,11 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private void setValue(StompHeaderAccessor accessor, String key, String value) {
+        Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
+        sessionAttributes.put(key, value);
+    }
+
+    private void setLongValue(StompHeaderAccessor accessor, String key, Long value) {
         Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
         sessionAttributes.put(key, value);
     }

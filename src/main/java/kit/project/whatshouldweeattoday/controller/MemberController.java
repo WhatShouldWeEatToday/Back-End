@@ -3,8 +3,8 @@ package kit.project.whatshouldweeattoday.controller;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.member.JwtTokenDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.MemberResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.login.LoginRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
@@ -120,7 +120,7 @@ public class MemberController {
         return ResponseEntity.ok(memberResponseDTO);
     }
 
-   /* @PostConstruct
+    @PostConstruct
     public void initMemberData() throws BadRequestException {
         SignupRequestDTO member1 = SignupRequestDTO.builder()
                 .loginId("hyun3478")
@@ -130,7 +130,6 @@ public class MemberController {
                 .gender("FEMALE")
                 .age(24)
                 .build();
-
         SignupRequestDTO member2 = SignupRequestDTO.builder()
                 .loginId("lim3478")
                 .loginPw("a12345678")
@@ -139,7 +138,6 @@ public class MemberController {
                 .gender("FEMALE")
                 .age(24)
                 .build();
-
         SignupRequestDTO member3 = SignupRequestDTO.builder()
                 .loginId("solim12")
                 .loginPw("a12345678")
@@ -148,7 +146,6 @@ public class MemberController {
                 .gender("FEMALE")
                 .age(24)
                 .build();
-
         SignupRequestDTO member4 = SignupRequestDTO.builder()
                 .loginId("lee12")
                 .loginPw("a12345678")
@@ -157,7 +154,6 @@ public class MemberController {
                 .gender("FEMALE")
                 .age(24)
                 .build();
-
         SignupRequestDTO member5 = SignupRequestDTO.builder()
                 .loginId("member5")
                 .loginPw("a12345678")
@@ -166,7 +162,6 @@ public class MemberController {
                 .gender("FEMALE")
                 .age(24)
                 .build();
-
         SignupRequestDTO member6 = SignupRequestDTO.builder()
                 .loginId("member6")
                 .loginPw("a12345678")
@@ -175,17 +170,16 @@ public class MemberController {
                 .gender("FEMALE")
                 .age(24)
                 .build();
-
         memberService.createMember(member1);
         memberService.createMember(member2);
         memberService.createMember(member3);
         memberService.createMember(member4);
         memberService.createMember(member5);
         memberService.createMember(member6);
-
         initFriendshipData();
     }
-*/
+
+
     public void initFriendshipData() throws BadRequestException {
         Member fromMember = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
         Member toMember = memberRepository.findByLoginId("lim3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
