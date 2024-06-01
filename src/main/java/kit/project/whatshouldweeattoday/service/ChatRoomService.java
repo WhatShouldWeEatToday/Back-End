@@ -1,8 +1,12 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomDTO;
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
+import kit.project.whatshouldweeattoday.domain.entity.Friendship;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
 import kit.project.whatshouldweeattoday.repository.ChatRepository;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
@@ -12,6 +16,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -61,8 +66,17 @@ public class ChatRoomService {
     /**
      * 모든 채팅방 찾기
      */
-    public List<ChatRoom> findChatRoomsByMemberId(Long memberId) {
-        return chatRoomRepository.findChatRoomsByMemberId(memberId);
+    public List<ChatRoomDTO> findChatRoomsByMemberId(Long memberId) {
+        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByMemberId(memberId);
+        List<ChatRoomDTO> result = new ArrayList<>();
+        for (ChatRoom chatRoom : chatRooms) {
+            ChatRoomDTO build = ChatRoomDTO.builder()
+                    .roomId(chatRoom.getId())
+                    .name(chatRoom.getRoomName())
+                    .build();
+            result.add(build);
+        }
+        return result;
     }
 
     /**

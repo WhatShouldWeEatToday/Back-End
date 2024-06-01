@@ -1,8 +1,11 @@
 package kit.project.whatshouldweeattoday.domain.dto.chat;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Getter
+@Builder
 public class ChatRoomDTO {
+    private Long roomId;
     private String name;
 }

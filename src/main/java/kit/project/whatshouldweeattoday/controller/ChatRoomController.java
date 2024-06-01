@@ -1,12 +1,17 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.type.MessageType;
 import kit.project.whatshouldweeattoday.domain.type.ResponseDetails;
+import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.ChatRoomService;
+import kit.project.whatshouldweeattoday.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -31,6 +36,7 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final MemberService memberService;
     private final SimpMessageSendingOperations messagingTemplate;
 
     /**
@@ -84,8 +90,9 @@ public class ChatRoomController {
     }
 
     @GetMapping(value = "/chat/rooms")
-    public ResponseEntity<List<ChatRoom>> getChatRooms(@RequestParam("memberId") Long memberId) {
-        List<ChatRoom> chatRooms = chatRoomService.findChatRoomsByMemberId(memberId);
-        return new ResponseEntity<>(chatRooms, HttpStatus.OK);
+    public ResponseEntity<?>  getChatRooms() throws BadRequestException {
+        Member member = memberService.findByLoginId(SecurityUtil.getLoginId()).orElseThrow(() -> new BadRequestException("존재하지 않는 사용자입니다."));
+        List<ChatRoomDTO> chatRoomList = chatRoomService.findChatRoomsByMemberId(member.getId());
+        return new ResponseEntity<>(chatRoomList, HttpStatus.OK);
     }
 }
