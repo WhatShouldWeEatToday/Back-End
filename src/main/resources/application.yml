@@ -1,4 +1,10 @@
 spring:
+  spring:
+    redis:
+      host: localhost
+      port: 6379
+    session:
+      store-type: redis
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/whatToEat?serverTimezone=UTC&characterEncoding=UTF-8

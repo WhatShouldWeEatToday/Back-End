@@ -27,6 +27,8 @@ public class WebSocketEventListener {
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         Principal user = accessor.getUser();
+        String sessionId = accessor.getSessionId(); // 세션 ID 추출
+        log.info("Received a new web socket connection with session ID: {}", sessionId);
         if (user != null) {
             log.info("Received a new web socket connection from user: {}", user.getName());
         } else {
@@ -65,6 +67,8 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         Principal user = accessor.getUser();
+        String sessionId = accessor.getSessionId(); // 세션 ID 추출
+        log.info("Received a new web socket connection with session ID: {}", sessionId);
         if (user != null) {
             log.info("User Disconnected: {}", user.getName());
         }
