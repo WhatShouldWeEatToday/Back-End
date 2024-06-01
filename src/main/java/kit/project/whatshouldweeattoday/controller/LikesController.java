@@ -28,8 +28,8 @@ public class LikesController {
         return reviewId;
     }
     //리뷰 좋아요 취소
-    @DeleteMapping("/api/review/{reviewId}/likes/{likesId}")
-    public Long reviewDelete(@PathVariable Long reviewId, @PathVariable Long likesId) {
+    @DeleteMapping("/api/review/{reviewId}/likes")
+    public Long reviewDelete(@PathVariable Long reviewId) {
         likesService.delete(reviewId);
         return reviewId;
     }
