@@ -58,12 +58,11 @@ public class ChatRoomService {
         return chatRoom;
     }
 
-
     /**
      * 모든 채팅방 찾기
      */
-    public List<ChatRoom> findAllChatRoom() {
-        return chatRoomRepository.findAll();
+    public List<ChatRoom> findChatRoomsByMemberId(Long memberId) {
+        return chatRoomRepository.findChatRoomsByMemberId(memberId);
     }
 
     /**

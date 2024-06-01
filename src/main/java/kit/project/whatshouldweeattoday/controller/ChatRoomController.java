@@ -20,6 +20,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -83,8 +84,8 @@ public class ChatRoomController {
     }
 
     @GetMapping(value = "/chat/rooms")
-    public ResponseEntity<List<ChatRoom>> message() {
-        List<ChatRoom> allChatRoom = chatRoomService.findAllChatRoom();
-        return new ResponseEntity<>(allChatRoom, HttpStatus.OK);
+    public ResponseEntity<List<ChatRoom>> getChatRooms(@RequestParam("memberId") Long memberId) {
+        List<ChatRoom> chatRooms = chatRoomService.findChatRoomsByMemberId(memberId);
+        return new ResponseEntity<>(chatRooms, HttpStatus.OK);
     }
 }
