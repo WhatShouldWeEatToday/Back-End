@@ -1,16 +1,9 @@
 package kit.project.whatshouldweeattoday.controller;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
-import kit.project.whatshouldweeattoday.domain.dto.member.signup.SignupRequestDTO;
-import kit.project.whatshouldweeattoday.domain.entity.Friendship;
-import kit.project.whatshouldweeattoday.domain.entity.Member;
-import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
-import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
-import kit.project.whatshouldweeattoday.repository.MemberRepository;
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
 import kit.project.whatshouldweeattoday.service.FriendshipService;
 import kit.project.whatshouldweeattoday.service.MemberService;
 import lombok.RequiredArgsConstructor;
