@@ -22,14 +22,14 @@ public class NoticeController {
         return noticeService.getNoticesByMember(loginId);
     }
 
-    @PostMapping("/send")
+    /*@PostMapping("/send")
     public NoticeResponseDTO sendNotice(@RequestBody NoticeRequestDTO noticeRequestDTO) {
         return noticeService.sendNotice(
                 noticeRequestDTO.getLoginId(),
                 noticeRequestDTO.getContent(),
                 noticeRequestDTO.getCreatedDate()
         );
-    }
+    }*/
 
 
 }

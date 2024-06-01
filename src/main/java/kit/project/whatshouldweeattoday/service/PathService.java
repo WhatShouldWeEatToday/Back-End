@@ -28,6 +28,7 @@ public class PathService {
     }
 
     // startAddres = 채팅방 사람들의 출발지 list
+    // startAddres = 채팅방 사람들의 출발지 list
     @Transactional
     public List<PersonalPath> getWeight(String keyword, List<String> startAddress) {
         List<PersonalPath> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
@@ -51,7 +52,6 @@ public class PathService {
             }
         }
         sortPersonalPathByWeightTop3(resultSort);
-
         return resultSort;
     }
 

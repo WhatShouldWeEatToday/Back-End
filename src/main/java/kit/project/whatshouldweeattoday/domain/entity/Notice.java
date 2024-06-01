@@ -1,6 +1,7 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ public class Notice extends BaseTimeEntity{
     @Column(name = "NOTICE_ID")
     private Long id;
     private String content;
+    private NoticeType noticeType;
 
     @OneToOne(mappedBy = "notice", fetch = FetchType.LAZY)
     private Chat chat;
@@ -24,8 +26,9 @@ public class Notice extends BaseTimeEntity{
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    public Notice(Member member, String content) {
+    public Notice(Member member, String content,NoticeType noticeType) {
         this.member = member;
         this.content = content;
+        this.noticeType=noticeType;
     }
 }
