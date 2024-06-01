@@ -39,11 +39,19 @@ public class Vote {
                 .build();
     }
 
-    public void incrementVoteCount1() {
-        this.voteCount1++;
+    public void setMenu1(String menu1) {
+        this.menu1 = menu1;
     }
 
-    public void incrementVoteCount2() {
-        this.voteCount2++;
+    public void setMenu2(String menu2) {
+        this.menu2 = menu2;
+    }
+
+    public void incrementVoteCount1(Long voteCount1) {
+        this.voteCount1 = voteCount1;
+    }
+
+    public void incrementVoteCount2(Long voteCount2) {
+        this.voteCount2 = voteCount2;
     }
 }

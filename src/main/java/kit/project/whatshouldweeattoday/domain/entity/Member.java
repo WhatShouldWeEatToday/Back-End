@@ -44,6 +44,8 @@ public class Member {
     @Column(length = 1000)
     private String refreshToken;
 
+    private String sessionId;
+
     /* JWT 토큰 관리 */
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
@@ -78,6 +80,10 @@ public class Member {
         this.nickname = nickname;
         this.gender = gender;
         this.age = age;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     /* 리뷰 등록 */
