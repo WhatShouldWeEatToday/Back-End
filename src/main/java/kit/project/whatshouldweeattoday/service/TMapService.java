@@ -113,8 +113,8 @@ public class TMapService {
             String bunjiString = bunji.asText();
             bunjiString= String.valueOf(bunjiString.charAt(0));
            // System.out.println("번지글자수 : "+bunjiString.length());
-            String fullAddress = dong.asText() + bunjiString;
-           // System.out.println("주소 : " + fullAddress);
+            String fullAddress = dong.asText() +" "+ bunjiString;
+            System.out.println("주소 : " + fullAddress);
             return fullAddress;
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to retrieve legalDong: " + e.getMessage());
