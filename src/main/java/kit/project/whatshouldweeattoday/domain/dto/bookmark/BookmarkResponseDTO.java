@@ -25,7 +25,7 @@ public class BookmarkResponseDTO {
         this.member_id=bookmark.getMember().getId();
         this.id = bookmark.getId();
         this.restaurantId = bookmark.getRestaurant().getId();
-        this.restaurantName=bookmark.getRestaurant().getTel();
+        this.restaurantTel=bookmark.getRestaurant().getTel();
         this.restaurantName = bookmark.getRestaurant().getName();
         this.addressRoad=bookmark.getRestaurant().getAddressRoad();
         this.degrees=bookmark.getRestaurant().getDegree();
