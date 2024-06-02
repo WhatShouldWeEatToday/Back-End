@@ -1,10 +1,12 @@
 package kit.project.whatshouldweeattoday.domain.dto.vote;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class VoteResponseDTO {
     private Long voteId;
     private String menu1;

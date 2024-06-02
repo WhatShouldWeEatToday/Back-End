@@ -59,16 +59,6 @@ public class ChatController {
     }
 
     /**
-     * 채팅방 내 모든 메시지 조회
-     * @param roomId
-     */
-    @GetMapping("/chat/rooms/{roomId}")
-    public ResponseEntity<?> getChatRoomOne(@PathVariable(name = "roomId", required = false) Long roomId) {
-        List<ChatResponseDTO> chat = chatService.findChatById(roomId);
-        return new ResponseEntity<>(chat, HttpStatus.OK);
-    }
-
-    /**
      * 채팅방 내 투표 생성
      * @param roomId
      * @param voteRequest
@@ -84,6 +74,17 @@ public class ChatController {
             log.error("Error registering vote for roomId {}: {}", roomId, e.getMessage());
             throw new BadRequestException("Failed to register vote");
         }
+    }
+
+    /**
+     * 채팅방 내 투표 조회
+     * @param roomId
+     */
+    @MessageMapping("/vote/state/{roomId}")
+    @SendTo("/topic/room/{roomId}")
+    public ResponseEntity<?> getVote(@PathVariable(name = "roomId", required = false) Long roomId) {
+        VoteResponseDTO vote = chatService.findVoteById(roomId);
+        return new ResponseEntity<>(vote, HttpStatus.OK);
     }
 
     /**
@@ -130,6 +131,17 @@ public class ChatController {
             log.error("Error incrementing vote for voteId {}: {}", voteId, e.getMessage());
             throw new BadRequestException("Failed to increment vote count");
         }
+    }
+
+    /**
+     * 채팅방 내 약속 조회
+     * @param roomId
+     */
+    @MessageMapping("/meet/state/{roomId}")
+    @SendTo("/topic/room/{roomId}")
+    public ResponseEntity<?> getMeet(@PathVariable(name = "roomId", required = false) Long roomId) {
+        MeetResponseDTO meet = chatService.findMeetById(roomId);
+        return new ResponseEntity<>(meet, HttpStatus.OK);
     }
 
     /**
