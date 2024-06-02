@@ -1,13 +1,15 @@
 package kit.project.whatshouldweeattoday.service;
 
-import kit.project.whatshouldweeattoday.domain.dto.chat.ChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
 import kit.project.whatshouldweeattoday.domain.entity.Vote;
-import kit.project.whatshouldweeattoday.repository.*;
+import kit.project.whatshouldweeattoday.repository.ChatRepository;
+import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
+import kit.project.whatshouldweeattoday.repository.MeetRepository;
+import kit.project.whatshouldweeattoday.repository.VoteRepository;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +30,6 @@ public class ChatService {
     private final MeetRepository meetRepository;
     private final VoteRepository voteRepository;
     private final FoodService foodService;
-    private final VoteService voteService;
-    private final MeetService meetService;
 
     /**
      * 채팅방 내 투표 조회
@@ -42,6 +40,9 @@ public class ChatService {
         log.info("채팅룸 메시지 조회를 시작합니다. [roomId : {}]", roomId);
         Chat chat = chatRepository.findOneByRoomId(roomId);
         Vote vote = chat.getVote();
+        if (vote == null) {
+            throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
+        }
         return VoteResponseDTO.builder()
                 .voteId(vote.getId())
                 .menu1(vote.getMenu1())
@@ -60,6 +61,9 @@ public class ChatService {
         log.info("채팅룸 메시지 조회를 시작합니다. [roomId : {}]", roomId);
         Chat chat = chatRepository.findOneByRoomId(roomId);
         Meet meet = chat.getMeet();
+        if (meet == null) {
+            throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
+        }
         return MeetResponseDTO.builder()
                 .meetId(meet.getId())
                 .maxVotedMenu(meet.getMeetMenu())
