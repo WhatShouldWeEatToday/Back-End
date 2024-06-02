@@ -26,7 +26,13 @@ public class ChatRoom {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private Set<ChatRoomMember> chatRoomMembers = new HashSet<>(); // 방 참여자들 (연관 관계)
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "VOTE_ID")
+    private Vote vote;
 
+    public void addVote(Vote vote) {
+        this.vote = vote;
+    }
 //    public ChatRoom(String roomName, String createdBy, Long realRoomId) {
 //        this.roomName = roomName;
 //        this.createdBy = createdBy;

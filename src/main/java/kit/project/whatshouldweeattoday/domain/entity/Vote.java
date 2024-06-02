@@ -17,10 +17,10 @@ public class Vote {
 
     private String menu1;
     private String menu2;
-    private Long voteCount1;
-    private Long voteCount2;
+    private Long voteCount1 = 0L;
+    private Long voteCount2 = 0L;
 
-    @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Chat chat;
 
     @Builder
