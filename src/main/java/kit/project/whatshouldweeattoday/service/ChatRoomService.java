@@ -2,8 +2,11 @@ package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.entity.Notice;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
+import kit.project.whatshouldweeattoday.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,6 +25,7 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
+    private final NoticeRepository noticeRepository;
 
     @Transactional
     public synchronized ChatRoom createRoomAndInviteFriends(String roomName, Member creator, Set<Member> friends) {
@@ -38,6 +42,9 @@ public class ChatRoomService {
 
             for (Member friend : friends) {
                 chatRoom.addParticipant(friend);
+                String content = creator.getNickname() + "님이 채팅방에 초대하셨습니다.";
+                Notice notice = new Notice(friend, content, NoticeType.CHAT_INVITE);
+                noticeRepository.save(notice);
             }
 
             return chatRoomRepository.save(chatRoom);

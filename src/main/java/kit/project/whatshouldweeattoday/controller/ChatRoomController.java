@@ -5,6 +5,8 @@ import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoomMember;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.entity.Notice;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import kit.project.whatshouldweeattoday.service.ChatRoomService;
 import kit.project.whatshouldweeattoday.service.MemberService;
