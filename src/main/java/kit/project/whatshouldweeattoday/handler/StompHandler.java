@@ -53,26 +53,14 @@ public class StompHandler implements ChannelInterceptor {
                     log.error("Destination is null.");
                     throw new IllegalArgumentException("Destination cannot be null.");
                 }
-                if (destination.startsWith("/topic/public/")) {
+                if (destination.startsWith("/topic/room/")) {
                     String loginId = (String) getValue(accessor, "loginId");
-                    String friendLoginId = extractPathSuffix(destination, "/topic/public/");
+                    String friendLoginId = extractPathSuffix(destination, "/topic/room/");
                     log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
                     setValue(accessor, "friendLoginId", friendLoginId);
                     validateMemberInFriendship(loginId, friendLoginId);
 
-                } else if (destination.startsWith("/topic/votes/")) {
-                    Long roomId = Long.valueOf(extractPathSuffix(destination, "/topic/votes/"));
-                    setLongValue(accessor, "roomId", roomId);
-
-                } else if (destination.startsWith("/topic/meet/")) {
-                    Long roomId = Long.valueOf(extractPathSuffix(destination, "/topic/meet/"));
-                    setLongValue(accessor, "roomId", roomId);
-
-                } else if (destination.startsWith("/topic/departure/")) {
-                    Long roomId = Long.valueOf(extractPathSuffix(destination, "/topic/departure/"));
-                    setLongValue(accessor, "roomId", roomId);
                 }
-
             }
             else if (StompCommand.SEND.equals(command)) {
                 String loginId = (String) getValue(accessor, "loginId");

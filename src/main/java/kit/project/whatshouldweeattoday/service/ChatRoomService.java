@@ -41,7 +41,7 @@ public class ChatRoomService {
     }
 
     public List<ChatRoom> findAllRoom() {
-        return chatRoomRepository.findAll();
+        return chatRoomRepository.findAllWithMembers();
     }
 
     public ChatRoom findByRoomId(Long roomId) {
