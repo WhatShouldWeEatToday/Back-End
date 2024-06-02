@@ -63,7 +63,7 @@ public class ChatService {
     public int getMemberCount(Long chatRoomId) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
-        return chatRoom.getParticipants().size();
+        return chatRoom.getChatRoomMembers().size();
     }
 
     /**

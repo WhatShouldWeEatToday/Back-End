@@ -73,7 +73,7 @@ public class ChatController {
      * @param voteRequest
      */
     @MessageMapping("/vote/register/{roomId}")
-    @SendTo("/topic/votes/{roomId}")
+    @SendTo("/topic/room/{roomId}")
     public VoteResponseDTO registerVote(@DestinationVariable("roomId") Long roomId, VoteRequestDTO voteRequest) throws BadRequestException {
         try {
             Vote vote = voteService.createVote(voteRequest.getMenu1(), voteRequest.getMenu2());
@@ -90,7 +90,7 @@ public class ChatController {
      * @param voteId
      */
     @MessageMapping("/vote/increment/{roomId}/{voteId}")
-    @SendTo("/topic/votes/{roomId}")
+    @SendTo("/topic/room/{roomId}")
     public VoteResponseDTO incrementVote(@DestinationVariable("voteId") Long voteId, VoteIdRequestDTO voteRequest) throws BadRequestException {
         try {
             Vote vote = voteService.getVote(voteId);
@@ -111,7 +111,7 @@ public class ChatController {
      * @param voteId
      */
     @MessageMapping("/vote/end/{roomId}/{voteId}")
-    @SendTo("/topic/votes/{roomId}")
+    @SendTo("/topic/room/{roomId}")
     public VoteResponseDTO endVoteAndSaveMenu(@DestinationVariable Long voteId) throws BadRequestException {
         try {
             Vote vote = voteService.getVote(voteId);
@@ -135,7 +135,7 @@ public class ChatController {
      * @param meetRequestDTO
      */
     @MessageMapping("/meet/register/{roomId}")
-    @SendTo("/topic/meet/{roomId}")
+    @SendTo("/topic/room/{roomId}")
     public MeetChatResponseDTO createMeet(@DestinationVariable("roomId") Long roomId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
         chatService.createMeet(roomId, meetRequestDTO.getMeetLocate(), meetRequestDTO.getMeetTime());
 
@@ -152,7 +152,7 @@ public class ChatController {
      * @param meetRequestDTO
      */
     @MessageMapping("/meet/update/{roomId}")
-    @SendTo("/topic/meet/{roomId}")
+    @SendTo("/topic/room/{roomId}")
     public MeetChatResponseDTO updateMeet(@DestinationVariable("meetId") Long meetId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
         Meet updatedMeet = chatService.updateMeet(meetId, meetRequestDTO.getMeetLocate(), meetRequestDTO.getMeetTime());
 
@@ -169,7 +169,7 @@ public class ChatController {
      * @param meetId
      */
     @MessageMapping("/meet/end/{meetId}")
-    @SendTo("/topic/meet/{roomId}")
+    @SendTo("/topic/room/{roomId}")
     public void endMeet(@DestinationVariable("meetId") Long meetId) throws BadRequestException {
         chatService.endMeet(meetId);
     }
@@ -179,7 +179,7 @@ public class ChatController {
      * @param departures
      */
     @MessageMapping("/departure/register")
-    @SendTo("/topic/departure/{roomId}")
+    @SendTo("/topic/room/{roomId}")
     public List<PersonalPath> registerDeparture(List<String> departures) {
         return pathService.getWeight("떡볶이", departures);
     }

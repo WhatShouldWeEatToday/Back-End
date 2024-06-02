@@ -8,7 +8,9 @@ import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -58,10 +60,8 @@ public class Member {
     @OneToMany( mappedBy = "member")
     private List<Friendship> friendshipList;
 
-    @JsonIgnore
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private ChatRoom room;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ChatRoomMember> chatRoomMembers = new HashSet<>();
 
     @OneToMany(mappedBy = "member",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -109,13 +109,5 @@ public class Member {
     //== 권한 부여 ==//
     public void addUserAuthority() {
         this.role = RoleType.USER;
-    }
-
-    public void setMappingRoom(ChatRoom room) {
-        this.room = room;
-    }
-
-    public void unsetMappingRoom() {
-        this.room = null;
     }
 }

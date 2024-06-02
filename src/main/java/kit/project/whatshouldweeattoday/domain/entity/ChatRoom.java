@@ -23,8 +23,8 @@ public class ChatRoom {
     private int currentUserNum; // 현재 인원 수
 
     @JsonIgnore
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Member> participants = new HashSet<>(); // 방 참여자들 (연관 관계)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private Set<ChatRoomMember> chatRoomMembers = new HashSet<>(); // 방 참여자들 (연관 관계)
 
 
 //    public ChatRoom(String roomName, String createdBy, Long realRoomId) {
@@ -49,28 +49,23 @@ public class ChatRoom {
     }
 
     public void addParticipant(Member member) {
-        this.participants.add(member);
-        member.setMappingRoom(this);
+        ChatRoomMember chatRoomMember = new ChatRoomMember(this, member);
+        this.chatRoomMembers.add(chatRoomMember);
+        member.getChatRoomMembers().add(chatRoomMember);
         this.currentUserNum += 1;
     }
 
     public void removeParticipant(Member member) {
-        this.participants.remove(member);
+        chatRoomMembers.removeIf(chatRoomMember -> chatRoomMember.getMember().equals(member));
+        member.getChatRoomMembers().removeIf(chatRoomMember -> chatRoomMember.getRoom().equals(this));
         this.currentUserNum -= 1;
     }
 
-    // 방 삭제하기 위해, 모두 내보내기
     public void removeParticipantAll() {
-        // user - room 매핑 관계 끊기
-        for (Member participant : this.participants) {
-            participant.unsetMappingRoom();
+        for (ChatRoomMember chatRoomMember : this.chatRoomMembers) {
+            chatRoomMember.getMember().getChatRoomMembers().remove(chatRoomMember);
         }
-        // 회원정보 List<> 비우기
-        this.participants.clear();
+        this.chatRoomMembers.clear();
         this.currentUserNum = 0;
-    }
-
-    public Set<Member> getParticipants() {
-        return participants;
     }
 }
