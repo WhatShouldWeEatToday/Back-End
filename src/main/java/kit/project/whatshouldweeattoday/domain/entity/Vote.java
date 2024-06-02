@@ -4,10 +4,13 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Vote {
 
@@ -23,8 +26,11 @@ public class Vote {
     @OneToOne(mappedBy = "vote", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Chat chat;
 
-    @Builder
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private ChatRoom room;
 
+    @Builder
     public Vote(String menu1, String menu2, Long voteCount1, Long voteCount2) {
         this.menu1 = menu1;
         this.menu2 = menu2;
@@ -37,14 +43,6 @@ public class Vote {
                 .menu1(menu1)
                 .menu2(menu2)
                 .build();
-    }
-
-    public void setMenu1(String menu1) {
-        this.menu1 = menu1;
-    }
-
-    public void setMenu2(String menu2) {
-        this.menu2 = menu2;
     }
 
     public void incrementVoteCount1(Long voteCount1) {

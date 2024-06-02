@@ -33,7 +33,7 @@ public class Chat {
     @JoinColumn(name = "vote_id")
     private Vote vote;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "meet_id")
     private Meet meet;
 

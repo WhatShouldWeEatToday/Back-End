@@ -13,5 +13,5 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class MeetRequestDTO {
     private String meetLocate;
-    private LocalDateTime meetTime;
+    private String meetTime;
 }

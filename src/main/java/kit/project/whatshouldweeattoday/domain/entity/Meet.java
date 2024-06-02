@@ -13,41 +13,41 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Meet extends BaseTimeEntity {
+public class Meet {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MEET_ID")
     private Long id;
     private String meetLocate;
     private String meetMenu;
-    private LocalDateTime meetTime;
+    private String meetTime;
 
     @OneToOne(mappedBy = "meet", fetch = FetchType.LAZY)
     private Chat chat;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
-    private ChatRoom chatRoom;
+    private ChatRoom room;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "food_id")
     private Food food;
 
     @Builder
-    public Meet(String meetLocate, String meetMenu, LocalDateTime meetTime) {
+    public Meet(String meetLocate, String meetMenu, String meetTime) {
         this.meetLocate = meetLocate;
         this.meetMenu = meetMenu;
         this.meetTime = meetTime;
     }
 
-    public static Meet createMeet(String meetLocate, LocalDateTime meetTime) {
+    public static Meet createMeet(String meetLocate, String meetTime) {
         return Meet.builder()
                 .meetLocate(meetLocate)
                 .meetTime(meetTime)
                 .build();
     }
 
-    public void updateMeet(String meetLocate, LocalDateTime meetTime) {
+    public void updateMeet(String meetLocate, String meetTime) {
         this.meetLocate = meetLocate;
         this.meetTime = meetTime;
     }
@@ -56,7 +56,10 @@ public class Meet extends BaseTimeEntity {
         this.meetMenu = meetMenu;
     }
 
-    public void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
+    public void setRoom(ChatRoom room) {
+        this.room = room;
+        if (room != null && room.getMeet() != this) {
+            room.setMeet(this); // 연관 관계 설정
+        }
     }
 }

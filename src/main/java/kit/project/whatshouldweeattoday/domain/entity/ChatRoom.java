@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 public class ChatRoom {
 
@@ -26,13 +26,26 @@ public class ChatRoom {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private Set<ChatRoomMember> chatRoomMembers = new HashSet<>(); // 방 참여자들 (연관 관계)
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "VOTE_ID")
     private Vote vote;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MEET_ID")
+    private Meet meet;
+
     public void addVote(Vote vote) {
         this.vote = vote;
+        vote.setRoom(this); // 연관 관계 설정
     }
+
+    public void addMeet(Meet meet) {
+        this.meet = meet;
+        if (meet != null) {
+            meet.setRoom(this); // 연관 관계 설정
+        }
+    }
+
 //    public ChatRoom(String roomName, String createdBy, Long realRoomId) {
 //        this.roomName = roomName;
 //        this.createdBy = createdBy;
