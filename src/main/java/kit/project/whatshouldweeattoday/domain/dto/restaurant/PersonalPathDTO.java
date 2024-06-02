@@ -8,14 +8,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PersonalPath {
-    private Restaurant restaurant;
+public class PersonalPathDTO {
+   // private Restaurant restaurant;
+    private RestaurantResponseDTO restaurantResponseDTO;
+    private String RestaurantName;
+    private Double RestaurantScore;
     private Integer totalTime;
     private Integer serialNum;
     private Integer weight = 0; //가중치
 
-    public PersonalPath(Restaurant restaurant, Integer totalTime, Integer serialNum) {
-        this.restaurant = restaurant;
+    public PersonalPathDTO(RestaurantResponseDTO restaurant, Integer totalTime, Integer serialNum) {
+      //  this.restaurant = restaurant;
+        this.RestaurantName = restaurant.getName();
+        this.RestaurantScore = restaurant.getDegree();
         this.totalTime = totalTime;
         this.serialNum = serialNum;
     }
@@ -23,7 +28,7 @@ public class PersonalPath {
     @Override
     public String toString() {
         return "PersonalPath{" +
-                "restaurant=" + restaurant +
+                "restaurant=" + restaurantResponseDTO +
                 ", totalTime=" + totalTime +
                 ", serialNum=" + serialNum +
                 ", weight=" + weight +

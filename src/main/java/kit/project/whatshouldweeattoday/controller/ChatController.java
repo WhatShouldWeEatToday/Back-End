@@ -6,6 +6,7 @@ import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteIdRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;

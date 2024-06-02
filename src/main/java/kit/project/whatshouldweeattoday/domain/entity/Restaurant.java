@@ -46,12 +46,12 @@ public class Restaurant {
     @JsonManagedReference
     private List<Bookmark> bookmark;
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviewList = new ArrayList<>();
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "foodType_id")
     private FoodType foodType;
 

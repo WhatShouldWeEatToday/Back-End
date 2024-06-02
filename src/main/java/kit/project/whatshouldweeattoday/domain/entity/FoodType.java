@@ -18,6 +18,6 @@ public class FoodType {
     private Long id;
     private String foodTypeName;
     private Long count;
-    @OneToMany(mappedBy = "foodType",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "foodType",fetch = FetchType.EAGER)
     private List<Restaurant>  restaurants;
 }
