@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -181,26 +182,32 @@ public class RestaurantController {
         return ResponseEntity.ok(routeInfo);
     }
 
-    //주소받아서 음식점경로를 json으로 반환
+    //주소받아서 음식점경로를 json으로 반환 -> 주소는 최종목적지 3곳의 경로
    @PostMapping("/search/totalPath")
-    public ResponseEntity<JsonNode> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
+    public ResponseEntity<List<JsonNode>> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
-       String destination = totalTimeRequest.getDestination();
+       List<String> destinations = totalTimeRequest.getDestinations();
        String searchDttm = totalTimeRequest.getSearchDttm();
 
-        JsonNode routeInfo = tmapService.getJsonByTransitRoute(departure, destination, 0, "json", 1, searchDttm);
+       List<JsonNode> routes = new ArrayList<>();
+       for(int i = 0;i<destinations.size();i++){
+           JsonNode routeInfo = tmapService.getJsonByTransitRoute(departure, destinations.get(i), 0, "json", 1, searchDttm);
 
-        if (routeInfo == null) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+           if (routeInfo == null) {
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+           }
+           routes.add(routeInfo);
+       }
 
-        return ResponseEntity.ok(routeInfo);
+        return ResponseEntity.ok(routes);
    }
 
    //채팅방 단체최적경로
     @PostMapping("/search/showArray")
     public ResponseEntity<List<PersonalPathDTO>> getWeightInfo(@RequestBody PathRequest request) {
+        //3개의 맛집이 반환됨
         List<PersonalPathDTO> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress());
+
         return ResponseEntity.ok(personalPathList);
     }
 
@@ -219,11 +226,13 @@ public class RestaurantController {
         return ResponseEntity.ok(routeInfo);
 
     }
+    //주소반환 테스트
     @GetMapping("/search/showAddress")
     public ResponseEntity<String> addressTest() {
         String address = tmapService.getAddressByCoordinates2(128.3592031, 36.0888125);
        return ResponseEntity.ok(address);
     }
+
 
 }
 
