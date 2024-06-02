@@ -1,9 +1,12 @@
 package kit.project.whatshouldweeattoday.service;
 
+import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
+import kit.project.whatshouldweeattoday.repository.ChatRepository;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MeetRepository;
+import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ public class MeetService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MeetRepository meetRepository;
+    private final ChatRepository chatRepository;
 
     public void registerMeetMenu(String maxVotedMenu, Long chatRoomId) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
@@ -24,5 +28,8 @@ public class MeetService {
         meet.setMeetMenu(maxVotedMenu);
         meet.setChatRoom(chatRoom);
         meetRepository.save(meet);
+
+        Chat chat = Chat.createChat(chatRoom, null, meet, SecurityUtil.getLoginId());
+        chatRepository.save(chat);
     }
 }

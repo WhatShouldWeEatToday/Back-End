@@ -49,10 +49,12 @@ public class ChatRoom {
     }
 
     public void addParticipant(Member member) {
-        ChatRoomMember chatRoomMember = new ChatRoomMember(this, member);
-        this.chatRoomMembers.add(chatRoomMember);
-        member.getChatRoomMembers().add(chatRoomMember);
-        this.currentUserNum += 1;
+        if (chatRoomMembers.stream().noneMatch(chatRoomMember -> chatRoomMember.getMember().equals(member))) {
+            ChatRoomMember chatRoomMember = new ChatRoomMember(this, member);
+            this.chatRoomMembers.add(chatRoomMember);
+            member.getChatRoomMembers().add(chatRoomMember);
+            this.currentUserNum += 1;
+        }
     }
 
     public void removeParticipant(Member member) {

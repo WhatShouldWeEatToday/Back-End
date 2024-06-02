@@ -24,7 +24,6 @@ public class ChatRoomService {
 
     @Transactional
     public ChatRoom createRoomAndInviteFriends(String roomName, Member creator, Set<Member> friends) {
-        // 영속성 컨텍스트 내로 병합
         creator = memberRepository.findById(creator.getId()).orElseThrow(() -> new IllegalArgumentException("Creator not found"));
         friends = friends.stream()
                 .map(friend -> memberRepository.findById(friend.getId()).orElseThrow(() -> new IllegalArgumentException("Friend not found")))
