@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.controller;
 
+import kit.project.whatshouldweeattoday.domain.dto.chat.ChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
@@ -11,7 +12,6 @@ import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Vote;
-import kit.project.whatshouldweeattoday.domain.type.ResponseDetails;
 import kit.project.whatshouldweeattoday.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +42,7 @@ public class ChatController {
     private final MemberService memberService;
     private final SimpMessageSendingOperations messagingTemplate;
 
+
     /**
      * 친구 초대 할 때 초대경로로 메시지 뿌리기
      * @param requestDTO
@@ -52,9 +53,18 @@ public class ChatController {
         Set<Member> friends = memberService.findAllByLoginIds(requestDTO.getFriendLoginIds());
 
         for (Member friend : friends) {
-            chatRoom.addParticipant(friend);
-            messagingTemplate.convertAndSend("/topic/invite/" + friend.getLoginId(), chatRoom.getId());
+            messagingTemplate.convertAndSend("/topic/public/" + friend.getLoginId(), chatRoom.getId());
         }
+    }
+
+    /**
+     * 채팅방 내 모든 메시지 조회
+     * @param roomId
+     */
+    @GetMapping("/chat/rooms/{roomId}")
+    public ResponseEntity<?> getChatRoomOne(@PathVariable(name = "roomId", required = false) Long roomId) {
+        List<ChatResponseDTO> chat = chatService.findChatById(roomId);
+        return new ResponseEntity<>(chat, HttpStatus.OK);
     }
 
     /**
@@ -172,15 +182,5 @@ public class ChatController {
     @SendTo("/topic/departure/{roomId}")
     public List<PersonalPath> registerDeparture(List<String> departures) {
         return pathService.getWeight("떡볶이", departures);
-    }
-
-    /**
-     * 채팅방 내 모든 메시지 조회
-     * @param roomId
-     */
-    @GetMapping(value = "/chat/room/{roomId}/message")
-    public ResponseEntity<?> message(@PathVariable("roomId") Long roomId) {
-        ResponseDetails responseDetails = chatService.findAllMsg(roomId);
-        return new ResponseEntity<>(responseDetails, HttpStatus.valueOf(responseDetails.getHttpStatus()));
     }
 }
