@@ -1,18 +1,18 @@
 package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteIdRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.domain.type.ResponseDetails;
-import kit.project.whatshouldweeattoday.service.ChatService;
-import kit.project.whatshouldweeattoday.service.MeetService;
-import kit.project.whatshouldweeattoday.service.PathService;
-import kit.project.whatshouldweeattoday.service.VoteService;
+import kit.project.whatshouldweeattoday.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -21,11 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Controller
@@ -36,6 +38,24 @@ public class ChatController {
     private final VoteService voteService;
     private final PathService pathService;
     private final MeetService meetService;
+    private final ChatRoomService chatRoomService;
+    private final MemberService memberService;
+    private final SimpMessageSendingOperations messagingTemplate;
+
+    /**
+     * 친구 초대 할 때 초대경로로 메시지 뿌리기
+     * @param requestDTO
+     */
+    @MessageMapping("/invite")
+    public void inviteFriendsToRoom(RoomAndFriendsRequestDTO requestDTO) {
+        ChatRoom chatRoom = chatRoomService.findByRoomId(requestDTO.getRoomId());
+        Set<Member> friends = memberService.findAllByLoginIds(requestDTO.getFriendLoginIds());
+
+        for (Member friend : friends) {
+            chatRoom.addParticipant(friend);
+            messagingTemplate.convertAndSend("/topic/invite/" + friend.getLoginId(), chatRoom.getId());
+        }
+    }
 
     /**
      * 채팅방 내 투표 생성

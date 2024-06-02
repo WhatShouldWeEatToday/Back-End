@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.type.RoleType;
@@ -7,14 +8,13 @@ import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -58,8 +58,10 @@ public class Member {
     @OneToMany( mappedBy = "member")
     private List<Friendship> friendshipList;
 
-    @ManyToMany(mappedBy = "members")
-    private Set<ChatRoom> chatRooms = new HashSet<>();
+    @JsonIgnore
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private ChatRoom room;
 
     @OneToMany(mappedBy = "member",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -71,8 +73,6 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Likes> likesList = new ArrayList<>();
-//    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Chat> chatList = new ArrayList<>();
 
     public Member(String loginId, String loginPw, String nickname, String gender, int age) {
         this.loginId = loginId;
@@ -80,10 +80,6 @@ public class Member {
         this.nickname = nickname;
         this.gender = gender;
         this.age = age;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
     }
 
     /* 리뷰 등록 */
@@ -113,5 +109,13 @@ public class Member {
     //== 권한 부여 ==//
     public void addUserAuthority() {
         this.role = RoleType.USER;
+    }
+
+    public void setMappingRoom(ChatRoom room) {
+        this.room = room;
+    }
+
+    public void unsetMappingRoom() {
+        this.room = null;
     }
 }

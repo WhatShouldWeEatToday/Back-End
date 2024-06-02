@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class RoomAndFriendsRequestDTO {
+    private Long roomId;
     private String name;
     private List<String> friendLoginIds;
 

@@ -37,6 +37,7 @@ public class StompHandler implements ChannelInterceptor {
         log.info("Native headers: {}", accessor.getNativeHeader("Authorization"));
 
         try {
+            String destination = accessor.getDestination();
             if (StompCommand.CONNECT.equals(command)) {
                 log.info("WebSocket CONNECT request received");
                 Member member = getMemberByAuthorizationHeader(
@@ -47,12 +48,11 @@ public class StompHandler implements ChannelInterceptor {
                 setSessionAttributes(accessor, member, sessionId);
 
             } else if (StompCommand.SUBSCRIBE.equals(command)) {
-                String destination = accessor.getDestination();
+
                 if (destination == null) {
                     log.error("Destination is null.");
                     throw new IllegalArgumentException("Destination cannot be null.");
                 }
-
                 if (destination.startsWith("/topic/public/")) {
                     String loginId = (String) getValue(accessor, "loginId");
                     String friendLoginId = extractPathSuffix(destination, "/topic/public/");
@@ -72,7 +72,17 @@ public class StompHandler implements ChannelInterceptor {
                     Long roomId = Long.valueOf(extractPathSuffix(destination, "/topic/departure/"));
                     setLongValue(accessor, "roomId", roomId);
                 }
-            } else if (StompCommand.DISCONNECT.equals(command)) {
+
+            }
+            else if (StompCommand.SEND.equals(command)) {
+                String loginId = (String) getValue(accessor, "loginId");
+                String friendLoginId = extractPathSuffix(destination, "/topic/public/");
+                log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
+                setValue(accessor, "friendLoginId", friendLoginId);
+                validateMemberInFriendship(loginId, friendLoginId);
+
+            }
+            else if (StompCommand.DISCONNECT.equals(command)) {
                 String loginId = (String) getValue(accessor, "loginId");
                 log.info("WebSocket DISCONNECTED request received: loginId = {}", loginId);
             }
