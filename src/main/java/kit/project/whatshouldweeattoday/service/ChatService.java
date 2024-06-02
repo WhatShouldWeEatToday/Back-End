@@ -25,9 +25,11 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRepository chatRepository;
-    private final VoteRepository voteRepository;
     private final MeetRepository meetRepository;
+    private final VoteRepository voteRepository;
     private final FoodService foodService;
+    private final VoteService voteService;
+    private final MeetService meetService;
 
     /**
      * 채팅방 내 모든 메시지 조회
@@ -50,14 +52,14 @@ public class ChatService {
 
     /**
      * @param roomId
-     * @param menu1
-     * @param menu2
+     * @param vote
      */
-    public void createVote(Long roomId, String menu1, String menu2) throws BadRequestException {
+    public void createVote(Long roomId, Vote vote) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
-        Vote vote = voteRepository.save(Vote.createVote(menu1, menu2));
-
-        chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
+        chatRoom.addVote(vote);
+        voteRepository.save(vote);
+        chatRoomRepository.save(chatRoom);
+//        chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }
 
     public int getMemberCount(Long chatRoomId) throws BadRequestException {

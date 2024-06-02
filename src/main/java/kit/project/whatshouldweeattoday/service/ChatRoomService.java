@@ -6,6 +6,7 @@ import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,20 +24,27 @@ public class ChatRoomService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public ChatRoom createRoomAndInviteFriends(String roomName, Member creator, Set<Member> friends) {
+    public synchronized ChatRoom createRoomAndInviteFriends(String roomName, Member creator, Set<Member> friends) {
+        log.info("Creating room: {} by creator: {}", roomName, creator.getLoginId());
+
         creator = memberRepository.findById(creator.getId()).orElseThrow(() -> new IllegalArgumentException("Creator not found"));
         friends = friends.stream()
                 .map(friend -> memberRepository.findById(friend.getId()).orElseThrow(() -> new IllegalArgumentException("Friend not found")))
                 .collect(Collectors.toSet());
 
-        ChatRoom chatRoom = ChatRoom.createRoom(creator.getLoginId(), roomName);
-        chatRoom.addParticipant(creator);
+        try {
+            ChatRoom chatRoom = ChatRoom.createRoom(creator.getLoginId(), roomName);
+            chatRoom.addParticipant(creator);
 
-        for (Member friend : friends) {
-            chatRoom.addParticipant(friend);
+            for (Member friend : friends) {
+                chatRoom.addParticipant(friend);
+            }
+
+            return chatRoomRepository.save(chatRoom);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Room already exists", e);
         }
 
-        return chatRoomRepository.save(chatRoom);
     }
 
     public List<ChatRoom> findAllRoom() {

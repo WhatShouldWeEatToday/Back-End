@@ -61,26 +61,25 @@ public class ChatRoomController {
         List<ChatRoom> chatRooms = chatRoomService.findAllRoom();
         List<ChatRoomDTO> includeChatRooms = new ArrayList<>();
         String loginId = SecurityUtil.getLoginId();
-        System.out.println("현재 로그인된 사용자 ID: " + loginId);
+        log.info("현재 로그인된 사용자 ID: " + loginId);
 
         for (ChatRoom room : chatRooms) {
             Set<ChatRoomMember> participants = room.getChatRoomMembers();
             if (participants == null || participants.isEmpty()) {
-                System.out.println("참여자 목록이 비어 있습니다. 채팅방 ID: " + room.getId());
+                log.info("참여자 목록이 비어 있습니다. 채팅방 ID: " + room.getId());
             } else {
-                System.out.println("채팅방 ID: " + room.getId() + ", 참여자 수: " + participants.size());
+                log.info("채팅방 ID: " + room.getId() + ", 참여자 수: " + participants.size());
                 for (ChatRoomMember participant : participants) {
-                    System.out.println("참여자 ID: " + participant.getMember().getLoginId());
+                    log.info("참여자 ID: " + participant.getMember().getLoginId());
                     if (Objects.equals(participant.getMember().getLoginId(), loginId)) {
                         includeChatRooms.add(ChatRoomDTO.from(room, loginId));
-                        System.out.println("추가된 채팅방 ID: " + room.getId());
+                        log.info("추가된 채팅방 ID: " + room.getId());
                         break;
                     }
                 }
             }
         }
-
-        System.out.println("총 포함된 채팅방 수: " + includeChatRooms.size());
+        log.info("총 포함된 채팅방 수: " + includeChatRooms.size());
         return new ResponseEntity<>(includeChatRooms, HttpStatus.OK);
     }
 }

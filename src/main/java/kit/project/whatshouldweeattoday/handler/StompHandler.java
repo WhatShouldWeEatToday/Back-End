@@ -14,6 +14,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -54,21 +56,39 @@ public class StompHandler implements ChannelInterceptor {
                     throw new IllegalArgumentException("Destination cannot be null.");
                 }
                 if (destination.startsWith("/topic/room/")) {
-                    String loginId = (String) getValue(accessor, "loginId");
-                    String friendLoginId = extractPathSuffix(destination, "/topic/room/");
-                    log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
-                    setValue(accessor, "friendLoginId", friendLoginId);
-                    validateMemberInFriendship(loginId, friendLoginId);
-
+                    Long roomId = Long.valueOf(extractPathSuffix(destination, "/topic/room/"));
+                    setLongValue(accessor, "roomId", roomId);
                 }
             }
             else if (StompCommand.SEND.equals(command)) {
-                String loginId = (String) getValue(accessor, "loginId");
-                String friendLoginId = extractPathSuffix(destination, "/topic/public/");
-                log.info("User subscribed: loginId = {}, friendLoginId = {}", loginId, friendLoginId);
-                setValue(accessor, "friendLoginId", friendLoginId);
-                validateMemberInFriendship(loginId, friendLoginId);
+                Long roomId = Long.valueOf(extractPathSuffix(destination, "/app/vote/register/"));
+                setLongValue(accessor, "roomId", roomId);
+                if (destination.startsWith("/app/vote/register/")) {
+                    String authHeader = accessor.getFirstNativeHeader("Authorization");
+                    if (authHeader == null || authHeader.isBlank()) {
+                        throw new WebSocketException("Authorization header is missing");
+                    }
 
+                    Member member = getMemberByAuthorizationHeader(authHeader);
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new UsernamePasswordAuthenticationToken(member, null, null)
+                    );
+                } else if (destination.startsWith("/app/vote/increment/" + roomId + "/")) {
+                    String voteIdString = extractPathSuffix(destination, "/app/vote/increment/" + roomId + "/");
+                    if (!voteIdString.isEmpty()) {
+                        Long voteId = Long.valueOf(voteIdString);
+                        setLongValue(accessor, "voteId", voteId);
+                    }
+                } else if (destination.startsWith("/app/vote/end/" + roomId + "/")) {
+                    Long voteId = Long.valueOf(extractPathSuffix(destination, "/app/vote/end/" + roomId + "/"));
+                    setLongValue(accessor, "voteId", voteId);
+                } else if (destination.startsWith("/app/meet/register/" + roomId + "/")) {
+                    Long meetId = Long.valueOf(extractPathSuffix(destination, "/app/meet/register/" + roomId + "/"));
+                    setLongValue(accessor, "meetId", meetId);
+                } else if (destination.startsWith("/departure/register/")) {
+                    roomId = Long.valueOf(extractPathSuffix(destination, "/departure/register/"));
+                    setLongValue(accessor, "roomId", roomId);
+                }
             }
             else if (StompCommand.DISCONNECT.equals(command)) {
                 String loginId = (String) getValue(accessor, "loginId");
