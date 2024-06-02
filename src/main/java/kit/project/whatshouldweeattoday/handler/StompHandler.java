@@ -82,22 +82,19 @@ public class StompHandler implements ChannelInterceptor {
                         setLongValue(accessor, "roomId", roomId);
                         setLongValue(accessor, "voteId", voteId);
                     } else {
-                        log.error("Invalid destination format for increment: {}", destination);
+                        log.error("Invalid destination format for vote increment: {}", destination);
                         throw new IllegalArgumentException("Invalid destination format");
                     }
 
                 } else if (destination.startsWith("/app/vote/state/")) {
                     String[] pathSegments = destination.substring("/app/vote/state/".length()).split("/");
-                    if (pathSegments.length == 2) {
+                    if (pathSegments.length == 1) {
                         Long roomId = Long.valueOf(pathSegments[0]);
-                        Long voteId = Long.valueOf(pathSegments[1]);
                         setLongValue(accessor, "roomId", roomId);
-                        setLongValue(accessor, "voteId", voteId);
                     } else {
-                        log.error("Invalid destination format for increment: {}", destination);
+                        log.error("Invalid destination format for vote state: {}", destination);
                         throw new IllegalArgumentException("Invalid destination format");
                     }
-
                 } else if (destination.startsWith("/app/vote/end/")) {
                     String[] pathSegments = destination.substring("/app/vote/end/".length()).split("/");
                     if (pathSegments.length == 2) {
@@ -106,7 +103,7 @@ public class StompHandler implements ChannelInterceptor {
                         setLongValue(accessor, "roomId", roomId);
                         setLongValue(accessor, "voteId", voteId);
                     } else {
-                        log.error("Invalid destination format for end: {}", destination);
+                        log.error("Invalid destination format for vote end: {}", destination);
                         throw new IllegalArgumentException("Invalid destination format");
                     }
 
@@ -118,7 +115,7 @@ public class StompHandler implements ChannelInterceptor {
                         setLongValue(accessor, "roomId", roomId);
                         setLongValue(accessor, "meetId", meetId);
                     } else {
-                        log.error("Invalid destination format for meet register: {}", destination);
+                        log.error("Invalid destination format for meet state: {}", destination);
                         throw new IllegalArgumentException("Invalid destination format");
                     }
 

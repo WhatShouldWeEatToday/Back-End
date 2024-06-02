@@ -11,5 +11,5 @@ public class MeetChatResponseDTO {
     private Long roomId;
     private String meetLocate;
     private String meetMenu;
-    private LocalDateTime meetTime;
+    private String meetTime;
 }

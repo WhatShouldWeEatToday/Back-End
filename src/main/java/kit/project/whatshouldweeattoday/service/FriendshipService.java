@@ -3,9 +3,12 @@ package kit.project.whatshouldweeattoday.service;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Friendship;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.entity.Notice;
 import kit.project.whatshouldweeattoday.domain.type.FriendshipStatus;
+import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
+import kit.project.whatshouldweeattoday.repository.NoticeRepository;
 import kit.project.whatshouldweeattoday.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ public class FriendshipService {
 
     private final MemberRepository memberRepository;
     private final FriendshipRepository friendshipRepository;
+    private final NoticeRepository noticeRepository;
 
     public void createFriendship(String toLoginId) throws BadRequestException {
         // 현재 로그인 되어있는 유저(보내는 사람)
@@ -65,6 +69,10 @@ public class FriendshipService {
         // 매칭되는 친구요청의 아이디를 저장한다.
         friendshipTo.setCounterpartId(friendshipFrom.getId());
         friendshipFrom.setCounterpartId(friendshipTo.getId());
+
+        String content = fromMember.getNickname() + "님이 친구추가 요청을 보냈습니다.";
+        Notice notice = new Notice(toMember, content, NoticeType.FRIEND_INVITE);
+        noticeRepository.save(notice);
     }
 
     public List<FriendListDTO> getFriendList() throws BadRequestException {

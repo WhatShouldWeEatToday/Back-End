@@ -27,17 +27,16 @@ public class PathService {
     }
 
     // startAddres = 채팅방 사람들의 출발지 list
-    // startAddres = 채팅방 사람들의 출발지 list
     @Transactional
     public List<PersonalPathDTO> getWeight(String keyword, List<String> startAddress) {
         List<PersonalPathDTO> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
         LocalDateTime localDateTime = LocalDateTime.now();
         String searchDttm = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-        List<String> addressInfo= new ArrayList<>();
+        List<String> addressInfo = new ArrayList<>();
         Map<String, Double> coordinates;
-        Double startX=0.0;
-        Double startY=0.0;
-        for(int i = 0;i<startAddress.size();i++){
+        Double startX = 0.0;
+        Double startY = 0.0;
+        for (int i = 0; i < startAddress.size(); i++) {
             //1. 주소를 위치 변환
             coordinates = tmapService.getCoordinates(startAddress.get(i));
             startX = coordinates.get("longitude");
@@ -53,8 +52,9 @@ public class PathService {
             addressInfo.add(userAddress);
         }
 
+        // 개인별 배열 만들고 일련번호 주입
         for (String targetAddress : addressInfo) { //allPathList를 채워줌
-            List<PersonalPathDTO> pathList = personalRestaurant(keyword, targetAddress, searchDttm,startX,startY);
+            List<PersonalPathDTO> pathList = personalRestaurant(keyword, targetAddress, searchDttm, startX, startY);
             pathList = setSerialNumForArray(pathList);
             resultSort.addAll(pathList);
         }
@@ -69,11 +69,18 @@ public class PathService {
             pathList = sortByPath(pathList);
             for (int j = 0; j < pathList.size(); j++) {
                 PersonalPathDTO target = pathList.get(j);
-                target.setWeight(target.getWeight() + j); //TODO weight = 0 인 경우확인
+                target.setWeight(target.getWeight() + j); //TODO weight = 0 인 경우 확인
             }
         }
-        sortPersonalPathByWeightTop3(resultSort);
+        //상위 3개 반환
+        resultSort = sortPersonalPathByWeightTop3(resultSort);
         return resultSort;
+    }
+
+    public void changeSubArray(int start, int end, List<PersonalPathDTO> resultSort) {
+        List<PersonalPathDTO> subArray = resultSort.subList(start, end + 1);
+        //별점 내림차순
+        Collections.sort(subArray, Comparator.comparingDouble((PersonalPathDTO dto) -> dto.getRestaurantResponseDTO().getDegree()).reversed());
     }
 
     @Transactional
@@ -82,14 +89,32 @@ public class PathService {
     }
 
     //최종 3개 추출
-    @Transactional
     public List<PersonalPathDTO> sortPersonalPathByWeightTop3(List<PersonalPathDTO> list) {
         // 리스트를 가중치 기준으로 정렬
         Collections.sort(list, Comparator.comparingInt(PersonalPathDTO::getWeight));
 
+        int start = -1; //SubArray를 만들기 위함
+        int end = -1; //SubArray를 만들기 위함
+        int size = list.size();
+        for (int i = 0; i < size - 1; i++) {
+            if (Objects.equals(list.get(i).getWeight(), list.get(i + 1).getWeight())) { //현재 보는 객체의 가중치와 다음 가중치가 같다면?
+                start = i;
+                int j = i;
+                while (Objects.equals(list.get(j).getWeight(), list.get(j + 1).getWeight())) {
+                    j++;
+                    if(j == size -1) {
+                        break;
+                    }
+                }
+                end = j;
+                i = j;
+                changeSubArray(start, end, list);
+            }
+        }
         // 상위 3개의 항목을 반환
         return list.size() > 3 ? list.subList(0, 3) : list;
     }
+
     //경로 시간 추출
     @Transactional
     public List<PersonalPathDTO> setTotalTime(List<PersonalPathDTO> list, Double startX, Double startY, String searchDttm) {
@@ -110,15 +135,15 @@ public class PathService {
 
         //1-1. 주소필터링
         restaurants = restaurantRepository.findByOnlyAddress(userAddress);
-        System.out.println("주소로 검색된 식당 수 : "+restaurants.size());
-        for(int i = 0;i<restaurants.size();i++){
+        System.out.println("주소로 검색된 식당 수 : " + restaurants.size());
+        for (int i = 0; i < restaurants.size(); i++) {
             System.out.println(restaurants.get(i).getName());
             System.out.println(restaurants.get(i).getAddressNumber());
         }
         //1-2. 키워드필터링
-        restaurants = filterByKeyword(restaurants,keyword);
-        System.out.println("키워드 검색된 식당 수 : "+restaurants.size());
-        for(int i = 0;i<restaurants.size();i++){
+        restaurants = filterByKeyword(restaurants, keyword);
+        System.out.println("키워드 검색된 식당 수 : " + restaurants.size());
+        for (int i = 0; i < restaurants.size(); i++) {
             System.out.println(restaurants.get(i).getName());
             System.out.println(restaurants.get(i).getAddressNumber());
         }

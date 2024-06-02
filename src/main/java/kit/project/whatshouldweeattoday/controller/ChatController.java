@@ -1,6 +1,5 @@
 package kit.project.whatshouldweeattoday.controller;
 
-import kit.project.whatshouldweeattoday.domain.dto.chat.ChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
@@ -9,8 +8,11 @@ import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteIdRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
-import kit.project.whatshouldweeattoday.domain.entity.*;
-import kit.project.whatshouldweeattoday.repository.ChatRepository;
+import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
+import kit.project.whatshouldweeattoday.domain.entity.Meet;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.entity.Vote;
+import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MeetRepository;
 import kit.project.whatshouldweeattoday.service.*;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Set;
@@ -41,9 +43,8 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
     private final MeetRepository meetRepository;
-    private final ChatRepository chatRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final SimpMessageSendingOperations messagingTemplate;
-
 
     /**
      * 친구 초대 할 때 초대경로로 메시지 뿌리기
@@ -70,6 +71,7 @@ public class ChatController {
         try {
             Vote vote = voteService.createVote(voteRequest.getMenu1(), voteRequest.getMenu2());
             chatService.createVote(roomId, vote);
+
             return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
         } catch (Exception e) {
             log.error("Error registering vote for roomId {}: {}", roomId, e.getMessage());
@@ -81,9 +83,16 @@ public class ChatController {
      * 채팅방 내 투표 조회
      * @param roomId
      */
+
+//    @GetMapping("/vote/{roomId}")
+//    public ResponseEntity<?> getVote(@PathVariable(name = "roomId", required = false) Long roomId) {
+//        VoteResponseDTO vote = chatService.findVoteById(roomId);
+//        return new ResponseEntity<>(vote, HttpStatus.OK);
+//    }
+
     @MessageMapping("/vote/state/{roomId}")
     @SendTo("/topic/room/{roomId}")
-    public ResponseEntity<?> getVote(@PathVariable(name = "roomId", required = false) Long roomId) {
+    public ResponseEntity<?> getVote(@DestinationVariable("roomId") Long roomId) {
         VoteResponseDTO vote = chatService.findVoteById(roomId);
         return new ResponseEntity<>(vote, HttpStatus.OK);
     }
@@ -120,6 +129,7 @@ public class ChatController {
             Vote vote = voteService.getVote(voteId);
 
             int memberCount = chatService.getMemberCount(roomId);
+
             long totalCount = vote.getVoteCount1() + vote.getVoteCount2();
             String maxVotedMenu = "";
             MeetResponseDTO responseDTO = null;
@@ -129,8 +139,8 @@ public class ChatController {
             }
             return responseDTO;
         } catch (Exception e) {
-            log.error("Error incrementing vote for voteId {}: {}", voteId, e.getMessage());
-            throw new BadRequestException("Failed to increment vote count");
+            log.error("Error ending vote for voteId {}: {}", voteId, e.getMessage());
+            throw new BadRequestException("Failed to end vote and save menu", e);
         }
     }
 
@@ -152,10 +162,12 @@ public class ChatController {
      */
     @MessageMapping("/meet/register/{roomId}/{meetId}")
     @SendTo("/topic/room/{roomId}")
-    public MeetChatResponseDTO createMeet(@DestinationVariable("roomId") Long roomId, @DestinationVariable("meetId") Long meetId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
+    public MeetChatResponseDTO createMeet(@DestinationVariable("roomId") Long roomId, @DestinationVariable("meetId") Long meetId, @RequestBody MeetRequestDTO meetRequestDTO) throws BadRequestException {
         Meet meet = meetService.findByMeetId(meetId);
         meet.setMeetLocate(meetRequestDTO.getMeetLocate());
         meet.setMeetTime(meetRequestDTO.getMeetTime());
+
+        meetRepository.save(meet);
 
         return MeetChatResponseDTO.builder()
                 .roomId(roomId)
@@ -198,17 +210,17 @@ public class ChatController {
      */
     @MessageMapping("/departure/register/{roomId}")
     @SendTo("/topic/room/{roomId}")
-    public List<PersonalPathDTO> registerDeparture(@DestinationVariable("roomId") Long roomId, List<String> departures) {
-        Chat chat = chatRepository.findOneByRoomId(roomId);
-        if (chat == null) {
-            throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
+    public ResponseEntity<List<PersonalPathDTO>> registerDeparture(@DestinationVariable("roomId") Long roomId, List<String> departures) {
+        ChatRoom room = chatRoomRepository.findOneById(roomId);
+        if (room == null) {
+            throw new IllegalArgumentException("존재하지 않는 채팅방입니다.");
         }
 
-        String meetMenu = chat.getMeet().getMeetMenu();
+        String meetMenu = room.getMeet().getMeetMenu();
         if (meetMenu == null) {
             throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
         }
-
-        return pathService.getWeight(meetMenu, departures);
+        List<PersonalPathDTO> weight = pathService.getWeight(meetMenu, departures);
+        return new ResponseEntity<>(weight, HttpStatus.OK);
     }
 }
