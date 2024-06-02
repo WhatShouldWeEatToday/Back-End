@@ -41,20 +41,31 @@ public class Chat {
     @JoinColumn(name = "notice_id")
     private Notice notice;
 
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "member_id")
+//    private Member member;
+
     @PrePersist
     protected void onCreate() {
         sendDate = LocalDateTime.now();
     }
 
+//    public Chat(ChatRoom room, Vote vote, Meet meet, String sender) {
+//        this.room = room;
+//        this.vote = vote;
+//        this.meet = meet;
+//        this.sender = sender;
+//        this.sendDate = LocalDateTime.now();
+//    }
+
     @Builder
-    public Chat(ChatRoom room, Vote vote, Meet meet) {
+    public Chat(ChatRoom room, Vote vote, Meet meet, Notice notice, String sender) {
         this.room = room;
         this.vote = vote;
         this.meet = meet;
-//        this.sender = sender;
-        this.sendDate = LocalDateTime.now();
+        this.notice = notice;
+        this.sender = sender;
     }
-
     /**
      * 채팅 생성
      * @param room 채팅 방
@@ -63,12 +74,12 @@ public class Chat {
      * @param sender  보낸 이
      * @return Chat Entity
      */
-    public static Chat createChat(ChatRoom room, Vote vote, Meet meet) {
+    public static Chat createChat(ChatRoom room, Vote vote, Meet meet, String sender) {
         return Chat.builder()
                 .room(room)
                 .vote(vote)
                 .meet(meet)
-//                .sender(sender)
+                .sender(sender)
                 .build();
     }
 }

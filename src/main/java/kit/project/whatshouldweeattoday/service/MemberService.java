@@ -18,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -82,5 +85,10 @@ public class MemberService {
 
     public Optional<Member> findByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId);
+    }
+
+    public Set<Member> findAllByLoginIds(List<String> loginIds) {
+        return memberRepository.findAllByLoginIdIn(loginIds)
+                .stream().collect(Collectors.toSet());
     }
 }

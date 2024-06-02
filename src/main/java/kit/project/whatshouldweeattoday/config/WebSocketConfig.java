@@ -20,8 +20,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic"); // 발행자가 "/"의 경로로 메시지를 주면 구독자들에게 전달
         registry.setApplicationDestinationPrefixes("/app"); // 발행자가 "/"의 경로로 메시지를 주면 가공을 해서 구독자들에게 전달
+        registry.enableSimpleBroker("/topic"); // 발행자가 "/"의 경로로 메시지를 주면 구독자들에게 전달
     }
 
     @Override

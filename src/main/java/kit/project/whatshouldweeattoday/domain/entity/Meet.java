@@ -24,7 +24,7 @@ public class Meet extends BaseTimeEntity {
     private Chat chat;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CHAT_ROOM_ID")
+    @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

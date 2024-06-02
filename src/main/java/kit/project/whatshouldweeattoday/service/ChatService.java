@@ -40,13 +40,13 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
         Vote vote = voteRepository.save(Vote.createVote(menu1, menu2));
 
-        chatRepository.save(Chat.createChat(chatRoom, vote, null));
+        chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }
 
     public int getMemberCount(Long chatRoomId) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
-        return chatRoom.getMembers().size();
+        return chatRoom.getParticipants().size();
     }
 
     /**
@@ -90,7 +90,7 @@ public class ChatService {
 
         foodService.increaseFoodCount(meetLocate);
 
-        return chatRepository.save(Chat.createChat(chatRoom, null, meet));
+        return chatRepository.save(Chat.createChat(chatRoom, null, meet, SecurityUtil.getLoginId()));
     }
 
     /**
