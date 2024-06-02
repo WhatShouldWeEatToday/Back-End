@@ -199,8 +199,8 @@ public class RestaurantController {
 
    //채팅방 단체최적경로
     @PostMapping("/search/showArray")
-    public ResponseEntity<List<PersonalPath>> getWeightInfo(@RequestBody PathRequest request) {
-        List<PersonalPath> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress());
+    public ResponseEntity<List<PersonalPathDTO>> getWeightInfo(@RequestBody PathRequest request) {
+        List<PersonalPathDTO> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress());
         return ResponseEntity.ok(personalPathList);
     }
 

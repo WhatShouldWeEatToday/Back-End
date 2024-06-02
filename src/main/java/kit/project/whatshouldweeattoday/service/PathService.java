@@ -1,14 +1,13 @@
 package kit.project.whatshouldweeattoday.service;
 
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,7 +20,7 @@ public class PathService {
     private final TMapService tmapService;
     private final ReviewService reviewService;
     private int serialNum = 0; // 음식점 배열 일련번호
-    private List<PersonalPath> weightArray = new ArrayList<>(); // 전체 가중치
+    private List<PersonalPathDTO> weightArray = new ArrayList<>(); // 전체 가중치
 
     public void registerDeparture(String meetMenu, Long chatId) {
         System.out.println("MeetMenu: " + meetMenu + ", ChatId: " + chatId);
@@ -30,24 +29,46 @@ public class PathService {
     // startAddres = 채팅방 사람들의 출발지 list
     // startAddres = 채팅방 사람들의 출발지 list
     @Transactional
-    public List<PersonalPath> getWeight(String keyword, List<String> startAddress) {
-        List<PersonalPath> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
+    public List<PersonalPathDTO> getWeight(String keyword, List<String> startAddress) {
+        List<PersonalPathDTO> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
         LocalDateTime localDateTime = LocalDateTime.now();
         String searchDttm = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-        for (String targetAddress : startAddress) { //allPathList를 채워줌
-            List<PersonalPath> pathList = personalRestaurant(keyword, targetAddress, searchDttm);
+        List<String> addressInfo= new ArrayList<>();
+        Map<String, Double> coordinates;
+        Double startX=0.0;
+        Double startY=0.0;
+        for(int i = 0;i<startAddress.size();i++){
+            //1. 주소를 위치 변환
+            coordinates = tmapService.getCoordinates(startAddress.get(i));
+            startX = coordinates.get("longitude");
+            startY = coordinates.get("latitude");
+            System.out.println("이 사람의 출발 위치 :" + startX + " " + startY);
+            //2. 사용자의 위치정보를 주소로 반환후 XX동 추출
+            String userAddress = tmapService.getAddressByCoordinates(startX, startY);
+
+            if (addressInfo.contains(userAddress)) {
+                // 만약 addressInfo 배열에 같은 주소가 있으면 세부 주소를 더 뽑음
+                userAddress = tmapService.getAddressByCoordinates2(startX, startY);
+            }
+            addressInfo.add(userAddress);
+        }
+
+        for (String targetAddress : addressInfo) { //allPathList를 채워줌
+            List<PersonalPathDTO> pathList = personalRestaurant(keyword, targetAddress, searchDttm,startX,startY);
             pathList = setSerialNumForArray(pathList);
             resultSort.addAll(pathList);
         }
+
+        //-> 가중치 계산
         for (String address : startAddress) {
             System.out.println("유저: " + address);
-            Map<String, Double> coordinates = tmapService.getCoordinates(address);
-            Double startX = coordinates.get("longitude");
-            Double startY = coordinates.get("latitude");
-            List<PersonalPath> pathList = setTotalTime(resultSort, startX, startY, searchDttm);
+            Map<String, Double> coordinates2 = tmapService.getCoordinates(address);
+            Double startX2 = coordinates2.get("longitude");
+            Double startY2 = coordinates2.get("latitude");
+            List<PersonalPathDTO> pathList = setTotalTime(resultSort, startX2, startY2, searchDttm);
             pathList = sortByPath(pathList);
             for (int j = 0; j < pathList.size(); j++) {
-                PersonalPath target = pathList.get(j);
+                PersonalPathDTO target = pathList.get(j);
                 target.setWeight(target.getWeight() + j); //TODO weight = 0 인 경우확인
             }
         }
@@ -56,25 +77,26 @@ public class PathService {
     }
 
     @Transactional
-    public void sortPersonalPathByWeight(List<PersonalPath> list) {
-        Collections.sort(list, Comparator.comparingInt(PersonalPath::getWeight));
+    public void sortPersonalPathByWeight(List<PersonalPathDTO> list) {
+        Collections.sort(list, Comparator.comparingInt(PersonalPathDTO::getWeight));
     }
 
     //최종 3개 추출
     @Transactional
-    public List<PersonalPath> sortPersonalPathByWeightTop3(List<PersonalPath> list) {
+    public List<PersonalPathDTO> sortPersonalPathByWeightTop3(List<PersonalPathDTO> list) {
         // 리스트를 가중치 기준으로 정렬
-        Collections.sort(list, Comparator.comparingInt(PersonalPath::getWeight));
+        Collections.sort(list, Comparator.comparingInt(PersonalPathDTO::getWeight));
 
         // 상위 3개의 항목을 반환
         return list.size() > 3 ? list.subList(0, 3) : list;
     }
+    //경로 시간 추출
     @Transactional
-    public List<PersonalPath> setTotalTime(List<PersonalPath> list, Double startX, Double startY, String searchDttm) {
-        List<PersonalPath> results = new ArrayList<>();
-        for (PersonalPath target : list) {
+    public List<PersonalPathDTO> setTotalTime(List<PersonalPathDTO> list, Double startX, Double startY, String searchDttm) {
+        List<PersonalPathDTO> results = new ArrayList<>();
+        for (PersonalPathDTO target : list) {
             target.setTotalTime(tmapService.totalTime(Double.toString(startX), Double.toString(startY),
-                    Double.toString(target.getRestaurant().getLongitude()), Double.toString(target.getRestaurant().getLatitude()), 0, "json", 1, searchDttm));
+                    Double.toString(target.getRestaurantResponseDTO().getLongitude()), Double.toString(target.getRestaurantResponseDTO().getLatitude()), 0, "json", 1, searchDttm));
             results.add(target);
         }
         return results;
@@ -82,25 +104,18 @@ public class PathService {
 
     //1차 배열
     @Transactional
-    public List<PersonalPath> personalRestaurant(String keyword, String startAddress, String searchDttm) {
+    public List<PersonalPathDTO> personalRestaurant(String keyword, String userAddress, String searchDttm, Double startX, Double startY) {
         List<Restaurant> restaurants = new ArrayList<>();
-        List<PersonalPath> personalPaths = new ArrayList<>();
-        //1. 주소를 위치 변환
-        Map<String, Double> coordinates = tmapService.getCoordinates(startAddress);
-        Double startX = coordinates.get("longitude");
-        Double startY = coordinates.get("latitude");
-        System.out.println("이 사람의 출발 위치 :" + startX + " " + startY);
-        //2. 사용자의 위치정보를 주소로 반환후 XX동 XX까지 추출
-        String userAddress = tmapService.getAddressByCoordinates2(startX, startY);
-        System.out.println("주소 : "+userAddress);
-        //3-1. 주소로만 검색
+        List<PersonalPathDTO> personalPaths = new ArrayList<>();
+
+        //1-1. 주소필터링
         restaurants = restaurantRepository.findByOnlyAddress(userAddress);
         System.out.println("주소로 검색된 식당 수 : "+restaurants.size());
         for(int i = 0;i<restaurants.size();i++){
             System.out.println(restaurants.get(i).getName());
             System.out.println(restaurants.get(i).getAddressNumber());
         }
-        //3-2. 키워드로만 검색
+        //1-2. 키워드필터링
         restaurants = filterByKeyword(restaurants,keyword);
         System.out.println("키워드 검색된 식당 수 : "+restaurants.size());
         for(int i = 0;i<restaurants.size();i++){
@@ -108,19 +123,19 @@ public class PathService {
             System.out.println(restaurants.get(i).getAddressNumber());
         }
 
-        //4.리뷰평점순으로 20개 추출(1차 필터링)
+        //2.리뷰평점순으로 20개 추출(1차 필터링)
         restaurants = sortByDegree(restaurants);
-        //5. 경로구하기 -> 여기서 personalPath로 변환
+        //3. 경로구하기 -> 여기서 personalPath로 변환
         personalPaths = getPath(startX, startY, restaurants, searchDttm);
-        //6. 경로순으로 정렬
+        //4. 경로순으로 정렬
         personalPaths = sortByPath(personalPaths);
         return personalPaths;
     }
 
     //2차 배열 -> 일련번호 넣어주기(쓰레드 공유 이슈 생길 수 있음..), 다른사람도 serialNum값을 사용함
     @Transactional
-    public List<PersonalPath> setSerialNumForArray(List<PersonalPath> personalPaths) {
-        for (PersonalPath personalPath : personalPaths) {
+    public List<PersonalPathDTO> setSerialNumForArray(List<PersonalPathDTO> personalPaths) {
+        for (PersonalPathDTO personalPath : personalPaths) {
             personalPath.setSerialNum(serialNum);
             serialNum++;
         }
@@ -129,13 +144,13 @@ public class PathService {
 
     //3차 배열 -> 다른사람들의 personalPath 배열들 다 합침
     @Transactional
-    public List<PersonalPath> mergeList(List<PersonalPath> personalPaths1, List<PersonalPath> personalPaths2) {
-        List<PersonalPath> mergedList = new ArrayList<>(personalPaths1);
+    public List<PersonalPathDTO> mergeList(List<PersonalPathDTO> personalPaths1, List<PersonalPathDTO> personalPaths2) {
+        List<PersonalPathDTO> mergedList = new ArrayList<>(personalPaths1);
         mergedList.addAll(personalPaths2);
         return mergedList;
     }
 
-    //리뷰평점순으로 정렬
+    //리뷰평점순으로 정렬 -> 20개
     @Transactional
     public List<Restaurant> sortByDegree(List<Restaurant> restaurants) {
         return restaurants.stream()
@@ -144,9 +159,17 @@ public class PathService {
                 .collect(Collectors.toList());
     }
 
+    //리뷰평점순으로 정렬
+    @Transactional
+    public List<Restaurant> sortByDegree2(List<Restaurant> restaurants) {
+        return restaurants.stream()
+                .sorted((r1, r2) -> Double.compare(r2.getDegree(), r1.getDegree()))
+                .collect(Collectors.toList());
+    }
+
     //경로순으로 정렬 -> 오름차순
     @Transactional
-    public List<PersonalPath> sortByPath(List<PersonalPath> personalPaths) {
+    public List<PersonalPathDTO> sortByPath(List<PersonalPathDTO> personalPaths) {
         return personalPaths.stream()
                 .sorted((r1, r2) -> Double.compare(r1.getTotalTime(), r2.getTotalTime()))
                 .limit(5)
@@ -155,13 +178,21 @@ public class PathService {
 
     //개인배열 경로 추출
     @Transactional
-    public List<PersonalPath> getPath(Double startX, Double startY, List<Restaurant> restaurants, String searchDttm) {
-        List<PersonalPath> personalPaths = new ArrayList<>();
+    public List<PersonalPathDTO> getPath(Double startX, Double startY, List<Restaurant> restaurants, String searchDttm) {
+        List<PersonalPathDTO> personalPaths = new ArrayList<>();
         for (Restaurant restaurant : restaurants) {
-            PersonalPath target = new PersonalPath();
-            target.setTotalTime(tmapService.totalTime(Double.toString(startX), Double.toString(startY),
-                    Double.toString(restaurant.getLongitude()), Double.toString(restaurant.getLatitude()), 0, "json", 10, searchDttm));
-            target.setRestaurant(restaurant);
+            PersonalPathDTO target = new PersonalPathDTO();
+            target.setTotalTime(tmapService.totalTime(
+                    Double.toString(startX), Double.toString(startY),
+                    Double.toString(restaurant.getLongitude()), Double.toString(restaurant.getLatitude()),
+                    0, "json", 1, searchDttm));
+
+            // Convert Restaurant to RestaurantResponseDTO
+            RestaurantResponseDTO restaurantResponseDTO = new RestaurantResponseDTO(
+                    restaurant
+            );
+
+            target.setRestaurantResponseDTO(restaurantResponseDTO);
             personalPaths.add(target);
         }
         return personalPaths;
