@@ -112,15 +112,15 @@ public class ChatController {
      */
     @MessageMapping("/vote/end/{roomId}/{voteId}")
     @SendTo("/topic/room/{roomId}")
-    public VoteResponseDTO endVoteAndSaveMenu(@DestinationVariable Long voteId) throws BadRequestException {
+    public VoteResponseDTO endVoteAndSaveMenu(@DestinationVariable Long voteId, Long roomId) throws BadRequestException {
         try {
             Vote vote = voteService.getVote(voteId);
 
-            int memberCount = chatService.getMemberCount(vote.getChat().getId());
+            int memberCount = chatService.getMemberCount(roomId);
             long totalCount = vote.getVoteCount1() + vote.getVoteCount2();
             if (memberCount == totalCount) {
                 String maxVotedMenu = voteService.getMostVotedMenu(voteId);
-                meetService.registerMeetMenu(maxVotedMenu, vote.getChat().getId());
+                meetService.registerMeetMenu(maxVotedMenu, roomId);
             }
             return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
         } catch (Exception e) {
