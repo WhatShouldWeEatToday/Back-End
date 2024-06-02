@@ -37,60 +37,86 @@ public class StompHandler implements ChannelInterceptor {
 
         log.info("Received WebSocket command: {}", command);
         log.info("Native headers: {}", accessor.getNativeHeader("Authorization"));
+        log.info("Destination: {}", accessor.getDestination());
 
         try {
             String destination = accessor.getDestination();
-            if (StompCommand.CONNECT.equals(command)) {
-                log.info("WebSocket CONNECT request received");
-                Member member = getMemberByAuthorizationHeader(
-                        accessor.getFirstNativeHeader("Authorization"));
-                String sessionId = accessor.getSessionId();
 
-                log.info("User authenticated: loginId={}, nickname={}, sessionId={}", member.getLoginId(), member.getNickname(), sessionId);
+            if (StompCommand.CONNECT.equals(command)) {
+                Member member = getMemberByAuthorizationHeader(accessor.getFirstNativeHeader("Authorization"));
+                String sessionId = accessor.getSessionId();
                 setSessionAttributes(accessor, member, sessionId);
 
             } else if (StompCommand.SUBSCRIBE.equals(command)) {
-
                 if (destination == null) {
                     log.error("Destination is null.");
                     throw new IllegalArgumentException("Destination cannot be null.");
                 }
                 if (destination.startsWith("/topic/room/")) {
-                    Long roomId = Long.valueOf(extractPathSuffix(destination, "/topic/room/"));
-                    setLongValue(accessor, "roomId", roomId);
+                    String roomIdStr = extractPathSuffix(destination, "/topic/room/");
+                    if (!roomIdStr.isEmpty()) {
+                        Long roomId = Long.valueOf(roomIdStr);
+                        setLongValue(accessor, "roomId", roomId);
+                    } else {
+                        log.error("Empty roomId extracted from destination: {}", destination);
+                    }
                 }
-            }
-            else if (StompCommand.SEND.equals(command)) {
-                Long roomId = Long.valueOf(extractPathSuffix(destination, "/app/vote/register/"));
-                setLongValue(accessor, "roomId", roomId);
+            } else if (StompCommand.SEND.equals(command)) {
                 if (destination.startsWith("/app/vote/register/")) {
+                    Long roomId = Long.valueOf(extractPathSuffix(destination, "/app/vote/register/"));
+                    setLongValue(accessor, "roomId", roomId);
                     String authHeader = accessor.getFirstNativeHeader("Authorization");
                     if (authHeader == null || authHeader.isBlank()) {
                         throw new WebSocketException("Authorization header is missing");
                     }
-
                     Member member = getMemberByAuthorizationHeader(authHeader);
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(member, null, null)
                     );
-                } else if (destination.startsWith("/app/vote/increment/" + roomId + "/")) {
-                    String voteIdString = extractPathSuffix(destination, "/app/vote/increment/" + roomId + "/");
-                    if (!voteIdString.isEmpty()) {
-                        Long voteId = Long.valueOf(voteIdString);
+
+                } else if (destination.startsWith("/app/vote/increment/")) {
+                    String[] pathSegments = destination.substring("/app/vote/increment/".length()).split("/");
+                    if (pathSegments.length == 2) {
+                        Long roomId = Long.valueOf(pathSegments[0]);
+                        Long voteId = Long.valueOf(pathSegments[1]);
+                        setLongValue(accessor, "roomId", roomId);
                         setLongValue(accessor, "voteId", voteId);
+                    } else {
+                        log.error("Invalid destination format for increment: {}", destination);
+                        throw new IllegalArgumentException("Invalid destination format");
                     }
-                } else if (destination.startsWith("/app/vote/end/" + roomId + "/")) {
-                    Long voteId = Long.valueOf(extractPathSuffix(destination, "/app/vote/end/" + roomId + "/"));
-                    setLongValue(accessor, "voteId", voteId);
-                } else if (destination.startsWith("/app/meet/register/" + roomId + "/")) {
-                    Long meetId = Long.valueOf(extractPathSuffix(destination, "/app/meet/register/" + roomId + "/"));
-                    setLongValue(accessor, "meetId", meetId);
+
+                } else if (destination.startsWith("/app/vote/end/")) {
+                    String[] pathSegments = destination.substring("/app/vote/end/".length()).split("/");
+                    if (pathSegments.length == 2) {
+                        Long roomId = Long.valueOf(pathSegments[0]);
+                        Long voteId = Long.valueOf(pathSegments[1]);
+                        setLongValue(accessor, "roomId", roomId);
+                        setLongValue(accessor, "voteId", voteId);
+                    } else {
+                        log.error("Invalid destination format for end: {}", destination);
+                        throw new IllegalArgumentException("Invalid destination format");
+                    }
+
+                } else if (destination.startsWith("/app/meet/register/")) {
+                    String[] pathSegments = destination.substring("/app/meet/register/".length()).split("/");
+                    if (pathSegments.length == 2) {
+                        Long roomId = Long.valueOf(pathSegments[0]);
+                        Long meetId = Long.valueOf(pathSegments[1]);
+                        setLongValue(accessor, "roomId", roomId);
+                        setLongValue(accessor, "meetId", meetId);
+                    } else {
+                        log.error("Invalid destination format for meet register: {}", destination);
+                        throw new IllegalArgumentException("Invalid destination format");
+                    }
+
                 } else if (destination.startsWith("/departure/register/")) {
-                    roomId = Long.valueOf(extractPathSuffix(destination, "/departure/register/"));
+                    Long roomId = Long.valueOf(extractPathSuffix(destination, "/departure/register/"));
                     setLongValue(accessor, "roomId", roomId);
+                } else {
+                    log.error("Unsupported destination: {}", destination);
                 }
-            }
-            else if (StompCommand.DISCONNECT.equals(command)) {
+            } else if (StompCommand.DISCONNECT.equals(command)) {
                 String loginId = (String) getValue(accessor, "loginId");
                 log.info("WebSocket DISCONNECTED request received: loginId = {}", loginId);
             }
@@ -131,7 +157,8 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private String extractPathSuffix(String destination, String prefix) {
-        return destination.startsWith(prefix) ? destination.substring(prefix.length()) : "";
+        int prefixLength = prefix.length();
+        return destination.substring(prefixLength);
     }
 
     private void validateMemberInFriendship(String memberLoginId, String friendLoginId) {
