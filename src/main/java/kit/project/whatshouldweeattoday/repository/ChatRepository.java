@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface ChatRepository extends CrudRepository<Chat, Long> {
     List<Chat> findAllByRoomId(Long roomId);
+    Chat findOneByRoomId(Long roomId);
 }

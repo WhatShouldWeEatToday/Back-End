@@ -1,6 +1,8 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.ChatResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.meet.MeetResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Chat;
 import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
 import kit.project.whatshouldweeattoday.domain.entity.Meet;
@@ -32,22 +34,36 @@ public class ChatService {
     private final MeetService meetService;
 
     /**
-     * 채팅방 내 모든 메시지 조회
+     * 채팅방 내 투표 조회
      * @param roomId
      */
     @Transactional
-    public List<ChatResponseDTO> findChatById(Long roomId) {
+    public VoteResponseDTO findVoteById(Long roomId) {
         log.info("채팅룸 메시지 조회를 시작합니다. [roomId : {}]", roomId);
-        List<Chat> chatList = chatRepository.findAllByRoomId(roomId);
-        List<ChatResponseDTO> list = new ArrayList<>();
-        for(Chat chat : chatList) {
-            list.add(ChatResponseDTO.builder()
-                    .id(chat.getId())
-                    .voteId(chat.getVote().getId())
-                    .meetId(chat.getMeet().getId())
-                    .build());
-        }
-        return list;
+        Chat chat = chatRepository.findOneByRoomId(roomId);
+        Vote vote = chat.getVote();
+        return VoteResponseDTO.builder()
+                .voteId(vote.getId())
+                .menu1(vote.getMenu1())
+                .menu2(vote.getMenu2())
+                .voteCount1(vote.getVoteCount1())
+                .voteCount2(vote.getVoteCount2())
+                .build();
+    }
+
+    /**
+     * 채팅방 내 약속 조회
+     * @param roomId
+     */
+    @Transactional
+    public MeetResponseDTO findMeetById(Long roomId) {
+        log.info("채팅룸 메시지 조회를 시작합니다. [roomId : {}]", roomId);
+        Chat chat = chatRepository.findOneByRoomId(roomId);
+        Meet meet = chat.getMeet();
+        return MeetResponseDTO.builder()
+                .meetId(meet.getId())
+                .maxVotedMenu(meet.getMeetMenu())
+                .build();
     }
 
     /**
@@ -55,12 +71,15 @@ public class ChatService {
      * @param vote
      */
     public void createVote(Long roomId, Vote vote) throws BadRequestException {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
         chatRoom.addVote(vote);
         voteRepository.save(vote);
+        vote = voteRepository.findById(vote.getId()).orElseThrow(() -> new BadRequestException("Vote not found")); // <-- 추가된 부분
         chatRoomRepository.save(chatRoom);
-//        chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
+        chatRepository.save(Chat.createChat(chatRoom, vote, null, SecurityUtil.getLoginId()));
     }
+
 
     public int getMemberCount(Long chatRoomId) throws BadRequestException {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)

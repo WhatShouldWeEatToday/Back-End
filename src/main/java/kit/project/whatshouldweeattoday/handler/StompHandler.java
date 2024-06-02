@@ -86,6 +86,18 @@ public class StompHandler implements ChannelInterceptor {
                         throw new IllegalArgumentException("Invalid destination format");
                     }
 
+                } else if (destination.startsWith("/app/vote/state/")) {
+                    String[] pathSegments = destination.substring("/app/vote/state/".length()).split("/");
+                    if (pathSegments.length == 2) {
+                        Long roomId = Long.valueOf(pathSegments[0]);
+                        Long voteId = Long.valueOf(pathSegments[1]);
+                        setLongValue(accessor, "roomId", roomId);
+                        setLongValue(accessor, "voteId", voteId);
+                    } else {
+                        log.error("Invalid destination format for increment: {}", destination);
+                        throw new IllegalArgumentException("Invalid destination format");
+                    }
+
                 } else if (destination.startsWith("/app/vote/end/")) {
                     String[] pathSegments = destination.substring("/app/vote/end/".length()).split("/");
                     if (pathSegments.length == 2) {
@@ -95,6 +107,18 @@ public class StompHandler implements ChannelInterceptor {
                         setLongValue(accessor, "voteId", voteId);
                     } else {
                         log.error("Invalid destination format for end: {}", destination);
+                        throw new IllegalArgumentException("Invalid destination format");
+                    }
+
+                } else if (destination.startsWith("/app/meet/state/")) {
+                    String[] pathSegments = destination.substring("/app/meet/state/".length()).split("/");
+                    if (pathSegments.length == 2) {
+                        Long roomId = Long.valueOf(pathSegments[0]);
+                        Long meetId = Long.valueOf(pathSegments[1]);
+                        setLongValue(accessor, "roomId", roomId);
+                        setLongValue(accessor, "meetId", meetId);
+                    } else {
+                        log.error("Invalid destination format for meet register: {}", destination);
                         throw new IllegalArgumentException("Invalid destination format");
                     }
 
