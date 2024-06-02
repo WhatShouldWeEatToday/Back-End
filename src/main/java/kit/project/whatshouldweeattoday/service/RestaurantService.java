@@ -1,17 +1,12 @@
 package kit.project.whatshouldweeattoday.service;
 
 
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
-import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
-import kit.project.whatshouldweeattoday.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

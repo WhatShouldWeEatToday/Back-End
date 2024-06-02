@@ -4,7 +4,7 @@ import kit.project.whatshouldweeattoday.domain.dto.chat.ChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPath;
+import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteIdRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
@@ -180,7 +180,7 @@ public class ChatController {
      */
     @MessageMapping("/departure/register")
     @SendTo("/topic/room/{roomId}")
-    public List<PersonalPath> registerDeparture(List<String> departures) {
+    public List<PersonalPathDTO> registerDeparture(List<String> departures) {
         return pathService.getWeight("떡볶이", departures);
     }
 }

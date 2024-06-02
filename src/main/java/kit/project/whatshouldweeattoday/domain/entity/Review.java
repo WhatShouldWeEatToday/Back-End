@@ -39,7 +39,7 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id")
     @JsonBackReference
     private Restaurant restaurant;
