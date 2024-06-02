@@ -9,10 +9,9 @@ import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteIdRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
-import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
-import kit.project.whatshouldweeattoday.domain.entity.Meet;
-import kit.project.whatshouldweeattoday.domain.entity.Member;
-import kit.project.whatshouldweeattoday.domain.entity.Vote;
+import kit.project.whatshouldweeattoday.domain.entity.*;
+import kit.project.whatshouldweeattoday.repository.ChatRepository;
+import kit.project.whatshouldweeattoday.repository.MeetRepository;
 import kit.project.whatshouldweeattoday.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +40,8 @@ public class ChatController {
     private final MeetService meetService;
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
+    private final MeetRepository meetRepository;
+    private final ChatRepository chatRepository;
     private final SimpMessageSendingOperations messagingTemplate;
 
 
@@ -198,6 +199,16 @@ public class ChatController {
     @MessageMapping("/departure/register/{roomId}")
     @SendTo("/topic/room/{roomId}")
     public List<PersonalPathDTO> registerDeparture(@DestinationVariable("roomId") Long roomId, List<String> departures) {
-        return pathService.getWeight("떡볶이", departures);
+        Chat chat = chatRepository.findOneByRoomId(roomId);
+        if (chat == null) {
+            throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
+        }
+
+        String meetMenu = chat.getMeet().getMeetMenu();
+        if (meetMenu == null) {
+            throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
+        }
+
+        return pathService.getWeight(meetMenu, departures);
     }
 }
