@@ -20,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
@@ -45,6 +47,13 @@ public class ReviewController {
     @PatchMapping("/api/review/{reviewId}")
     public ResponseEntity<ReviewResponseDTO> update(@PathVariable("reviewId") Long id, @RequestBody ReviewRequestDTO requestDTO) {
         return new ResponseEntity<>(reviewService.update(id, requestDTO), HttpStatus.OK);
+    }
+
+    // 리뷰 s날짜 수정
+    @PatchMapping("/api/reviewDate/")
+    public ResponseEntity<MsgResponseDTO> updateDate() {
+        reviewService.updateDateFormat();
+        return ResponseEntity.ok(new MsgResponseDTO("리뷰 등록 완료", HttpStatus.OK.value()));
     }
 
     // 리뷰 삭제

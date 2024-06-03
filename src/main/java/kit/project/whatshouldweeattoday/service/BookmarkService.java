@@ -39,6 +39,7 @@ public class BookmarkService {
         }
 
         Bookmark bookmark = bookmarkRequestDTO.toSaveEntity(member, restaurant);
+
         bookmarkRepository.save(bookmark);
     }
     // 즐겨찾기 삭제
@@ -48,6 +49,7 @@ public class BookmarkService {
         return new MsgResponseDTO("즐겨찾기 취소", 200);
     }
 
+    //즐겨찾기 조회
     @Transactional
     public Page<BookmarkResponseDTO> findAllBookmarks(Pageable pageable) {
         Member member = getCurrentMember();
@@ -61,4 +63,5 @@ public class BookmarkService {
         return memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
     }
+
 }

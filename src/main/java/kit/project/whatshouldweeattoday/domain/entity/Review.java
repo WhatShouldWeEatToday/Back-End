@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.userdetails.User;
 
 import java.awt.*;
@@ -39,12 +36,12 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     @JsonBackReference
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "review",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "review",fetch = FetchType.LAZY)
     private List<Likes> likesList;
 
 

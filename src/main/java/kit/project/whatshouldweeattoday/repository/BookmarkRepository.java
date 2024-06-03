@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.repository;
 
+import kit.project.whatshouldweeattoday.domain.dto.bookmark.BookmarkResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Bookmark;
 import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;

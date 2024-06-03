@@ -21,7 +21,7 @@ public class Likes {
     @JoinColumn(name = "REVIEW_ID")
     private Review review;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 

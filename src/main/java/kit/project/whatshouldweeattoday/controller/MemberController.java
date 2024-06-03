@@ -128,7 +128,7 @@ public class MemberController {
         return ResponseEntity.ok(findMember.getId());
     }
 
-   @PostConstruct
+   /*@PostConstruct
     public void initMemberData() throws BadRequestException {
         SignupRequestDTO member1 = SignupRequestDTO.builder()
                 .loginId("hyun3478")
@@ -185,7 +185,7 @@ public class MemberController {
         memberService.createMember(member5);
         memberService.createMember(member6);
         initFriendshipData();
-    }
+    }*/
     public void initFriendshipData() throws BadRequestException {
         Member fromMember = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
         Member toMember = memberRepository.findByLoginId("lim3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
