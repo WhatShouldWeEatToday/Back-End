@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VoteIdRequestDTO {
 
-    private String menu1;
-    private String menu2;
+    public String menu1;
+    public String menu2;
     private Long voteCount1;
     private Long voteCount2;
 }
