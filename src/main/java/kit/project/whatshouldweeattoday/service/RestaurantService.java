@@ -28,7 +28,7 @@ public class RestaurantService {
     //keyword로 맛집을 검색함(메뉴명, 점포명)
     @Transactional
     public Page<RestaurantResponseDTO> searchRestaurants(String keyword, Pageable pageable) {
-        System.out.println("searchRestaurants 함수 : " + keyword);
+       // System.out.println("searchRestaurants 함수 : " + keyword);
         Page<Restaurant> restaurantPage;
         if (keyword == null || keyword.trim().isEmpty()) {
             restaurantPage = restaurantRepository.findAll(pageable);
@@ -46,7 +46,7 @@ public class RestaurantService {
     //카페만 반환
     @Transactional
     public Page<RestaurantResponseDTO> searchOnlyCafes(String keyword, Pageable pageable) {
-        System.out.println("searchOnlyCafes 함수 : " + keyword);
+      //  System.out.println("searchOnlyCafes 함수 : " + keyword);
         Page<Restaurant> cafes;
 
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -69,7 +69,7 @@ public class RestaurantService {
     //카페가 아닌곳(음식점)만 반환
     @Transactional
     public Page<RestaurantResponseDTO> searchOnlyRestaurant(String keyword, Pageable pageable) {
-        System.out.println("searchOnlyRestaurant 함수 : " + keyword);
+       // System.out.println("searchOnlyRestaurant 함수 : " + keyword);
         Page<Restaurant> restaurants;
 
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -111,7 +111,7 @@ public class RestaurantService {
     //음식점 직선거리
     public Page<RestaurantResponseDTO> findByDistances(String keyword, Float startX, Float startY, Pageable pageable) {
         //TODO 기본적으로 페이지 1에 대해서 출력은 하되 페이지 2부터는 다른 함수로 빼두는 게 좋을 거 같고 dtos를 활용해서 페이지 정보만 가지고 사용하면 됨
-        System.out.println("findByDistances들어옴");
+      //  System.out.println("findByDistances들어옴");
         String dong = tmapService.getAddressByCoordinates(startX, startY);
         List<Restaurant> list = null;
         List<RestaurantResponseDTO> dtos = new ArrayList<>();
