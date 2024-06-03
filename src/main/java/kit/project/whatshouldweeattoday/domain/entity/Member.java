@@ -1,6 +1,5 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.type.RoleType;
@@ -42,19 +41,6 @@ public class Member {
     @Enumerated(STRING)
     @Column(nullable = false, length = 30)
     private RoleType role; //권한 -> USER, ADMIN
-
-    @Column(length = 1000)
-    private String refreshToken;
-
-    private String sessionId;
-
-    /* JWT 토큰 관리 */
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-    public void destroyRefreshToken() {
-        this.refreshToken = null;
-    }
 
     /* 회원 탈퇴 => 친구, 북마크, 리뷰 모두 삭제 */
     @OneToMany( mappedBy = "member")

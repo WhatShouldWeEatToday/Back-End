@@ -97,8 +97,6 @@ public class ChatController {
     public VoteResponseDTO incrementVote(@DestinationVariable("roomId") Long roomId, @DestinationVariable("voteId") Long voteId, VoteIdRequestDTO voteRequest) throws BadRequestException {
         try {
             Vote vote = voteService.getVote(voteId);
-            vote.setMenu1(voteRequest.getMenu1());
-            vote.setMenu2(voteRequest.getMenu2());
             vote.incrementVoteCount1(voteRequest.getVoteCount1());
             vote.incrementVoteCount2(voteRequest.getVoteCount2());
 
