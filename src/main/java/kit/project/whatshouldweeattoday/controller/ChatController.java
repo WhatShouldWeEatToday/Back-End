@@ -81,12 +81,12 @@ public class ChatController {
         }
     }
 
-    @MessageMapping("/vote/state/{roomId}")
-    @SendTo("/topic/room/{roomId}")
-    public ResponseEntity<?> getVote(@DestinationVariable("roomId") Long roomId) {
-        VoteResponseDTO vote = chatService.findVoteById(roomId);
-        return new ResponseEntity<>(vote, HttpStatus.OK);
-    }
+//    @MessageMapping("/vote/state/{roomId}")
+//    @SendTo("/topic/room/{roomId}")
+//    public ResponseEntity<?> getVote(@DestinationVariable("roomId") Long roomId) {
+//        VoteResponseDTO vote = chatService.findVoteById(roomId);
+//        return new ResponseEntity<>(vote, HttpStatus.OK);
+//    }
 
     /**
      * 메뉴 투표 Count 실시간 관리
@@ -112,7 +112,7 @@ public class ChatController {
 
             int memberCount = chatService.getMemberCount(roomId);
             long totalCount = vote.getVoteCount1() + vote.getVoteCount2();
-            boolean isCountSame = memberCount == (totalCount/2);
+            boolean isCountSame = memberCount == totalCount;
 
             return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2(), isCountSame);
         } catch (Exception e) {
