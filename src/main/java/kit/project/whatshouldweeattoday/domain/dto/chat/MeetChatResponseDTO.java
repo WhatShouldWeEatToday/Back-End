@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class MeetChatResponseDTO {
     private Long roomId;
+    private Long meetId;
     private String meetLocate;
     private String meetMenu;
     private String meetTime;
