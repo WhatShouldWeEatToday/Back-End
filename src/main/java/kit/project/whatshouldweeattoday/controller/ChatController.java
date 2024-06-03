@@ -164,6 +164,7 @@ public class ChatController {
 
         return MeetChatResponseDTO.builder()
                 .roomId(roomId)
+                .meetId(meet.getId())
                 .meetLocate(meet.getMeetLocate())
                 .meetTime(meet.getMeetTime())
                 .build();
