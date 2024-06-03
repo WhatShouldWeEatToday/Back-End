@@ -2,6 +2,7 @@ package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO;
+import kit.project.whatshouldweeattoday.domain.dto.meet.DepartureResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -204,17 +206,24 @@ public class ChatController {
      */
     @MessageMapping("/departure/register/{roomId}")
     @SendTo("/topic/room/{roomId}")
-    public ResponseEntity<List<PersonalPathDTO>> registerDeparture(@DestinationVariable("roomId") Long roomId, List<String> departures) {
+    public ResponseEntity<DepartureResponseDTO> registerDeparture(@DestinationVariable("roomId") Long roomId, String departures) {
         ChatRoom room = chatRoomRepository.findOneById(roomId);
         if (room == null) {
             throw new IllegalArgumentException("존재하지 않는 채팅방입니다.");
         }
+        List<String> departureList = new ArrayList<>();
+        departureList.add(departures);
 
         String meetMenu = room.getMeet().getMeetMenu();
         if (meetMenu == null) {
             throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
         }
-        List<PersonalPathDTO> weight = pathService.getWeight(meetMenu, departures);
-        return new ResponseEntity<>(weight, HttpStatus.OK);
+//        pathService.getWeight(meetMenu, departureList);
+
+        DepartureResponseDTO responseDTO = DepartureResponseDTO.builder()
+                .meetMenu(meetMenu)
+                .departureList(departureList)
+                .build();
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 }
