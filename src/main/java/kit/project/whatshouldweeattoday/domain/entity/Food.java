@@ -28,10 +28,6 @@ public class Food {
     @JoinColumn(name = "food_rank_id")
     private WeeklyFoodRank weeklyFoodRank;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_type_rank_id")
-    private WeeklyFoodTypeRank weeklyFoodTypeRank;*/
-
     public void setCount(Long count) {
         this.count = count;
     }

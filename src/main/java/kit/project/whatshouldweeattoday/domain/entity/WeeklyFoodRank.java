@@ -19,8 +19,6 @@ public class WeeklyFoodRank extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FOOD_RANK_ID")
     private Long id;
-    private int ranks;
-    private String foodName;
     private String date; // 한주가 지나면 초기화되어야함
 
     //Transient : 실제 데이터베이스에 저장되지 않고 티티 객체의 라이프사이클 동안 메모리에서만 유지 //   @OneToMany(mappedBy = "weeklyFoodRank")

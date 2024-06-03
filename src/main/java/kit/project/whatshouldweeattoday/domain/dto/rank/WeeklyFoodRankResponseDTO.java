@@ -10,12 +10,11 @@ import java.util.List;
 @NoArgsConstructor
 public class WeeklyFoodRankResponseDTO {
     private Long id;
-    private int ranks;
-    private String foodTypeName;
     private String date;
     private List<FoodResponseDTO> topFoods;
 
-    public WeeklyFoodRankResponseDTO(String date, List<FoodResponseDTO> topFoods) {
+    public WeeklyFoodRankResponseDTO(Long id,String date, List<FoodResponseDTO> topFoods) {
+        this.id=id;
         this.date = date;
         this.topFoods = topFoods;
     }
