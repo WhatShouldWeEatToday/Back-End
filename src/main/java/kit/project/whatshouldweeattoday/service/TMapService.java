@@ -152,7 +152,7 @@ public class TMapService {
             // API 요청 URL 생성
             String requestUrl = String.format("https://apis.openapi.sk.com/tmap/routes?version=1&startX=%s&startY=%s&endX=%s&endY=%s&appKey=%s",
                     Double.toString(startX), Double.toString(startY), Double.toString(endX), Double.toString(endY), tmapKey);
-            System.out.println("requestURL : " + requestUrl);
+          //  System.out.println("requestURL : " + requestUrl);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(requestUrl))
                     .header("accept", "application/json")

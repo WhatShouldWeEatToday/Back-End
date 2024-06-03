@@ -27,7 +27,7 @@ public class RestaurantController {
     private final TMapService tmapService;
     private final PathService pathService;
 
-    //맛집 검색
+    //맛집 검색 -> 기본
     @GetMapping("/search")
     public ResponseEntity<Page<RestaurantResponseDTO>> search(@RequestParam(name = "word", required = false) String word,
                                                               @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
@@ -151,6 +151,8 @@ public class RestaurantController {
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
+    //직선거리순으로 정렬하면서 음식점만
+    //직선거리순으로 정렬하면서 카페만
 
     //음식점 경로 시간 알아보기
     /*@PostMapping("/search/totalTime")
@@ -183,7 +185,7 @@ public class RestaurantController {
     }
 
     //주소받아서 음식점경로를 json으로 반환 -> 주소는 최종목적지 3곳의 경로
-   @PostMapping("/search/totalPath")
+   @PostMapping("/search/getPath")
     public ResponseEntity<List<JsonNode>> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
        List<String> destinations = totalTimeRequest.getDestinations();
@@ -203,7 +205,7 @@ public class RestaurantController {
    }
 
    //채팅방 단체최적경로
-    @PostMapping("/search/showArray")
+    @PostMapping("/search/getWeight")
     public ResponseEntity<List<PersonalPathDTO>> getWeightInfo(@RequestBody PathRequest request) {
         //3개의 맛집이 반환됨
         List<PersonalPathDTO> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress());
@@ -212,7 +214,7 @@ public class RestaurantController {
     }
 
     //보행자 경로
-    @PostMapping("/search/walkPath")
+    @PostMapping("/search/getWalkPath")
     public ResponseEntity<JsonNode> getWalkRoute(@RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
         String destination = totalTimeRequest.getDestination();
