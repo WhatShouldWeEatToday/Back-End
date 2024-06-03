@@ -52,7 +52,7 @@ public class TMapService {
     @Transactional
     public String getAddressByCoordinates(double startX, double startY) {
         ObjectMapper mapper = new ObjectMapper();
-        System.out.println("getAddressByCoordinates 들어옴");
+     //   System.out.println("getAddressByCoordinates 들어옴");
         /*String coordType = "WGS84GEO"; // 좌표계 유형 설정
         String addressType = "A00"; // 변환할 주소 유형 설정
         String coordYn = "Y"; // 좌푯값 반환 여부
@@ -62,7 +62,7 @@ public class TMapService {
                     "https://apis.openapi.sk.com/tmap/geo/reversegeocoding?version=1&lat=%f&lon=%f&appKey=%s",
                     startY, startX, tmapKey
             );
-            System.out.println("requestURL : " + requestUrl);
+       //     System.out.println("requestURL : " + requestUrl);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(requestUrl))
@@ -86,7 +86,7 @@ public class TMapService {
     @Transactional
     public String getAddressByCoordinates2(double startX, double startY) {
         ObjectMapper mapper = new ObjectMapper();
-        System.out.println("getAddressByCoordinates 들어옴");
+     //   System.out.println("getAddressByCoordinates 들어옴");
         /*String coordType = "WGS84GEO"; // 좌표계 유형 설정
         String addressType = "A00"; // 변환할 주소 유형 설정
         String coordYn = "Y"; // 좌푯값 반환 여부
@@ -96,7 +96,7 @@ public class TMapService {
                     "https://apis.openapi.sk.com/tmap/geo/reversegeocoding?version=1&lat=%f&lon=%f&appKey=%s",
                     startY, startX, tmapKey
             );
-            System.out.println("requestURL : " + requestUrl);
+         //   System.out.println("requestURL : " + requestUrl);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(requestUrl))
@@ -147,7 +147,7 @@ public class TMapService {
     // 직선 거리 계산
     @Transactional
     public Double getDirectDistance(double startX, double startY, double endX, double endY) {
-        System.out.println("api를 사용한 직선거리 계산 출발지 정보 " + startX + " " + startY + " 도착지 정보 " + endX + " " + endY);
+    //    System.out.println("api를 사용한 직선거리 계산 출발지 정보 " + startX + " " + startY + " 도착지 정보 " + endX + " " + endY);
         try {
             // API 요청 URL 생성
             String requestUrl = String.format("https://apis.openapi.sk.com/tmap/routes?version=1&startX=%s&startY=%s&endX=%s&endY=%s&appKey=%s",
@@ -250,11 +250,11 @@ public class TMapService {
 
     @Transactional
     public int totalTime2(String departure, String destination, int lang, String format, int count, String searchDttm) {
-        System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+       // System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
         Map<String, Double> destCoordinates = this.getCoordinates(destination);
 
-        System.out.println("출발지 위치 :" + depCoordinates.get("latitude")+" "+depCoordinates.get("longitude")+ " 도착지 위치 " + destCoordinates.get("latitude")+" "+destCoordinates.get("longitude"));
+       // System.out.println("출발지 위치 :" + depCoordinates.get("latitude")+" "+depCoordinates.get("longitude")+ " 도착지 위치 " + destCoordinates.get("latitude")+" "+destCoordinates.get("longitude"));
         String startY = Double.toString(depCoordinates.get("latitude"));
         String startX = Double.toString(depCoordinates.get("longitude"));
         String endY = Double.toString(destCoordinates.get("latitude"));
@@ -274,10 +274,10 @@ public class TMapService {
                     .method("POST", HttpRequest.BodyPublishers.ofString(jsonBody)) // 변경된 부분
                     .build();
 
-            System.out.println("Url : " + request.uri().toString());
+        //    System.out.println("Url : " + request.uri().toString());
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            System.out.println("body : " + body);
+        //    System.out.println("body : " + body);
 
             if (body.contains("error")) {
                 System.out.println("에러입니다");
@@ -292,7 +292,7 @@ public class TMapService {
             if (itinerariesNode.isArray() && itinerariesNode.size() > 0) {
                 JsonNode firstItinerary = itinerariesNode.get(0);
                 JsonNode totalTimeInfo = firstItinerary.path("totalTime");
-                System.out.println("총 소요시간은 : " + totalTimeInfo.toString());
+               // System.out.println("총 소요시간은 : " + totalTimeInfo.toString());
                 return totalTimeInfo.asInt();
             }
             return 0;
@@ -364,11 +364,11 @@ public class TMapService {
 */
     @Transactional
     public JsonNode getJsonByTransitRoute(String departure, String destination, int lang, String format, int count, String searchDttm) {
-        System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+       // System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
         Map<String, Double> destCoordinates = this.getCoordinates(destination);
 
-        System.out.println("출발지 위치 :" + depCoordinates.get("latitude") + " " + depCoordinates.get("longitude") + " 도착지 위치 " + destCoordinates.get("latitude") + " " + destCoordinates.get("longitude"));
+      //  System.out.println("출발지 위치 :" + depCoordinates.get("latitude") + " " + depCoordinates.get("longitude") + " 도착지 위치 " + destCoordinates.get("latitude") + " " + destCoordinates.get("longitude"));
         String startY = Double.toString(depCoordinates.get("latitude"));
         String startX = Double.toString(depCoordinates.get("longitude"));
         String endY = Double.toString(destCoordinates.get("latitude"));
@@ -395,21 +395,21 @@ public class TMapService {
             JsonNode rootNode = mapper.readTree(body);
 
             if (rootNode.has("result") && rootNode.get("result").get("status").asInt() == 11) {
-                System.out.println("출발지와 도착지 간 거리가 가까움. 도보 경로를 반환합니다.");
+              //  System.out.println("출발지와 도착지 간 거리가 가까움. 도보 경로를 반환합니다.");
                 return getJsonByWalkRoute(departure, destination);
             }
 
             return rootNode; // JSON 응답을 그대로 반환
 
         } catch (IOException | InterruptedException e) {
-            System.err.println("Failed to calculate transit time: " + e.getMessage());
+        //    System.err.println("Failed to calculate transit time: " + e.getMessage());
             return null; // 오류 발생 시 null 반환
         }
     }
 
     @Transactional
     public PathResponseDTO getTransitRoute2(String departure, String destination, int lang, String format, int count, String searchDttm) {
-        System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
+       // System.out.println("경로 반환 함수 출발지 :" + departure + " 도착지 정보 " + destination);
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
         Map<String, Double> destCoordinates = this.getCoordinates(destination);
 

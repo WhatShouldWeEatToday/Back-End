@@ -42,7 +42,7 @@ public class PathService {
             coordinates = tmapService.getCoordinates(startAddress.get(i));
             startX = coordinates.get("longitude");
             startY = coordinates.get("latitude");
-            System.out.println("이 사람의 출발 위치 :" + startX + " " + startY);
+          //  System.out.println("이 사람의 출발 위치 :" + startX + " " + startY);
             //2. 사용자의 위치정보를 주소로 반환후 XX동 추출
             String userAddress = tmapService.getAddressByCoordinates(startX, startY);
 
@@ -62,7 +62,7 @@ public class PathService {
 
         //-> 가중치 계산
         for (String address : startAddress) {
-            System.out.println("유저: " + address);
+          //  System.out.println("유저: " + address);
             Map<String, Double> coordinates2 = tmapService.getCoordinates(address);
             Double startX2 = coordinates2.get("longitude");
             Double startY2 = coordinates2.get("latitude");
@@ -136,18 +136,18 @@ public class PathService {
 
         //1-1. 주소필터링
         restaurants = restaurantRepository.findByOnlyAddress(userAddress);
-        System.out.println("주소로 검색된 식당 수 : " + restaurants.size());
+        /*System.out.println("주소로 검색된 식당 수 : " + restaurants.size());
         for (int i = 0; i < restaurants.size(); i++) {
             System.out.println(restaurants.get(i).getName());
             System.out.println(restaurants.get(i).getAddressNumber());
-        }
+        }*/
         //1-2. 키워드필터링
         restaurants = filterByKeyword(restaurants, keyword);
-        System.out.println("키워드 검색된 식당 수 : " + restaurants.size());
+        /*System.out.println("키워드 검색된 식당 수 : " + restaurants.size());
         for (int i = 0; i < restaurants.size(); i++) {
             System.out.println(restaurants.get(i).getName());
             System.out.println(restaurants.get(i).getAddressNumber());
-        }
+        }*/
 
         //2.리뷰평점순으로 20개 추출(1차 필터링)
         restaurants = sortByDegree(restaurants);
