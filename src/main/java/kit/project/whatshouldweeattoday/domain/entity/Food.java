@@ -19,7 +19,7 @@ public class Food {
     @JoinColumn(name = "foodType_id")
     private FoodType foodType;
     private String imageRoute;
-    private Long count; //채팅방에서 나올때마다 count 됨
+    private Long count = 0L;
 
     @OneToOne(mappedBy = "food", fetch = FetchType.LAZY)
     private Meet meet;
@@ -32,4 +32,8 @@ public class Food {
         this.count = count;
     }
     public void setImageRoute(String imageRoute){this.imageRoute=imageRoute;}
+
+    public void incrementFoodCount() {
+        this.count++;
+    }
 }

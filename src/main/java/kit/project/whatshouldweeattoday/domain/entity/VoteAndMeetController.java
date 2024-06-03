@@ -18,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VoteAndMeetController {
 
-    private final ChatService chatService;
     private final VoteService voteService;
     private final MeetService meetService;
     private final PathService pathService;
@@ -39,18 +41,8 @@ public class VoteAndMeetController {
     @PostMapping("/vote/end/{roomId}/{voteId}")
     public MeetResponseDTO endVoteAndSaveMenu(@PathVariable("voteId") Long voteId, @PathVariable("roomId") Long roomId) throws BadRequestException {
         try {
-            Vote vote = voteService.getVote(voteId);
-
-            int memberCount = chatService.getMemberCount(roomId);
-
-            long totalCount = vote.getVoteCount1() + vote.getVoteCount2();
-            String maxVotedMenu = "";
-            MeetResponseDTO responseDTO = null;
-            if (memberCount == totalCount) {
-                maxVotedMenu = voteService.getMostVotedMenu(voteId);
-                responseDTO = meetService.registerMeetMenu(maxVotedMenu, roomId);
-            }
-            return responseDTO;
+            String maxVotedMenu = voteService.getMostVotedMenu(voteId);
+            return meetService.registerMeetMenu(maxVotedMenu, roomId);
         } catch (Exception e) {
             log.error("Error ending vote for voteId {}: {}", voteId, e.getMessage());
             throw new BadRequestException("Failed to end vote and save menu", e);
