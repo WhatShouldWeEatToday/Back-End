@@ -74,7 +74,7 @@ public class ChatController {
             Vote vote = voteService.createVote(voteRequest.getMenu1(), voteRequest.getMenu2());
             chatService.createVote(roomId, vote);
 
-            return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2(), false);
+            return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2(), false); //,
         } catch (Exception e) {
             log.error("Error registering vote for roomId {}: {}", roomId, e.getMessage());
             throw new BadRequestException("Failed to register vote");
@@ -97,18 +97,22 @@ public class ChatController {
     public VoteResponseDTO incrementVote(@DestinationVariable("roomId") Long roomId, @DestinationVariable("voteId") Long voteId, VoteIdRequestDTO voteRequest) throws BadRequestException {
         try {
             Vote vote = voteService.getVote(voteId);
+
+            if (vote.getVoteCount1() == null) {
+                vote.setVoteCount1(0L);
+            }
+            if (vote.getVoteCount2() == null) {
+                vote.setVoteCount2(0L);
+            }
+
             vote.incrementVoteCount1(voteRequest.getVoteCount1());
             vote.incrementVoteCount2(voteRequest.getVoteCount2());
 
             voteRepository.save(vote);
 
             int memberCount = chatService.getMemberCount(roomId);
-
             long totalCount = vote.getVoteCount1() + vote.getVoteCount2();
-            boolean isCountSame = false;
-            if (memberCount == totalCount) {
-                isCountSame = true;
-            }
+            boolean isCountSame = memberCount == (totalCount/2);
 
             return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2(), isCountSame);
         } catch (Exception e) {
@@ -151,7 +155,7 @@ public class ChatController {
      */
     @MessageMapping("/meet/register/{roomId}/{meetId}")
     @SendTo("/topic/room/{roomId}")
-    public MeetChatResponseDTO createMeet(@DestinationVariable("roomId") Long roomId, @DestinationVariable("meetId") Long meetId, @RequestBody MeetRequestDTO meetRequestDTO) throws BadRequestException {
+    public MeetChatResponseDTO createMeet(@DestinationVariable("roomId") Long roomId, @DestinationVariable("meetId") Long meetId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
         Meet meet = meetService.findByMeetId(meetId);
         meet.setMeetLocate(meetRequestDTO.getMeetLocate());
         meet.setMeetTime(meetRequestDTO.getMeetTime());
