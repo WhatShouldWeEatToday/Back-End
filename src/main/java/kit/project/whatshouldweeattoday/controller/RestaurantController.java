@@ -186,22 +186,16 @@ public class RestaurantController {
 
     //주소받아서 음식점경로를 json으로 반환 -> 주소는 최종목적지 3곳의 경로
    @PostMapping("/search/getPath")
-    public ResponseEntity<List<JsonNode>> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
+    public ResponseEntity<JsonNode> getTransitRoute(@RequestBody PathRequestDTO totalTimeRequest) {
         String departure = totalTimeRequest.getDeparture();
-       List<String> destinations = totalTimeRequest.getDestinations();
+       String destination = totalTimeRequest.getDestination();
        String searchDttm = totalTimeRequest.getSearchDttm();
 
-       List<JsonNode> routes = new ArrayList<>();
-       for(int i = 0;i<destinations.size();i++){
-           JsonNode routeInfo = tmapService.getJsonByTransitRoute(departure, destinations.get(i), 0, "json", 1, searchDttm);
-
-           if (routeInfo == null) {
-               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-           }
-           routes.add(routeInfo);
+       JsonNode routeInfo = tmapService.getJsonByTransitRoute(departure, destination, 0, "json", 1, searchDttm);
+       if (routeInfo == null) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
        }
-
-        return ResponseEntity.ok(routes);
+        return ResponseEntity.ok(routeInfo);
    }
 
    //채팅방 단체최적경로
