@@ -1,9 +1,12 @@
-package kit.project.whatshouldweeattoday.domain.entity;
+package kit.project.whatshouldweeattoday.controller;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
+import kit.project.whatshouldweeattoday.domain.entity.ChatRoom;
+import kit.project.whatshouldweeattoday.domain.entity.Meet;
+import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MeetRepository;
 import kit.project.whatshouldweeattoday.service.ChatService;
