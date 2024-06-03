@@ -1,4 +1,4 @@
-package kit.project.whatshouldweeattoday.controller;
+package kit.project.whatshouldweeattoday.domain.entity;
 
 import kit.project.whatshouldweeattoday.domain.dto.chat.MeetChatResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;

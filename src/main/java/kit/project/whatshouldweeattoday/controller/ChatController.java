@@ -74,23 +74,12 @@ public class ChatController {
             Vote vote = voteService.createVote(voteRequest.getMenu1(), voteRequest.getMenu2());
             chatService.createVote(roomId, vote);
 
-            return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
+            return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2(), false);
         } catch (Exception e) {
             log.error("Error registering vote for roomId {}: {}", roomId, e.getMessage());
             throw new BadRequestException("Failed to register vote");
         }
     }
-
-    /**
-     * 채팅방 내 투표 조회
-     * @param roomId
-     */
-
-//    @GetMapping("/vote/{roomId}")
-//    public ResponseEntity<?> getVote(@PathVariable(name = "roomId", required = false) Long roomId) {
-//        VoteResponseDTO vote = chatService.findVoteById(roomId);
-//        return new ResponseEntity<>(vote, HttpStatus.OK);
-//    }
 
     @MessageMapping("/vote/state/{roomId}")
     @SendTo("/topic/room/{roomId}")
@@ -105,7 +94,7 @@ public class ChatController {
      */
     @MessageMapping("/vote/increment/{roomId}/{voteId}")
     @SendTo("/topic/room/{roomId}")
-    public VoteResponseDTO incrementVote(@DestinationVariable("voteId") Long voteId, VoteIdRequestDTO voteRequest) throws BadRequestException {
+    public VoteResponseDTO incrementVote(@DestinationVariable("roomId") Long roomId, @DestinationVariable("voteId") Long voteId, VoteIdRequestDTO voteRequest) throws BadRequestException {
         try {
             Vote vote = voteService.getVote(voteId);
             vote.setMenu1(voteRequest.getMenu1());
@@ -114,7 +103,16 @@ public class ChatController {
             vote.incrementVoteCount2(voteRequest.getVoteCount2());
 
             voteRepository.save(vote);
-            return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
+
+            int memberCount = chatService.getMemberCount(roomId);
+
+            long totalCount = vote.getVoteCount1() + vote.getVoteCount2();
+            boolean isCountSame = false;
+            if (memberCount == totalCount) {
+                isCountSame = true;
+            }
+
+            return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2(), isCountSame);
         } catch (Exception e) {
             log.error("Error incrementing vote for voteId {}: {}", voteId, e.getMessage());
             throw new BadRequestException("Failed to increment vote count");
@@ -129,18 +127,8 @@ public class ChatController {
     @SendTo("/topic/room/{roomId}")
     public MeetResponseDTO endVoteAndSaveMenu(@DestinationVariable("voteId") Long voteId, @DestinationVariable("roomId") Long roomId) throws BadRequestException {
         try {
-            Vote vote = voteService.getVote(voteId);
-
-            int memberCount = chatService.getMemberCount(roomId);
-
-            long totalCount = vote.getVoteCount1() + vote.getVoteCount2();
-            String maxVotedMenu = "";
-            MeetResponseDTO responseDTO = null;
-            if (memberCount == totalCount) {
-                maxVotedMenu = voteService.getMostVotedMenu(voteId);
-                responseDTO = meetService.registerMeetMenu(maxVotedMenu, roomId);
-            }
-            return responseDTO;
+            String maxVotedMenu = voteService.getMostVotedMenu(voteId);
+            return meetService.registerMeetMenu(maxVotedMenu, roomId);
         } catch (Exception e) {
             log.error("Error ending vote for voteId {}: {}", voteId, e.getMessage());
             throw new BadRequestException("Failed to end vote and save menu", e);
