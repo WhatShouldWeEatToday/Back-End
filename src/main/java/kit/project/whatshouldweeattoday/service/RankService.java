@@ -54,7 +54,7 @@ public class RankService {
         weeklyFoodTypeRank.setFoodTypes(foodTypeResponseDTOS); // Assuming this sets the food types, you may want to rename the method
         weeklyFoodTypeRankRepository.save(weeklyFoodTypeRank);
 
-        return new WeeklyFoodTypeRankResponseDTO(currentDate, foodTypeResponseDTOS);
+        return new WeeklyFoodTypeRankResponseDTO(weeklyFoodTypeRank.getId(),currentDate, foodTypeResponseDTOS);
     }
     @Transactional
     public FoodTypeResponseDTO convertToFoodTypeDTO(FoodType foodType, int rank) {
@@ -113,7 +113,7 @@ public class RankService {
 
         weeklyFoodRank.setFoods(foodResponseDTOS);
         weeklyFoodRankRepository.save(weeklyFoodRank);
-        return new WeeklyFoodRankResponseDTO(currentDate, foodResponseDTOS);
+        return new WeeklyFoodRankResponseDTO(weeklyFoodRank.getId(), currentDate, foodResponseDTOS);
     }
 
     // food -> foodResponse
