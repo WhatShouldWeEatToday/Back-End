@@ -42,7 +42,7 @@ public class Restaurant {
     private Double distance;
     private Long count; // 음식종류별 순위
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference
     private List<Bookmark> bookmark;
 
@@ -51,14 +51,14 @@ public class Restaurant {
     private List<Review> reviewList = new ArrayList<>();
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "foodType_id")
     private FoodType foodType;
 
     public void setCoordinates(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
-        System.out.println("setCoordinates의 경도 위도 " + longitude + " " + latitude);
+        //System.out.println("setCoordinates의 경도 위도 " + longitude + " " + latitude);
     }
 
     //평점

@@ -2,11 +2,15 @@ package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.json.simple.parser.ParseException;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Getter
 @MappedSuperclass
@@ -32,4 +36,18 @@ public class BaseTimeEntity {
     public void onPreUpdate() {
         this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
     }
+
+    public void updateCreatedDateFormat() {
+        SimpleDateFormat currentFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat desiredFormat = new SimpleDateFormat("yyyy.MM.dd");
+
+        try {
+            Date date = currentFormat.parse(this.createdDate);
+            String updatedDate = desiredFormat.format(date);
+            this.createdDate = updatedDate;
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

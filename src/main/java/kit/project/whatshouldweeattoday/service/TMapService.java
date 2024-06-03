@@ -354,7 +354,7 @@ public class TMapService {
             //itinerariesNode의 경우 .get(0).path("fare").path("regular").path("totalPrice");
             //itinerariesNode의 totalTime의 경우 .get(0).path("totalTime);
             //legs의 경우에는 여러 index가 있어서 for문으로 전부 돌아서 원하는 정보 위와 같이 넣어주면 될 거 같음
-            //TODO 구조 잘 보고 넣을 것!!!!
+
             return null;
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to calculate transit time: " + e.getMessage());
@@ -386,10 +386,10 @@ public class TMapService {
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
-            System.out.println("Url : " + request.uri().toString());
+           // System.out.println("Url : " + request.uri().toString());
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            System.out.println("body : " + body);
+           // System.out.println("body : " + body);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(body);
@@ -457,7 +457,7 @@ public class TMapService {
     //보행자 경로 -> 대중교통 경로 반환할때 거리가 너무 가까우면 보행자경로 반환
     @Transactional
     public JsonNode getJsonByWalkRoute(String departure, String destination) {
-        System.out.println("보행자 경로도 들어왔어용");
+      //  System.out.println("보행자 경로도 들어왔어용");
         Map<String, Double> depCoordinates = this.getCoordinates(departure);
         Map<String, Double> destCoordinates = this.getCoordinates(destination);
 
@@ -485,7 +485,7 @@ public class TMapService {
 
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            System.out.println(body);
+          //  System.out.println(body);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(body);
