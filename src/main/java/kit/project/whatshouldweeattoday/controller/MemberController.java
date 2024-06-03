@@ -186,7 +186,6 @@ public class MemberController {
         memberService.createMember(member6);
         initFriendshipData();
     }
-
     public void initFriendshipData() throws BadRequestException {
         Member fromMember = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
         Member toMember = memberRepository.findByLoginId("lim3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
