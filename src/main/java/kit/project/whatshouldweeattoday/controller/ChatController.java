@@ -14,6 +14,7 @@ import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.repository.ChatRoomRepository;
 import kit.project.whatshouldweeattoday.repository.MeetRepository;
+import kit.project.whatshouldweeattoday.repository.VoteRepository;
 import kit.project.whatshouldweeattoday.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,7 @@ public class ChatController {
     private final MemberService memberService;
     private final MeetRepository meetRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final VoteRepository voteRepository;
     private final SimpMessageSendingOperations messagingTemplate;
 
     /**
@@ -111,6 +113,7 @@ public class ChatController {
             vote.incrementVoteCount1(voteRequest.getVoteCount1());
             vote.incrementVoteCount2(voteRequest.getVoteCount2());
 
+            voteRepository.save(vote);
             return new VoteResponseDTO(vote.getId(), vote.getMenu1(), vote.getVoteCount1(), vote.getMenu2(), vote.getVoteCount2());
         } catch (Exception e) {
             log.error("Error incrementing vote for voteId {}: {}", voteId, e.getMessage());
