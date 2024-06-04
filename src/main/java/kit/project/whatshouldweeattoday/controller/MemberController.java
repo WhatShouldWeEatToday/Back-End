@@ -159,7 +159,7 @@ public class MemberController {
                 .loginPw("a12345678")
                 .verifiedLoginPw("a12345678")
                 .nickname("이준현")
-                .gender("FEMALE")
+                .gender("MALE")
                 .age(24)
                 .build();
         SignupRequestDTO member5 = SignupRequestDTO.builder()
@@ -167,7 +167,7 @@ public class MemberController {
                 .loginPw("a12345678")
                 .verifiedLoginPw("a12345678")
                 .nickname("이민형")
-                .gender("FEMALE")
+                .gender("MALE")
                 .age(24)
                 .build();
         SignupRequestDTO member6 = SignupRequestDTO.builder()
@@ -175,7 +175,15 @@ public class MemberController {
                 .loginPw("a12345678")
                 .verifiedLoginPw("a12345678")
                 .nickname("이동혁")
-                .gender("FEMALE")
+                .gender("MALE")
+                .age(24)
+                .build();
+        SignupRequestDTO member7 = SignupRequestDTO.builder()
+                .loginId("member7")
+                .loginPw("a12345678")
+                .verifiedLoginPw("a12345678")
+                .nickname("변우석")
+                .gender("MALE")
                 .age(24)
                 .build();
         memberService.createMember(member1);
@@ -184,6 +192,7 @@ public class MemberController {
         memberService.createMember(member4);
         memberService.createMember(member5);
         memberService.createMember(member6);
+        memberService.createMember(member7);
         initFriendshipData();
     }
     public void initFriendshipData() throws BadRequestException {
@@ -301,5 +310,28 @@ public class MemberController {
 
         friendshipRepository.save(friendshipTo5);
         friendshipRepository.save(friendshipFrom5);
+
+        Member fromMember6 = memberRepository.findByLoginId("member7").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+        Member toMember6 = memberRepository.findByLoginId("hyun3478").orElseThrow(() -> new BadRequestException("회원 조회 실패"));
+
+        Friendship friendshipFrom6 = Friendship.builder()
+                .member(fromMember6)
+                .memberLoginId("member7")
+                .friendLoginId("hyun3478")
+                .status(FriendshipStatus.WAITING)
+                .isFrom(true)
+                .build();
+
+        // 보내는 사람에게 저장될 친구 요청
+        Friendship friendshipTo6 = Friendship.builder()
+                .member(toMember6)
+                .memberLoginId("hyun3478")
+                .friendLoginId("member7")
+                .status(FriendshipStatus.WAITING)
+                .isFrom(false)
+                .build();
+
+        friendshipRepository.save(friendshipTo6);
+        friendshipRepository.save(friendshipFrom6);
     }
 }
