@@ -1,5 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,10 +21,12 @@ public class Meet {
     private String meetTime;
 
     @OneToOne(mappedBy = "meet", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Chat chat;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
+    @JsonIgnore
     private ChatRoom room;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

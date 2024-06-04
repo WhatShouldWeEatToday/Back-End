@@ -72,17 +72,4 @@ public class FoodService {
             throw new RuntimeException("Failed to update image routes", e);
         }
     }
-
-    public void updateFoodTypeName(){
-        List<Food> food = foodRepository.findAll();
-
-        for(int i =0;i<food.size();i++){
-            Optional<FoodType> foodType =foodTypeRepository.findById(food.get(i).getFoodType().getId());
-
-            String foodTypeName = foodType.get().getFoodTypeName();
-
-            food.get(i).setFoodTypeName(foodTypeName);
-        }
-
-    }
 }
