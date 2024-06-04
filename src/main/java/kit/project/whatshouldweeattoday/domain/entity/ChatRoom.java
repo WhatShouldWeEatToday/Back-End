@@ -35,6 +35,7 @@ public class ChatRoom {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "MEET_ID")
+    @JsonIgnore
     private Meet meet;
 
     public void addVote(Vote vote) {

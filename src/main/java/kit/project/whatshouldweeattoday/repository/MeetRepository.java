@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface MeetRepository extends JpaRepository<Meet, Long> {
-    Optional<Meet> findByRoomIdAndMeetMenu(Long roomId, String meetMenu);
+    Optional<Meet> findByRoomIdAndMeetMenu(Long chatRoomId, String meetMenu);
 }

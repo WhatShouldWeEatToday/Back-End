@@ -1,5 +1,7 @@
 package kit.project.whatshouldweeattoday.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,6 +28,7 @@ public class Chat {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
+    @JsonIgnore
     private ChatRoom room;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

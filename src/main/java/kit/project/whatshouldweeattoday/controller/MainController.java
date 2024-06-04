@@ -34,13 +34,6 @@ public class MainController {
         return new ResponseEntity<>("Image routes updated successfully", HttpStatus.OK);
     }
 
-    //foodTypeName update
-    @PatchMapping("/update-foodTypeName")
-    public ResponseEntity<String> updateFoodTypeName() {
-        foodService.updateFoodTypeName();
-        return new ResponseEntity<>("FoodTypeName updated successfully", HttpStatus.OK);
-    }
-
     //음식 이미지 반환
     @GetMapping("/image/{foodName}")
     public ResponseEntity<InputStreamResource> getImageByFoodName(@PathVariable String foodName) {
