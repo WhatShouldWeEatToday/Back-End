@@ -1,7 +1,9 @@
 package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.entity.Food;
+import kit.project.whatshouldweeattoday.domain.entity.FoodType;
 import kit.project.whatshouldweeattoday.repository.FoodRepository;
+import kit.project.whatshouldweeattoday.repository.FoodTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +26,7 @@ import java.util.Optional;
 @Transactional
 public class FoodService {
     private final FoodRepository foodRepository;
+    private final FoodTypeRepository foodTypeRepository;
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images";
 
     public String getImageRouteByFoodName(String foodName) throws BadRequestException {
@@ -69,4 +73,16 @@ public class FoodService {
         }
     }
 
+    public void updateFoodTypeName(){
+        List<Food> food = foodRepository.findAll();
+
+        for(int i =0;i<food.size();i++){
+            Optional<FoodType> foodType =foodTypeRepository.findById(food.get(i).getFoodType().getId());
+
+            String foodTypeName = foodType.get().getFoodTypeName();
+
+            food.get(i).setFoodTypeName(foodTypeName);
+        }
+
+    }
 }
