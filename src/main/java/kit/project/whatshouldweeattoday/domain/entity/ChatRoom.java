@@ -45,17 +45,10 @@ public class ChatRoom {
 
     public void addMeet(Meet meet) {
         this.meet = meet;
-        if (meet != null) {
-            meet.setRoom(this); // 연관 관계 설정
-        }
+//        if (meet != null) {
+//            meet.setRoom(this); // 연관 관계 설정
+//        }
     }
-
-//    public ChatRoom(String roomName, String createdBy, Long realRoomId) {
-//        this.roomName = roomName;
-//        this.createdBy = createdBy;
-//        this.realRoomId = realRoomId;
-//        this.createdDate = LocalDateTime.now();
-//    }
 
     @Builder
     public ChatRoom(String hostId, String roomName, int currentUserNum) {

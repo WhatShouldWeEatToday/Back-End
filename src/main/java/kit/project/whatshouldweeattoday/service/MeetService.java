@@ -37,7 +37,7 @@ public class MeetService {
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
 
         // 중복된 meetMenu가 존재하는지 확인
-        Optional<Meet> existingMeet = meetRepository.findByRoomIdAndMeetMenu(chatRoom.getId(), maxVotedMenu);
+        Optional<Meet> existingMeet = meetRepository.findByIdAndMeetMenu(chatRoom.getId(), maxVotedMenu);
         if (existingMeet.isPresent()) {
             log.info("해당 메뉴가 이미 채팅방에 등록되어 있습니다. 기존 메뉴를 반환합니다.");
             Meet meet = existingMeet.get();
@@ -50,18 +50,16 @@ public class MeetService {
         // 새로운 meet 생성 및 저장
         Meet meet = new Meet();
         meet.setMeetMenu(maxVotedMenu);
-        meet = meetRepository.save(meet);
+        meet = meetRepository.saveAndFlush(meet);
         log.info("새로운 meet 객체가 저장되었습니다. meetId: {}", meet.getId());
-
-        // 채팅방에 meet 추가 및 저장
-        chatRoom.addMeet(meet);
-        chatRoom = chatRoomRepository.save(chatRoom);
-        log.info("chatRoom 객체가 저장되었습니다. chatRoomId: {}, meetId: {}", chatRoom.getId(), meet.getId());
 
         // 새로운 채팅 생성 및 저장
         Chat chat = Chat.createChat(chatRoom, null, meet, SecurityUtil.getLoginId());
         chatRepository.save(chat);
         log.info("새로운 chat 객체가 저장되었습니다. chatId: {}", chat.getId());
+
+        // 채팅방에 meet 추가
+        chatRoom.addMeet(meet);
 
         // 음식 정보 업데이트
         Food findFood = foodService.findByFoodName(maxVotedMenu)
@@ -76,6 +74,7 @@ public class MeetService {
                 .maxVotedMenu(maxVotedMenu)
                 .build();
     }
+
 
     public Meet findByMeetId(Long meetId) throws BadRequestException {
         return meetRepository.findById(meetId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));

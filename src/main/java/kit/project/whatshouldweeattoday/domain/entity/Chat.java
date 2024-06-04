@@ -35,7 +35,7 @@ public class Chat {
     @JoinColumn(name = "vote_id")
     private Vote vote;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "meet_id")
     private Meet meet;
 
@@ -43,22 +43,10 @@ public class Chat {
     @JoinColumn(name = "notice_id")
     private Notice notice;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "member_id")
-//    private Member member;
-
     @PrePersist
     protected void onCreate() {
         sendDate = LocalDateTime.now();
     }
-
-//    public Chat(ChatRoom room, Vote vote, Meet meet, String sender) {
-//        this.room = room;
-//        this.vote = vote;
-//        this.meet = meet;
-//        this.sender = sender;
-//        this.sendDate = LocalDateTime.now();
-//    }
 
     @Builder
     public Chat(ChatRoom room, Vote vote, Meet meet, Notice notice, String sender) {
@@ -77,11 +65,19 @@ public class Chat {
      * @return Chat Entity
      */
     public static Chat createChat(ChatRoom room, Vote vote, Meet meet, String sender) {
-        return Chat.builder()
-                .room(room)
-                .vote(vote)
-                .meet(meet)
-                .sender(sender)
-                .build();
+        Chat chat = new Chat();
+        chat.room = room;
+        chat.vote = vote;
+        chat.meet = meet;
+        chat.sender = sender;
+        chat.sendDate = LocalDateTime.now();
+        return chat;
     }
+
+//    public void setMeet(Meet meet) {
+//        this.meet = meet;
+//        if (meet != null && meet.getChat() != this) {
+//            meet.setChat(this); // 연관 관계 설정
+//        }
+//    }
 }

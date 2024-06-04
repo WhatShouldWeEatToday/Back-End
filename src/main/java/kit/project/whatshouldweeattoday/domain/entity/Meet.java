@@ -20,15 +20,6 @@ public class Meet {
     private String meetMenu;
     private String meetTime;
 
-    @OneToOne(mappedBy = "meet", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Chat chat;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    @JsonIgnore
-    private ChatRoom room;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "food_id")
     private Food food;
@@ -56,10 +47,10 @@ public class Meet {
         this.meetMenu = meetMenu;
     }
 
-    public void setRoom(ChatRoom room) {
-        this.room = room;
-        if (room != null && room.getMeet() != this) {
-            room.setMeet(this); // 연관 관계 설정
-        }
-    }
+//    public void setChat(Chat chat) {
+//        this.chat = chat;
+//        if (chat != null && chat.getMeet() != this) {
+//            chat.setMeet(this); // 연관 관계 설정
+//        }
+//    }
 }

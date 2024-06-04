@@ -158,6 +158,7 @@ public class ChatController {
         return MeetChatResponseDTO.builder()
                 .roomId(roomId)
                 .meetId(meet.getId())
+                .meetMenu(meet.getMeetMenu())
                 .meetLocate(meet.getMeetLocate())
                 .meetTime(meet.getMeetTime())
                 .build();
@@ -168,18 +169,18 @@ public class ChatController {
      * @param meetId
      * @param meetRequestDTO
      */
-    @MessageMapping("/meet/update/{roomId}/{meetId}")
-    @SendTo("/topic/room/{roomId}")
-    public MeetChatResponseDTO updateMeet(@DestinationVariable("meetId") Long meetId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
-        Meet updatedMeet = chatService.updateMeet(meetId, meetRequestDTO.getMeetLocate(), meetRequestDTO.getMeetTime());
-
-        return MeetChatResponseDTO.builder()
-                .roomId(updatedMeet.getChat().getRoom().getId())
-                .meetLocate(updatedMeet.getMeetLocate())
-                .meetMenu(updatedMeet.getMeetMenu())
-                .meetTime(updatedMeet.getMeetTime())
-                .build();
-    }
+//    @MessageMapping("/meet/update/{roomId}/{meetId}")
+//    @SendTo("/topic/room/{roomId}")
+//    public MeetChatResponseDTO updateMeet(@DestinationVariable("meetId") Long meetId, MeetRequestDTO meetRequestDTO) throws BadRequestException {
+//        Meet updatedMeet = chatService.updateMeet(meetId, meetRequestDTO.getMeetLocate(), meetRequestDTO.getMeetTime());
+//
+//        return MeetChatResponseDTO.builder()
+//                .roomId(updatedMeet.getChat().getRoom().getId())
+//                .meetLocate(updatedMeet.getMeetLocate())
+//                .meetMenu(updatedMeet.getMeetMenu())
+//                .meetTime(updatedMeet.getMeetTime())
+//                .build();
+//    }
 
     /**
      * 채팅방 내 약속 종료
