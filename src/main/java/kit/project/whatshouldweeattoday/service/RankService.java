@@ -64,14 +64,24 @@ public class RankService {
                 rank
         );
     }
-
+    // 음식 Type count 초기화
     @Transactional
     public void resetRestaurantCounts() {
-        List<Restaurant> allRestaurants = restaurantRepository.findAll();
-        for (Restaurant restaurant : allRestaurants) {
-            restaurant.setCount(0L); // count 필드를 0으로 초기화
+        List<FoodType> allFoodTypes = foodTypeRepository.findAll();
+        for (FoodType foodType : allFoodTypes) {
+            foodType.setCount(0L); // count 필드를 0으로 초기화
         }
-        restaurantRepository.saveAll(allRestaurants);
+        foodTypeRepository.saveAll(allFoodTypes);
+    }
+
+    //음식 count 초기화
+    @Transactional
+    public void resetFoodCounts() {
+        List<Food> allFoods = foodRepository.findAll();
+        for (Food food : allFoods) {
+            food.setCount(0L); // count 필드를 0으로 초기화
+        }
+        foodRepository.saveAll(allFoods);
     }
 
     @Scheduled(cron = "0 0 0 * * MON") // 매주 월요일 0시에 실행
@@ -81,6 +91,8 @@ public class RankService {
         getTop5RestaurantsByCount();
         // 2. restaurant count 초기화
         resetRestaurantCounts();
+        // 3. food count 초기화
+        resetFoodCounts();
     }
 
     @Transactional

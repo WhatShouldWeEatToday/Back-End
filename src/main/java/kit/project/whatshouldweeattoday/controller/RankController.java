@@ -23,6 +23,13 @@ public class RankController {
     private final RestaurantService restaurantService;
     private final RankService rankService;
 
+    // -> 순위초기화
+    @GetMapping("/update-weekly")
+    public String updateWeeklyRankings() {
+        rankService.updateWeeklyRankings();
+        return "Weekly rankings updated and counts reset";
+    }
+
 
     //주간 음식종류별 순위
     @GetMapping("/foodType")
