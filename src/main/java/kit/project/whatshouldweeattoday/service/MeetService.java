@@ -40,7 +40,10 @@ public class MeetService {
         }
 
         Meet meet = new Meet();
-        meet.setId(1L);
+        if(meet.getId() == null) {
+            meet.setId(1L);
+        }
+
         meet.setMeetMenu(maxVotedMenu);
 
         chatRoom.addMeet(meet);
