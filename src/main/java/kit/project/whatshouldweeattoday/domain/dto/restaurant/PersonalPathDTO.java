@@ -1,7 +1,6 @@
 package kit.project.whatshouldweeattoday.domain.dto.restaurant;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,14 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PersonalPathDTO {
-   // private Restaurant restaurant;
+
     private RestaurantResponseDTO restaurantResponseDTO;
-   /* private String RestaurantName;
-    private Double RestaurantScore;*/
     private Integer totalTime;
     private Integer serialNum;
-    private Integer weight = 0; //가중치
-    private JsonNode routeInfo; //경로
+    private Integer weight = 0; // 가중치
+    private JsonNode routeInfo; // 경로
     public PersonalPathDTO(RestaurantResponseDTO restaurant, Integer totalTime, Integer serialNum) {
         this.restaurantResponseDTO = restaurant;
         this.totalTime = totalTime;

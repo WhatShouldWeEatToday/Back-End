@@ -1,11 +1,12 @@
 package kit.project.whatshouldweeattoday.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
 import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PathService {
@@ -23,13 +25,9 @@ public class PathService {
     private int serialNum = 0; // 음식점 배열 일련번호
     private List<PersonalPathDTO> weightArray = new ArrayList<>(); // 전체 가중치
 
-    public void registerDeparture(String meetMenu, Long chatId) {
-        System.out.println("MeetMenu: " + meetMenu + ", ChatId: " + chatId);
-    }
-
     // startAddres = 채팅방 사람들의 출발지 list
     @Transactional
-    public List<PersonalPathDTO> getWeight(String keyword, List<String> startAddress) {
+    public List<PersonalPathDTO> getWeight(@Param("keyword") String keyword, @Param("startAddress") List<String> startAddress) {
         List<PersonalPathDTO> resultSort = new ArrayList<>(); //ex) A와 B와 C에 대해서 나온 것들을 순차적으로 저장한 배열 -> 시리얼 넘버랑, 각 식당에 대해서 가지고 있음
         LocalDateTime localDateTime = LocalDateTime.now();
         String searchDttm = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
@@ -62,7 +60,6 @@ public class PathService {
 
         //-> 가중치 계산
         for (String address : startAddress) {
-          //  System.out.println("유저: " + address);
             Map<String, Double> coordinates2 = tmapService.getCoordinates(address);
             Double startX2 = coordinates2.get("longitude");
             Double startY2 = coordinates2.get("latitude");
@@ -75,6 +72,10 @@ public class PathService {
         }
         //상위 3개 반환
         resultSort = sortPersonalPathByWeightTop3(resultSort);
+        for (PersonalPathDTO personalPathDTO : resultSort) {
+            log.info("사용자 경로 반환 : serialNum = {}, weight = {}, totalTime = {}, routeInfo = {}",
+                    personalPathDTO.getSerialNum(), personalPathDTO.getWeight(), personalPathDTO.getTotalTime(), personalPathDTO.getRouteInfo());
+        }
         return resultSort;
     }
 

@@ -1,7 +1,6 @@
 package kit.project.whatshouldweeattoday.repository;
 
 import kit.project.whatshouldweeattoday.domain.entity.FoodType;
-import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -22,23 +22,6 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final MemberRepository memberRepository;
-    private final SimpMessagingTemplate messagingTemplate;
-
-   /* public List<Notice> getNoticesByMember(String loginId) {
-        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
-        return noticeRepository.findAllByMember(member);
-    }
-
-    public Notice sendNotice(String loginId, String content, String createdDate) {
-        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        Notice notice = new Notice(member, content, createdDate);
-
-        return noticeRepository.save(notice);
-    }*/
-
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public List<NoticeResponseDTO> getNoticesByMember(String loginId) {
         Member member = memberRepository.findByLoginId(loginId)
@@ -53,26 +36,4 @@ public class NoticeService {
                 notice.getNoticeType()
         )).collect(Collectors.toList());
     }
-
-    /*public NoticeResponseDTO sendNotice(String loginId, String content, String createdDate) {
-        Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
-        // 현재 날짜를 String으로 변환
-        String dateString = dateFormat.format(new Date());
-
-        Notice notice = new Notice(member,content);
-        noticeRepository.save(notice);
-
-        NoticeResponseDTO responseDTO = new NoticeResponseDTO(
-                notice.getId(),
-                notice.getMember().getId(),
-                notice.getContent(),
-                notice.getNoticeType()
-        );
-
-        messagingTemplate.convertAndSendToUser(member.getLoginId(), "/topic/notices", responseDTO);
-
-        return responseDTO;
-    }*/
 }

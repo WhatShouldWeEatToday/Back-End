@@ -3,21 +3,10 @@ package kit.project.whatshouldweeattoday.domain.dto.restaurant;
 
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
-import kit.project.whatshouldweeattoday.domain.entity.Review;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 @Getter
 @Setter

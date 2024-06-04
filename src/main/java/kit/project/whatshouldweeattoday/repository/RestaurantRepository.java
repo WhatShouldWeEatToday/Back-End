@@ -87,10 +87,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r FROM Restaurant r WHERE r.addressNumber LIKE CONCAT('%', :address, '%')")
     Page<Restaurant> findByAddressForReview(@Param("address") String address, Pageable pageable);
 
-  /*  //최신 리뷰 날짜를 기준으로 음식점을 정렬
-    @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.reviewList rev GROUP BY r ORDER BY MAX(rev.createdDate) DESC")
-    Page<Restaurant> findByAddressOrderByLatestReview(@Param("address") String address, Pageable pageable);*/
-
     //읍,면, 동별로 찾기 -> 음식점과 리뷰 모두 출력
     @Query("SELECT r FROM Restaurant r WHERE r.addressRoad LIKE CONCAT('%', :address, '%')")
     Page<Restaurant> findByAddressOrderByLatestReview(@Param("address") String address, Pageable pageable);

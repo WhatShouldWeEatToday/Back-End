@@ -6,18 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class SecurityUtil {
 
-//    public static String getLoginId(){
-//        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        return user.getUsername();
-//    }
-/*SecurityContext context = SecurityContextHolder.getContext();
-    Object principal = context.getAuthentication().getPrincipal();
-
-	if (principal instanceof User) {
-        this.user = (User) principal;
-    } else {
-        this.user = null;
-    }*/
     public static String getLoginId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {

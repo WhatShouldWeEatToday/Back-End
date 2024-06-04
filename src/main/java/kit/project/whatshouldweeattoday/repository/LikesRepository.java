@@ -1,7 +1,6 @@
 package kit.project.whatshouldweeattoday.repository;
 
 import kit.project.whatshouldweeattoday.domain.entity.Likes;
-import kit.project.whatshouldweeattoday.domain.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

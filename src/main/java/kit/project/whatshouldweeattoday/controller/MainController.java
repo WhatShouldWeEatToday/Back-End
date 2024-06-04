@@ -1,26 +1,19 @@
 package kit.project.whatshouldweeattoday.controller;
 
-import io.github.classgraph.Resource;
 import kit.project.whatshouldweeattoday.domain.entity.Food;
 import kit.project.whatshouldweeattoday.service.FoodService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 @RestController
@@ -28,7 +21,6 @@ import java.util.Optional;
 public class MainController {
 
     private final FoodService foodService;
-   // private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
 
     @GetMapping("/main/image")
     public String getMainImage(@RequestParam String foodName) throws BadRequestException {

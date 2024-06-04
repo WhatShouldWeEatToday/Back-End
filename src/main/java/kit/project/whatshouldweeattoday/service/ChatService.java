@@ -17,8 +17,6 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -30,27 +28,6 @@ public class ChatService {
     private final MeetRepository meetRepository;
     private final VoteRepository voteRepository;
     private final FoodService foodService;
-
-    /**
-     * 채팅방 내 투표 조회
-     * @param roomId
-     */
-    @Transactional
-    public VoteResponseDTO findVoteById(Long roomId) {
-        log.info("채팅룸 메시지 조회를 시작합니다. [roomId : {}]", roomId);
-        Chat chat = chatRepository.findOneByRoomId(roomId);
-        Vote vote = chat.getVote();
-        if (vote == null) {
-            throw new IllegalArgumentException("해당 채팅방에 대한 Vote 정보가 없습니다.");
-        }
-        return VoteResponseDTO.builder()
-                .voteId(vote.getId())
-                .menu1(vote.getMenu1())
-                .menu2(vote.getMenu2())
-                .voteCount1(vote.getVoteCount1())
-                .voteCount2(vote.getVoteCount2())
-                .build();
-    }
 
     /**
      * 채팅방 내 약속 조회

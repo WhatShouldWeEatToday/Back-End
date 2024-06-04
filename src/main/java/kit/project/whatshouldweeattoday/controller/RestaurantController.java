@@ -151,22 +151,6 @@ public class RestaurantController {
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
-    //직선거리순으로 정렬하면서 음식점만
-    //직선거리순으로 정렬하면서 카페만
-
-    //음식점 경로 시간 알아보기
-    /*@PostMapping("/search/totalTime")
-    public ResponseEntity<?> totalTime(
-            @RequestBody PathRequestDTO totalTimeRequest) {
-
-        try {
-            int totalTime = tmapService.totalTime(totalTimeRequest.getStartX(), totalTimeRequest.getStartY(), totalTimeRequest.getEndX(), totalTimeRequest.getEndY(), totalTimeRequest.getLang(), totalTimeRequest.getFormat(), totalTimeRequest.getCount(), totalTimeRequest.getSearchDttm());
-            return ResponseEntity.ok(totalTime);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error calculating total time: " + e.getMessage());
-        }
-    }*/
-
     //주소받아서 음식점경로 알아오기
     @PostMapping("/search/totalPath2")
     public ResponseEntity<PathResponseDTO> getTransitRoute2(
@@ -228,10 +212,4 @@ public class RestaurantController {
         String address = tmapService.getAddressByCoordinates2(128.3592031, 36.0888125);
        return ResponseEntity.ok(address);
     }
-
-
 }
-
-
-
-

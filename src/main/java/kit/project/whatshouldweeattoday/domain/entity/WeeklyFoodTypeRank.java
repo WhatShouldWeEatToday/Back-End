@@ -2,7 +2,6 @@ package kit.project.whatshouldweeattoday.domain.entity;
 
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.dto.foodType.FoodTypeResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

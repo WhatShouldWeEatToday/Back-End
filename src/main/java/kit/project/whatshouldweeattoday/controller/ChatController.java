@@ -5,7 +5,6 @@ import kit.project.whatshouldweeattoday.domain.dto.chat.RoomAndFriendsRequestDTO
 import kit.project.whatshouldweeattoday.domain.dto.meet.DepartureResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.meet.MeetResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.PersonalPathDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteIdRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.vote.VoteResponseDTO;
@@ -28,7 +27,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +39,6 @@ public class ChatController {
 
     private final ChatService chatService;
     private final VoteService voteService;
-    private final PathService pathService;
     private final MeetService meetService;
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
@@ -49,6 +46,7 @@ public class ChatController {
     private final ChatRoomRepository chatRoomRepository;
     private final VoteRepository voteRepository;
     private final SimpMessageSendingOperations messagingTemplate;
+    private List<String> departureList = new ArrayList<>();
 
     /**
      * 친구 초대 할 때 초대경로로 메시지 뿌리기
@@ -82,13 +80,6 @@ public class ChatController {
             throw new BadRequestException("Failed to register vote");
         }
     }
-
-//    @MessageMapping("/vote/state/{roomId}")
-//    @SendTo("/topic/room/{roomId}")
-//    public ResponseEntity<?> getVote(@DestinationVariable("roomId") Long roomId) {
-//        VoteResponseDTO vote = chatService.findVoteById(roomId);
-//        return new ResponseEntity<>(vote, HttpStatus.OK);
-//    }
 
     /**
      * 메뉴 투표 Count 실시간 관리
@@ -206,21 +197,21 @@ public class ChatController {
      */
     @MessageMapping("/departure/register/{roomId}")
     @SendTo("/topic/room/{roomId}")
-    public ResponseEntity<DepartureResponseDTO> registerDeparture(@DestinationVariable("roomId") Long roomId, String departures) {
+    public ResponseEntity<DepartureResponseDTO> registerDeparture(@DestinationVariable("roomId") Long roomId, String departures) throws BadRequestException {
         ChatRoom room = chatRoomRepository.findOneById(roomId);
         if (room == null) {
             throw new IllegalArgumentException("존재하지 않는 채팅방입니다.");
         }
-        List<String> departureList = new ArrayList<>();
         departureList.add(departures);
 
         String meetMenu = room.getMeet().getMeetMenu();
         if (meetMenu == null) {
             throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
         }
-//        pathService.getWeight(meetMenu, departureList);
+        int memberCount = chatService.getMemberCount(roomId);
 
         DepartureResponseDTO responseDTO = DepartureResponseDTO.builder()
+                .memberCount(memberCount)
                 .meetMenu(meetMenu)
                 .departureList(departureList)
                 .build();

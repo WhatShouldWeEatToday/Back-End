@@ -2,9 +2,10 @@ package kit.project.whatshouldweeattoday.service;
 
 import kit.project.whatshouldweeattoday.domain.dto.bookmark.BookmarkRequestDTO;
 import kit.project.whatshouldweeattoday.domain.dto.bookmark.BookmarkResponseDTO;
-import kit.project.whatshouldweeattoday.domain.dto.restaurant.RestaurantResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.review.MsgResponseDTO;
-import kit.project.whatshouldweeattoday.domain.entity.*;
+import kit.project.whatshouldweeattoday.domain.entity.Bookmark;
+import kit.project.whatshouldweeattoday.domain.entity.Member;
+import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import kit.project.whatshouldweeattoday.repository.BookmarkRepository;
 import kit.project.whatshouldweeattoday.repository.MemberRepository;
 import kit.project.whatshouldweeattoday.repository.RestaurantRepository;
