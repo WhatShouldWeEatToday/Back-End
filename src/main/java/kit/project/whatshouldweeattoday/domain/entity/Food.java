@@ -19,6 +19,7 @@ public class Food {
     @JoinColumn(name = "foodType_id")
     private FoodType foodType;
     private String imageRoute;
+    private String foodTypeName;
     private Long count = 0L;
 
     @OneToOne(mappedBy = "food", fetch = FetchType.LAZY)
@@ -32,6 +33,7 @@ public class Food {
         this.count = count;
     }
     public void setImageRoute(String imageRoute){this.imageRoute=imageRoute;}
+    public void setFoodTypeName(String foodTypeName){this.foodTypeName=foodTypeName;}
 
     public void incrementFoodCount() {
         this.count++;

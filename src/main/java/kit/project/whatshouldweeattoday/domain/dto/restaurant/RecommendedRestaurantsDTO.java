@@ -7,7 +7,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PathRequest {
+public class RecommendedRestaurantsDTO {
     private String keyword;
     private List<String> startAddress;
+    private String searchDttm;
 }

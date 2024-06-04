@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -184,7 +183,7 @@ public class RestaurantController {
 
    //채팅방 단체최적경로
     @PostMapping("/search/getWeight")
-    public ResponseEntity<List<PersonalPathDTO>> getWeightInfo(@RequestBody PathRequest request) {
+    public ResponseEntity<List<PersonalPathDTO>> getWeightInfo(@RequestBody RecommendedRestaurantsDTO request) {
         //3개의 맛집이 반환됨
         List<PersonalPathDTO> personalPathList = pathService.getWeight(request.getKeyword(), request.getStartAddress());
 

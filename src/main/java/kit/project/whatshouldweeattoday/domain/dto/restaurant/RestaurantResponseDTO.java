@@ -2,6 +2,7 @@ package kit.project.whatshouldweeattoday.domain.dto.restaurant;
 
 
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.FoodType;
 import kit.project.whatshouldweeattoday.domain.entity.Restaurant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,9 +37,10 @@ public class RestaurantResponseDTO {
 
     private int count;
     private int rank;
+    private FoodType foodType;
 
     // 음식점 상세보기
-    public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark, Page<ReviewResponseDTO> reviewList) {
+    public RestaurantResponseDTO(Long id, String name, String restaurantType, Double degree, String addressRoad, String addressNumber, String tel, String menus, int totalReviews, int totalTaste, int totalCost, int totalKind, int totalMood, int totalPark, Page<ReviewResponseDTO> reviewList,FoodType foodType) {
         this.id = id;
         this.name = name;
         this.restaurantType = restaurantType;
@@ -54,6 +56,7 @@ public class RestaurantResponseDTO {
         this.totalMood = totalMood;
         this.totalPark = totalPark;
         this.reviewList = reviewList;
+        this.foodType = foodType;
     }
 
     // 리뷰폼 안의 음식점 상세
