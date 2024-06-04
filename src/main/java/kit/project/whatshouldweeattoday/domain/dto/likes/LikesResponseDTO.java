@@ -22,9 +22,7 @@ public class LikesResponseDTO {
     public LikesResponseDTO(Likes likes){
         this.id = likes.getId();
         this.state = likes.getState();
-        //this.review=likes.getReview();
         this.review_id=likes.getReview().getId();
-       // this.writer = likes.getReview().getWriter();
         this.member_id=likes.getMember().getId();
     }
 }

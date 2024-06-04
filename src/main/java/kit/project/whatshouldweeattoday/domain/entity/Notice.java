@@ -5,10 +5,6 @@ import kit.project.whatshouldweeattoday.domain.type.NoticeType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 @Entity
 @Getter
 @NoArgsConstructor

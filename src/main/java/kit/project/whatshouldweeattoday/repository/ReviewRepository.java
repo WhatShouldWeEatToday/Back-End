@@ -20,9 +20,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r WHERE r.restaurant.id = :id")
     List<Review> findByRestaurant(@Param("id") Long id);
 
-   /* @Query("SELECT r FROM Review r WHERE r.restaurant.id = :id")
-    Page<Review> findByRestaurantforPage(@Param("id") Long restaurantId, Pageable pageable);
-*/
     //음식점 아이디로 리뷰찾기 -> 페이징처리
     @Query("SELECT r FROM Review r WHERE r.restaurant.id = :id")
     Page<Review> findByRestaurantforPage(@Param("id") Long restaurantId, Pageable pageable);

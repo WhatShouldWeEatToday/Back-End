@@ -1,6 +1,5 @@
 package kit.project.whatshouldweeattoday.domain.dto.review;
 
-import kit.project.whatshouldweeattoday.domain.entity.Member;
 import kit.project.whatshouldweeattoday.domain.entity.Review;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
 import lombok.Getter;

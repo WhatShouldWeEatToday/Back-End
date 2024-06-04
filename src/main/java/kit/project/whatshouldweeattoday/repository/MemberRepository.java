@@ -5,7 +5,6 @@ import kit.project.whatshouldweeattoday.domain.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +17,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByLoginId(String loginId);
     Set<Member> findAllByLoginIdIn(List<String> loginId);
     Page<FriendListResponseDTO> findByLoginIdContaining(String loginId, Pageable pageable);
-//    @Query("SELECT m FROM Member m JOIN m.chatRooms cr WHERE cr.id = :chatRoomId")
-//    List<Member> findAllByChatRoomId(Long chatRoomId);
 }

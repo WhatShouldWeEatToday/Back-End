@@ -9,10 +9,12 @@ import java.util.List;
 @Builder
 public class DepartureResponseDTO {
 
+    private Integer memberCount;
     private String meetMenu;
     private List<String> departureList;
 
-    public DepartureResponseDTO(String meetMenu, List<String> departureList) {
+    public DepartureResponseDTO(Integer memberCount, String meetMenu, List<String> departureList) {
+        this.memberCount = memberCount;
         this.meetMenu = meetMenu;
         this.departureList = departureList;
     }

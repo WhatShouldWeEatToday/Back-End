@@ -20,5 +20,4 @@ public class FoodResponseDTO {
         this.count = count;
         this.ranks=ranks;
     }
-
 }

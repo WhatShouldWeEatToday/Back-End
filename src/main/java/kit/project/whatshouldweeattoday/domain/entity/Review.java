@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import kit.project.whatshouldweeattoday.domain.dto.review.ReviewRequestDTO;
 import kit.project.whatshouldweeattoday.domain.type.ReviewType;
-import lombok.*;
-import org.springframework.security.core.userdetails.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

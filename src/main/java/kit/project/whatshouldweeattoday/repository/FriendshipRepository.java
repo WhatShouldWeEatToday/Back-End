@@ -1,7 +1,6 @@
 package kit.project.whatshouldweeattoday.repository;
 
 import kit.project.whatshouldweeattoday.domain.entity.Friendship;
-import kit.project.whatshouldweeattoday.domain.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

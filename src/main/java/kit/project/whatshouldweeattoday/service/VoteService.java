@@ -1,14 +1,11 @@
 package kit.project.whatshouldweeattoday.service;
 
-import jakarta.persistence.EntityManager;
 import kit.project.whatshouldweeattoday.domain.entity.Vote;
 import kit.project.whatshouldweeattoday.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.swing.text.html.parser.Entity;
 
 @Service
 @RequiredArgsConstructor

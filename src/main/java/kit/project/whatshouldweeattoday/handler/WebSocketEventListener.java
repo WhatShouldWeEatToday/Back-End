@@ -1,7 +1,5 @@
 package kit.project.whatshouldweeattoday.handler;
 
-import kit.project.whatshouldweeattoday.domain.dto.chat.ChatRoomMessage;
-import kit.project.whatshouldweeattoday.domain.type.MessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

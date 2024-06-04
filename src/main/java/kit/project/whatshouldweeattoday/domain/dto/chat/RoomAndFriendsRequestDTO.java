@@ -24,8 +24,4 @@ public class RoomAndFriendsRequestDTO {
     public List<String> getFriendLoginIds() {
         return friendLoginIds;
     }
-
-    public void setFriendLoginIds(List<String> friendLoginIds) {
-        this.friendLoginIds = friendLoginIds;
-    }
 }
