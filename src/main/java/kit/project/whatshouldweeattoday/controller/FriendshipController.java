@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import kit.project.whatshouldweeattoday.domain.dto.MsgResponseDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListDTO;
 import kit.project.whatshouldweeattoday.domain.dto.friend.FriendListResponseDTO;
+import kit.project.whatshouldweeattoday.domain.dto.friend.FriendStatusResponseDTO;
+import kit.project.whatshouldweeattoday.domain.entity.Friendship;
+import kit.project.whatshouldweeattoday.repository.FriendshipRepository;
 import kit.project.whatshouldweeattoday.service.FriendshipService;
 import kit.project.whatshouldweeattoday.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -27,6 +31,7 @@ public class FriendshipController {
 
     private final MemberService memberService;
     private final FriendshipService friendshipService;
+    private final FriendshipRepository friendshipRepository;
 
     /* 친구 검색 */
     @GetMapping("/friend/search")
@@ -68,8 +73,12 @@ public class FriendshipController {
     /* 친구 추가 수락 */
     @PostMapping("/friend/accept/{friendshipId}")
     public ResponseEntity<?> acceptFriend(@Valid @PathVariable("friendshipId") Long friendshipId) throws Exception {
+        Friendship byId = friendshipRepository.findById(friendshipId).orElseThrow();
         friendshipService.acceptFriendRequest(friendshipId);
-        return ResponseEntity.ok(new MsgResponseDTO("친구 추가 수락", HttpStatus.OK.value()));
+
+        FriendStatusResponseDTO responseDTO = FriendStatusResponseDTO.builder()
+                .status(byId.getStatus()).build();
+        return ResponseEntity.ok(responseDTO);
     }
 
     /* 친구 추가 취소 */

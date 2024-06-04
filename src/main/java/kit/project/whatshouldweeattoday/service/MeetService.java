@@ -75,7 +75,6 @@ public class MeetService {
                 .build();
     }
 
-
     public Meet findByMeetId(Long meetId) throws BadRequestException {
         return meetRepository.findById(meetId).orElseThrow(() -> new BadRequestException("존재하지 않는 채팅방입니다."));
     }
