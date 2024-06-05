@@ -134,7 +134,7 @@ public class MemberController {
         return ResponseEntity.ok(findMember.getId());
     }
 
-   @PostConstruct
+    @PostConstruct
     public void initMemberData() throws BadRequestException {
         SignupRequestDTO member1 = SignupRequestDTO.builder()
                 .loginId("hyun3478")
