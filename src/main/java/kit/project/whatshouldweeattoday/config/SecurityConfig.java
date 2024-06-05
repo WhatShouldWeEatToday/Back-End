@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/", "/signup", "/signin","/api/signup", "/api/signin", "/confirmId", "/confirmNickname").permitAll()
 //                        .requestMatchers("/ws-stomp/**").authenticated()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .logout((logout) -> logout
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true))
