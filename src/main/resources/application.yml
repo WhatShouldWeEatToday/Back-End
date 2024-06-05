@@ -7,11 +7,11 @@ spring:
     password: ${MYSQL_PW}
     hikari:
       maximum-pool-size: 50 # 최대 커넥션 수를 50으로 설정
-#      connection-timeout: 60000 # 커넥션 획득 대기 시간을 60초로 설정
-#      validation-timeout: 3000 # 유효성 검사 시간을 3초로 설정
-#      idle-timeout: 600000 # 유휴 상태 커넥션 유지 시간을 10분으로 설정
-#      min-idle: 10 # 최소 유휴 커넥션 수를 10으로 설정
-#      max-lifetime: 1800000 # 커넥션 최대 생존 시간을 30분으로 설정
+      connection-timeout: 60000 # 커넥션 획득 대기 시간을 60초로 설정
+      validation-timeout: 3000 # 유효성 검사 시간을 3초로 설정
+      idle-timeout: 600000 # 유휴 상태 커넥션 유지 시간을 10분으로 설정
+      min-idle: 10 # 최소 유휴 커넥션 수를 10으로 설정
+      max-lifetime: 1800000 # 커넥션 최대 생존 시간을 30분으로 설정
   mustache:
     suffix: .html
   profiles:

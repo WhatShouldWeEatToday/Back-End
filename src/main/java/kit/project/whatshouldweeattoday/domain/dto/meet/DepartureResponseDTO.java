@@ -11,11 +11,13 @@ public class DepartureResponseDTO {
 
     private Integer memberCount;
     private String meetMenu;
+    private String meetDate;
     private List<String> departureList;
 
-    public DepartureResponseDTO(Integer memberCount, String meetMenu, List<String> departureList) {
+    public DepartureResponseDTO(Integer memberCount, String meetMenu, String meetDate, List<String> departureList) {
         this.memberCount = memberCount;
         this.meetMenu = meetMenu;
+        this.meetDate = meetDate;
         this.departureList = departureList;
     }
 }

@@ -121,13 +121,13 @@ public class ChatController {
     @MessageMapping("/vote/end/{roomId}/{voteId}")
     @SendTo("/topic/room/{roomId}")
     public MeetResponseDTO endVoteAndSaveMenu(@DestinationVariable("voteId") Long voteId, @DestinationVariable("roomId") Long roomId) throws BadRequestException {
-        try {
+//        try {
             String maxVotedMenu = voteService.getMostVotedMenu(voteId);
             return meetService.registerMeetMenu(maxVotedMenu, roomId);
-        } catch (Exception e) {
-            log.error("Error ending vote for voteId {}: {}", voteId, e.getMessage());
-            throw new BadRequestException("Failed to end vote and save menu", e);
-        }
+//        } catch (Exception e) {
+//            log.error("Error ending vote for voteId {}: {}", voteId, e.getMessage());
+//            throw new BadRequestException("Failed to end vote and save menu", e);
+//        }
     }
 
     /**
@@ -206,6 +206,7 @@ public class ChatController {
         departureList.add(departures);
 
         String meetMenu = room.getMeet().getMeetMenu();
+        String meetDate = room.getMeet().getMeetTime();
         if (meetMenu == null) {
             throw new IllegalArgumentException("해당 채팅방에 대한 Chat 정보가 없습니다.");
         }
@@ -214,6 +215,7 @@ public class ChatController {
         DepartureResponseDTO responseDTO = DepartureResponseDTO.builder()
                 .memberCount(memberCount)
                 .meetMenu(meetMenu)
+                .meetDate(meetDate)
                 .departureList(departureList)
                 .build();
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);

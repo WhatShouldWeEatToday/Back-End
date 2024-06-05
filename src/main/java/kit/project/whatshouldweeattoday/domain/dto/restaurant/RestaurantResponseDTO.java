@@ -97,6 +97,7 @@ public class RestaurantResponseDTO {
         this.latitude = restaurant.getLatitude();
         this.distance = restaurant.getDistance();
         this.pathTime = restaurant.getPathTime();
+        this.count= Math.toIntExact(restaurant.getCount());
     }
 
     // 주간 순위 -> 음식 종류만 반환
