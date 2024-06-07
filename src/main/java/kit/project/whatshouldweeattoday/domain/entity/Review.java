@@ -41,7 +41,7 @@ public class Review extends BaseTimeEntity {
     @JsonBackReference
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "review",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Likes> likesList;
 
 
