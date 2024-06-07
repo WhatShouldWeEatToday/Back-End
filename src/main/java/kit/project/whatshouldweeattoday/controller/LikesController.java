@@ -14,7 +14,7 @@ public class LikesController {
 
     // 리뷰 좋아요 등록 또는 취소
     @PostMapping("/api/review/{reviewId}/likes")
-    public ResponseEntity<?> reviewLikes(@PathVariable Long reviewId) {
+    public ResponseEntity<?> reviewLikes(@PathVariable("reviewId") Long reviewId) {
         try {
             // 좋아요 등록 또는 취소
             likesService.toggleLike(reviewId);
